@@ -10,6 +10,7 @@ const express = require('express');
 // Local Imports.
 const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static');
 const staticRouter = require('./src/routes/static');
+const authRouter = require('./src/routes/auth');
 
 // Initializing Express.
 const app = express();
@@ -26,6 +27,7 @@ app.use(express.json());
 
 // Routes.
 app.use(staticRouter);
+app.use(authRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);

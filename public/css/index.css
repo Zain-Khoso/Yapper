@@ -114,6 +114,10 @@ a {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 p {
   text-align: justify;
   color: var(--color-foreground-secondary);

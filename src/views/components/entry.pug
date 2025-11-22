@@ -1,0 +1,14 @@
+include ../svgs/eye-close
+
+mixin entry(id, label, placeholder, variant="default", type="text")
+  label.entry
+    label.label(for=id) #{label}
+    
+    label.input-wrapper
+      input(type=type, id=id, placeholder=placeholder)
+      
+      if variant === 'password' 
+        .password-visibility-btn 
+          +eyeClose
+    
+    label#error-text.error-text.hidden

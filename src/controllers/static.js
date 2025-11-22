@@ -72,11 +72,13 @@ exports.getNotFoundPage = function (req, res) {
   res.render('not-found', { metadata });
 };
 
-exports.getServerErrorPage = function (_, req, res, __) {
+exports.getServerErrorPage = function (error, req, res, __) {
   const metadata = getMetadata({
     title: 'Server Error',
     url: { hostname: req.hostname, path: req.url },
   });
+
+  console.log(error);
 
   res.render('server-error', { metadata });
 };

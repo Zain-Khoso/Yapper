@@ -1,0 +1,58 @@
+extends layouts/auth
+
+include components/entry
+include svgs/checkbox
+include svgs/checkedbox
+
+block content 
+  main.page 
+    header.heading
+      h2 Create your Yapper account
+      p Join the simplest chat experience built for fun, learning, and quick conversations.
+    
+    form#form
+      section.inputs-group 
+        +entry("email", "Email", "abc@xyz.com")
+
+        +entry("password", "Password", "********", "password", "password")
+
+        +entry("confirmPassword", "Confirm Password", "********", "password", "password")
+
+        
+        label.checkbox
+          .checkbox-ui
+            input(type="checkbox", id="terms", class='checkbox-input')
+
+            +checkbox('checkbox-empty-icon')
+
+            +checkedBox('checkbox-filled-icon')
+            
+            label.label(for="terms") 
+              span I agree to the 
+              a.highlight(href="/terms-and-conditions") Terms and Conditions
+              span  of Yapper.
+          span.error-text
+
+        label.checkbox
+          .checkbox-ui
+            input(type="checkbox", id="policies", class='checkbox-input')
+
+            +checkbox('checkbox-empty-icon')
+
+            +checkedBox('checkbox-filled-icon')
+
+            label.label(for="policies") 
+              span I agree to the 
+              a.highlight(href="/privacy-policy") Privacy Policy
+              span  of Yapper.
+          
+          span.error-text
+
+      .btn-group.reverse
+        button.btn.primary Create Account 
+        button.btn.outline Go Back 
+      
+      p 
+        span Already have an account?
+        a.highlight(href="/login")  Sign in
+      
