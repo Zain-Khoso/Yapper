@@ -65,7 +65,6 @@
   color: var(--color-foreground);
   list-style-type: none;
   text-decoration: none;
-  cursor: default;
 }
 
 *::selection {
@@ -78,6 +77,7 @@ body {
   height: 100dvh;
   overflow-y: auto;
   background-color: var(--color-background);
+  padding: 1.5rem 1rem;
 }
 
 h1 {
@@ -85,7 +85,7 @@ h1 {
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  font-size: 2.5rem;
+  font-size: 3rem;
 }
 
 h2 {
@@ -110,11 +110,6 @@ h4 {
   font-weight: 600;
   font-style: normal;
   font-size: 1rem;
-}
-
-a,
-button {
-  cursor: pointer;
 }
 
 a {
@@ -155,21 +150,23 @@ span {
   height: fit-content;
   background-color: transparent;
   padding: 0.5rem 1.5rem;
-  border: 1.5px solid transparent;
+  border: 2px solid transparent;
   border-radius: 0.5rem;
-  font-weight: 600;
+  font-weight: 800;
   transition:
-    background-color 200ms ease-out,
-    border-color 200ms ease-out;
+    background-color 300ms ease-out,
+    border-color 300ms ease-out;
 }
 
 .btn.primary {
+  color: var(--color-background);
   background-color: var(--color-foreground);
   border-color: var(--color-foreground);
 }
 
 .btn.primary:hover,
 .btn.primary:focus-visible {
+  color: var(--color-foreground);
   background-color: transparent;
 }
 
@@ -180,6 +177,7 @@ span {
 
 .btn.outline:hover,
 .btn.outline:focus-visible {
+  color: var(--color-background);
   background-color: var(--color-foreground);
 }
 
@@ -190,9 +188,24 @@ span {
   pointer-events: none;
 }
 
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-group .btn {
+  flex: 1;
+  min-width: fit-content;
+}
+
+.btn-group.reverse {
+  flex-direction: row-reverse;
+}
+
 span.highlight {
   color: var(--color-foreground);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .container {
@@ -206,4 +219,26 @@ span.highlight {
 
 .hidden {
   display: none !important;
+}
+
+.stroke-foreground {
+  stroke: var(--color-foreground);
+}
+
+.separator {
+  background-color: var(--color-foreground);
+  border-radius: 1px;
+}
+
+.horizontal {
+  width: 100%;
+  max-width: 1280px;
+  height: 1px;
+  margin-inline: auto;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
 }

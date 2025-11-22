@@ -1,0 +1,13 @@
+include ../svgs/icon
+
+mixin navbar(noActions=false) 
+  nav.navbar 
+    a.logo(href="/") 
+      +icon('icon')
+      h1 Yapper
+
+    .btn-group.reverse
+      a.btn.primary(href="/login") Login
+      a.btn.outline(href="/create-account") Create Account
+  
+  .separator.horizontal 

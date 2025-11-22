@@ -1,1 +1,11 @@
 extends root
+
+include ../components/navbar
+
+block styles 
+  link(rel="stylesheet", href="/css/static.css")
+  link(rel="stylesheet", href="/css/navbar.css")
+
+block body 
+  body
+    +navbar 
