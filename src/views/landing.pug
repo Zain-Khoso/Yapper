@@ -1,1 +1,24 @@
 extends layouts/static
+
+include svgs/hero-illustration
+
+block page-styles 
+  link(rel="stylesheet", href="/css/landing.css")
+
+block content 
+  main.hero 
+    section.copy 
+      h1 
+        span Chat smarter. 
+        br 
+        span Connect faster. 
+        br
+        span Build conversations that matter.
+
+      p Yapper is your no-noise, no-distraction chat experience — built for teams, friends, and communities who want clarity, speed, and reliability. Lightweight, real-time, and engineered with Express and MySQL, Yapper keeps your conversations flowing without friction.
+
+      .btn-group.reverse
+        a.btn.primary(href="/chat") Get Started For Free 
+        a.btn.outline(href="https://zain-khoso.vercel.app", target="_blank") Founder 
+    
+    +heroIllustration
