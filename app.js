@@ -8,7 +8,7 @@ const path = require('path');
 const express = require('express');
 
 // Local Imports.
-const { getNotFoundPage } = require('./src/controllers/static');
+const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static');
 const staticRouter = require('./src/routes/static');
 
 // Initializing Express.
@@ -29,6 +29,7 @@ app.use(staticRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);
+app.use(getServerErrorPage);
 
 // Running the server.
 app.listen(process.env.PORT);
