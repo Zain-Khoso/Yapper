@@ -7,6 +7,9 @@ const path = require('path');
 // Lib Imports.
 const express = require('express');
 
+// Local Imports.
+const staticRouter = require('./src/routes/static');
+
 // Initializing Express.
 const app = express();
 
@@ -21,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 // Routes.
+app.use(staticRouter);
 
 // Running the server.
 app.listen(process.env.PORT);

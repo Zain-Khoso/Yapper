@@ -1,0 +1,34 @@
+mixin metadata({title, faviconLight, faviconDark, description, keywords, author, landingPage, pageURL, opengraph})
+  //- Metadata - Essentials
+  meta(charset="UTF-8")
+  meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  meta(name="description", content=description)
+  meta(name="keywords", content=keywords)
+  link(rel="author", href=author)
+  link(rel="canonical", href=landingPage)
+
+  //- Metadata - Opengraph
+  meta(property="og:url", content=pageURL)
+  meta(property="og:image", content=opengraph.imageURL)
+  meta(property="og:description", content=description)
+  meta(property="og:title", content=title)
+  meta(property="og:site_name", content=opengraph.siteName)
+  meta(property="og:see_also", content=landingPage)
+
+  //- Metadata - Google
+  meta(itemprop="name", content=title)
+  meta(itemprop="description", content=description)
+  meta(itemprop="image", content=opengraph.imageURL)
+
+  //- Metadata - Twitter
+  meta(name="twitter:url", content=pageURL)
+  meta(name="twitter:title", content=title)
+  meta(name="twitter:description", content=description)
+  meta(name="twitter:image", content=opengraph.imageURL)
+
+  //- Favicon
+  link(rel="icon", type="image/png", media="(prefers-color-scheme: light)", href=faviconLight)
+  link(rel="icon", type="image/png", media="(prefers-color-scheme: dark)", href=faviconDark)
+
+  //- Page Title
+  title #{title}

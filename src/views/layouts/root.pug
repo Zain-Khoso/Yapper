@@ -1,0 +1,19 @@
+include ../mixins/metadata.pug
+
+doctype html
+html(lang="en")
+  head
+    +metadata(metadata)
+    
+    //- Styles
+    link(rel="stylesheet", href="/css/index.css")
+    
+    block styles 
+
+    //- Scripts
+    script(src="https://cdn.jsdelivr.net/npm/sweetalert2@11") 
+    script(src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js")
+    
+    block scripts 
+  body 
+    block body  
