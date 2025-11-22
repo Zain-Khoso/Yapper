@@ -21,3 +21,25 @@
   flex: 1;
   height: auto;
 }
+
+@media screen and (max-width: 1024px) {
+  .hero {
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: end;
+  }
+
+  .hero > .illustration {
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .hero > .illustration {
+    max-height: 180px;
+  }
+
+  .hero .copy .btn-group .btn:last-child {
+    display: none;
+  }
+}

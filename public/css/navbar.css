@@ -18,3 +18,14 @@
   width: 4rem;
   height: 4rem;
 }
+
+@media screen and (max-width: 768px) {
+  .navbar .logo .icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .navbar .btn-group {
+    display: none;
+  }
+}
