@@ -42,3 +42,23 @@ exports.getTermsAndConditionsPage = function (req, res) {
 
   res.render('terms-and-conditions', { metadata });
 };
+
+exports.getPrivacyPolicyPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Privacy Policy',
+    description:
+      'Read the Privacy Policy for Yapper — a simple hobby chat app built for learning and experimentation. This page explains the limitations, risks, and usage guidelines for using Yapper.',
+    keywords: [
+      'yapper policy',
+      'yapper privacy',
+      'privacy policy',
+      'chat app policies',
+      'hobby project policies',
+      'usage guidelines',
+      'yapper legal',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('privacy-policy', { metadata });
+};
