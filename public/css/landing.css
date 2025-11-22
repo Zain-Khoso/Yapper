@@ -31,6 +31,7 @@
 
   .hero > .illustration {
     width: auto;
+    max-height: 380px;
   }
 }
 

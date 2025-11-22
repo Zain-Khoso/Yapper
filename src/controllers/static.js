@@ -62,3 +62,12 @@ exports.getPrivacyPolicyPage = function (req, res) {
 
   res.render('privacy-policy', { metadata });
 };
+
+exports.getNotFoundPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Page Not Found',
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('not-found', { metadata });
+};
