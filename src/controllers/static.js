@@ -22,3 +22,23 @@ exports.getLandingPage = function (req, res) {
 
   res.render('landing', { metadata });
 };
+
+exports.getTermsAndConditionsPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Terms & Conditions',
+    description:
+      'Read the Terms & Conditions for Yapper — a simple hobby chat app built for learning and experimentation. This page explains the limitations, risks, and usage guidelines for using Yapper.',
+    keywords: [
+      'yapper terms',
+      'yapper conditions',
+      'terms and conditions',
+      'chat app terms',
+      'hobby project policies',
+      'usage guidelines',
+      'yapper legal',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('terms-and-conditions', { metadata });
+};

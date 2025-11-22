@@ -264,6 +264,22 @@ span.highlight {
   margin-inline: auto;
 }
 
+.article-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+.headed-para {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 @media screen and (max-width: 768px) {
   body {
     padding: 1rem;

@@ -11,4 +11,7 @@ const router = Router();
 // GET: Landing Page.
 router.get('/', controller.getLandingPage);
 
+// GET: Terms and Conditions Page.
+router.get('/terms-and-conditions', controller.getTermsAndConditionsPage);
+
 module.exports = router;
