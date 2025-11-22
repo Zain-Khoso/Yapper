@@ -2,7 +2,6 @@
 const getMetadata = require('../utils/metadata');
 
 exports.getLandingPage = function (req, res, next) {
-  return next(Error());
   const metadata = getMetadata({
     title: 'The Simple Chat App',
     description:
