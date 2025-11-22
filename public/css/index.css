@@ -1,0 +1,209 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+/* Color Scheme Setup */
+
+/* Custom Color Propertise */
+:root {
+  --color-light: #fff8d4;
+  --color-light-secondary: #a3b087;
+  --color-dark: #313647;
+  --color-dark-secondary: #435663;
+  --color-success: #1f7d53;
+  --color-danger: #f7374f;
+}
+
+:root {
+  --color-background: var(--color-light);
+  --color-background-secondary: var(--color-light-secondary);
+  --color-foreground: var(--color-dark);
+  --color-foreground-secondary: var(--color-dark-secondary);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-dark);
+    --color-background-secondary: var(--color-dark-secondary);
+    --color-foreground: var(--color-light);
+    --color-foreground-secondary: var(--color-light-secondary);
+  }
+}
+
+/* Light Mode */
+:root[data-theme='light'] {
+  --color-background: var(--color-light);
+  --color-background-secondary: var(--color-light-secondary);
+  --color-foreground: var(--color-dark);
+  --color-foreground-secondary: var(--color-dark-secondary);
+}
+
+/* Dark Mode */
+:root[data-theme='dark'] {
+  --color-background: var(--color-dark);
+  --color-background-secondary: var(--color-dark-secondary);
+  --color-foreground: var(--color-light);
+  --color-foreground-secondary: var(--color-light-secondary);
+}
+
+/* Global Style Reset */
+* {
+  box-sizing: border-box;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  margin: 0;
+  overflow: hidden;
+
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Nunito', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  color: var(--color-foreground);
+  list-style-type: none;
+  text-decoration: none;
+  cursor: default;
+}
+
+*::selection {
+  color: var(--color-background);
+  background-color: var(--color-foreground);
+}
+
+body {
+  width: 100dvw;
+  height: 100dvh;
+  overflow-y: auto;
+  background-color: var(--color-background);
+}
+
+h1 {
+  font-family: 'Alexandria', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-family: 'Alexandria', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 2rem;
+}
+
+h3 {
+  font-family: 'Alexandria', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-family: 'Alexandria', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1rem;
+}
+
+a,
+button {
+  cursor: pointer;
+}
+
+a {
+  font: inherit;
+}
+
+p {
+  text-align: justify;
+  color: var(--color-foreground-secondary);
+  line-height: 180%;
+}
+
+p:first-of-type {
+  margin-bottom: 0.5rem;
+}
+
+p:last-of-type {
+  margin-top: 0.5rem;
+}
+
+p:not(:first-of-type) + p:not(:last-of-type) {
+  margin-block: 0.5rem;
+}
+
+p:only-of-type {
+  margin-block: 0;
+}
+
+span {
+  font: inherit;
+  color: inherit;
+}
+
+.btn {
+  display: block;
+
+  width: fit-content;
+  height: fit-content;
+  background-color: transparent;
+  padding: 0.5rem 1.5rem;
+  border: 1.5px solid transparent;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out;
+}
+
+.btn.primary {
+  background-color: var(--color-foreground);
+  border-color: var(--color-foreground);
+}
+
+.btn.primary:hover,
+.btn.primary:focus-visible {
+  background-color: transparent;
+}
+
+.btn.outline,
+.btn.outline {
+  border-color: var(--color-foreground);
+}
+
+.btn.outline:hover,
+.btn.outline:focus-visible {
+  background-color: var(--color-foreground);
+}
+
+.btn:disabled {
+  opacity: 0.6 !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+  pointer-events: none;
+}
+
+span.highlight {
+  color: var(--color-foreground);
+  font-weight: 500;
+}
+
+.container {
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.hidden {
+  display: none !important;
+}
