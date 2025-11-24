@@ -113,18 +113,48 @@ body {
   color: transparent;
 }
 
-.entry .password-visibility .password-eye {
+.entry input[type='password'] + .password-visibility-btn .password-visibility.eye-close-svg {
+  display: none;
+}
+
+.entry input[type='password'] + .password-visibility-btn .password-visibility.eye-open-svg {
+  display: block;
+}
+
+.entry input[type='text'] + .password-visibility-btn .password-visibility.eye-close-svg {
+  display: block;
+}
+
+.entry input[type='text'] + .password-visibility-btn .password-visibility.eye-open-svg {
+  display: none;
+}
+
+.entry .password-visibility .password-eye-stroke {
   stroke: var(--color-foreground-secondary);
 }
 
-.entry.error .password-visibility-btn .password-eye {
+.entry .password-visibility .password-eye-fill {
+  fill: var(--color-foreground-secondary);
+}
+
+.entry.error .password-visibility-btn .password-eye-stroke {
   stroke: var(--color-danger);
 }
 
-.entry:focus-within .password-visibility .password-eye,
-.entry .password-visibility-btn:hover .password-eye,
-.entry .password-visibility-btn:focus .password-eye {
+.entry.error .password-visibility-btn .password-eye-fill {
+  fill: var(--color-danger);
+}
+
+.entry:focus-within .password-visibility .password-eye-stroke,
+.entry .password-visibility-btn:hover .password-eye-stroke,
+.entry .password-visibility-btn:focus .password-eye-stroke {
   stroke: var(--color-foreground);
+}
+
+.entry:focus-within .password-visibility .password-eye-fill,
+.entry .password-visibility-btn:hover .password-eye-fill,
+.entry .password-visibility-btn:focus .password-eye-fill {
+  fill: var(--color-foreground);
 }
 
 .error-text {

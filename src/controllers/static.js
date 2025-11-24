@@ -69,7 +69,7 @@ exports.getNotFoundPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('not-found', { metadata });
+  res.status(404).render('not-found', { metadata });
 };
 
 exports.getServerErrorPage = function (error, req, res, __) {
@@ -80,5 +80,5 @@ exports.getServerErrorPage = function (error, req, res, __) {
 
   console.log(error);
 
-  res.render('server-error', { metadata });
+  res.status(500).render('server-error', { metadata });
 };

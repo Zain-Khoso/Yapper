@@ -4,6 +4,10 @@ include components/entry
 include svgs/checkbox
 include svgs/checkedbox
 
+block scripts 
+  script(src="https://unpkg.com/validator@latest/validator.min.js")
+  script(type="module", src="/js/create-account.js", defer) 
+
 block content 
   main.page 
     header.heading
@@ -29,9 +33,9 @@ block content
             
             label.label(for="terms") 
               span I agree to the 
-              a.highlight(href="/terms-and-conditions") Terms and Conditions
+              a.highlight(href="/terms-and-conditions", target="_blank") Terms and Conditions
               span  of Yapper.
-          span.error-text
+          label.error-text(for="terms")
 
         label.checkbox
           .checkbox-ui
@@ -43,14 +47,14 @@ block content
 
             label.label(for="policies") 
               span I agree to the 
-              a.highlight(href="/privacy-policy") Privacy Policy
+              a.highlight(href="/privacy-policy", target="_blank") Privacy Policy
               span  of Yapper.
           
-          span.error-text
+          label.error-text(for="policies")
 
       .btn-group.reverse
-        button.btn.primary Create Account 
-        button.btn.outline Go Back 
+        button#submit.btn.primary Create Account 
+        button#cancel.btn.outline Go Back 
       
       p 
         span Already have an account?
