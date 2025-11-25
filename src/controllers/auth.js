@@ -69,3 +69,22 @@ exports.getChangePasswordPage = function (req, res) {
 
   res.render('change-password', { metadata });
 };
+
+exports.getChangeEmailPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Change Email',
+    description:
+      'Update the email associated with your Yapper account. Yapper is a simple hobby chat app, so email changes may not be permanent if the database resets.',
+    keywords: [
+      'change email',
+      'update email',
+      'yapper settings',
+      'account settings',
+      'email update',
+      'hobby chat app',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('change-email', { metadata });
+};

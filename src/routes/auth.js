@@ -20,4 +20,7 @@ router.get('/forgot-password', controller.getForgotPasswordPage);
 // GET: Change Password Page.
 router.get('/change-password', controller.getChangePasswordPage);
 
+// GET: Change Email Page.
+router.get('/change-email', controller.getChangeEmailPage);
+
 module.exports = router;

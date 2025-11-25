@@ -1,0 +1,28 @@
+extends layouts/auth
+
+include components/entry
+include svgs/checkbox
+include svgs/checkedbox
+
+block scripts 
+  script(src="https://unpkg.com/validator@latest/validator.min.js")
+
+block content 
+  main.page 
+    header.heading
+      h2 Update Your Email
+      p Keep your account details up to date. Enter your new email below.
+    
+    form#form
+      section.inputs-group 
+        +entry("newEmail", "New Email", "abc@xyz.com")
+
+        +entry("confirmNewEmail", "Confirm New Email", "abc@xyz.com")
+
+      .btn-group.reverse
+        button#submit.btn.primary Save New Email
+      
+      p 
+        span Changed your mind? 
+        a.highlight(href="/login")  Go back to Account Settings
+      
