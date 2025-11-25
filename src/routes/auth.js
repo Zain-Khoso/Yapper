@@ -11,4 +11,7 @@ const router = Router();
 // GET: Create Account Page.
 router.get('/create-account', controller.getCreateAccountPage);
 
+// GET: Login Page.
+router.get('/login', controller.getLoginPage);
+
 module.exports = router;
