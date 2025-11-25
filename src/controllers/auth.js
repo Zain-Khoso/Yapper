@@ -31,3 +31,41 @@ exports.getLoginPage = function (req, res) {
 
   res.render('login', { metadata });
 };
+
+exports.getForgotPasswordPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Forgot Password',
+    description:
+      'Reset your Yapper password. Enter your account email or username to receive password reset instructions. Yapper is a simple hobby project—please avoid using sensitive or personal credentials.',
+    keywords: [
+      'forgot password',
+      'reset password',
+      'yapper password',
+      'account recovery',
+      'password reset',
+      'hobby chat app',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('forgot-password', { metadata });
+};
+
+exports.getChangePasswordPage = function (req, res) {
+  const metadata = getMetadata({
+    title: 'Change Password',
+    description:
+      'Update your Yapper account password. This is a simple hobby project, so avoid using sensitive or personal passwords. Change your password to keep your account accessible and up to date.',
+    keywords: [
+      'change password',
+      'update password',
+      'yapper settings',
+      'account settings',
+      'password update',
+      'hobby chat app',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('change-password', { metadata });
+};

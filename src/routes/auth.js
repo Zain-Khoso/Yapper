@@ -14,4 +14,10 @@ router.get('/create-account', controller.getCreateAccountPage);
 // GET: Login Page.
 router.get('/login', controller.getLoginPage);
 
+// GET: Forgot Password Page.
+router.get('/forgot-password', controller.getForgotPasswordPage);
+
+// GET: Change Password Page.
+router.get('/change-password', controller.getChangePasswordPage);
+
 module.exports = router;
