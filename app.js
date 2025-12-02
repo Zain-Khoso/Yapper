@@ -11,6 +11,7 @@ const express = require('express');
 const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static');
 const staticRouter = require('./src/routes/static');
 const authRouter = require('./src/routes/auth');
+const chatRouter = require('./src/routes/chat');
 
 // Initializing Express.
 const app = express();
@@ -26,8 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 // Routes.
-app.use(staticRouter);
-app.use(authRouter);
+app.use(staticRouter, authRouter, chatRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);

@@ -1,0 +1,105 @@
+extends layouts/app
+
+include svgs/video
+include svgs/more-vertical
+include svgs/plus
+include svgs/send
+
+block page-styles 
+  link(rel="stylesheet", href="/css/chat.css")
+
+block page-controls 
+  ul.chats-list 
+    li.chat 
+      .user-icon 
+        span.user-initial A
+      
+      .user-content 
+        .title 
+          span.highlight Adeen
+          span.last-spoke Today
+        
+        span.last-message Mr. White 
+
+    li.chat.active 
+      .user-icon 
+        span.user-initial H
+      
+      .user-content 
+        .title 
+          span.highlight Hamza
+          span.last-spoke Sunday
+        
+        span.last-message Qari saab is after me 
+
+    li.chat 
+      .user-icon 
+        span.user-initial Q
+      
+      .user-content 
+        .title 
+          span.highlight Qari Saab
+          span.last-spoke Saturday
+        
+        span.last-message Hamza just block me 
+
+block content
+  .chatapp 
+    header.chat-head 
+      .user 
+        .user-icon 
+          span.user-initial H 
+        
+        h2 Hamza 
+      
+      .actions 
+        button.icon-btn 
+          +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+        button.icon-btn 
+          +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+        button.icon-btn 
+          +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+    
+    section.messages
+      .message-wrapper.center 
+        span.date-separator Today 
+
+      .message-wrapper.left 
+        .message-box 
+          p.message-text Hey! Did you finish the login page?
+          span.time-text 16:32
+           
+      .message-wrapper.right 
+        .message-box 
+          p.message-text Yup, just wrapped it up. Starting on the chat list UI now.
+          span.time-text 16:32 
+
+      .message-wrapper.left 
+        .message-box 
+          p.message-text Nicee. Send me a screenshot when you're done?
+          span.time-text 16:33
+           
+      .message-wrapper.right 
+        .message-box 
+          p.message-text Sure thing. Also, should we keep the theme light or dark by default?
+          span.time-text 16:33 
+
+      .message-wrapper.left 
+        .message-box 
+          p.message-text Dark. Always dark 😆
+          span.time-text 16:35
+           
+      .message-wrapper.right 
+        .message-box 
+          p.message-text Bet. Dark it is.
+          span.time-text 16:40 
+
+    form.controller
+      label.file-label
+        input#file-input(type="file")
+        +plus('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+      
+      input.text-input(type="text", placeholder="Type your message...")
+
+      button.send
+        +send('icon', 'fill-background-secondary', 'stroke-background-secondary')

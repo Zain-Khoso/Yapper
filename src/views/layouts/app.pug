@@ -1,0 +1,35 @@
+extends root
+
+include ../svgs/message-box
+include ../svgs/phone
+include ../svgs/settings
+
+block styles 
+  link(rel="stylesheet", href="/css/app.css")
+
+  block page-styles 
+
+block body 
+  body.app 
+    nav.left-bar 
+      .controls  
+        a.control(href="/chat")
+          +messageBox('icon', 'fill-foreground', 'stroke-foreground')
+        a.control(href="/calls")
+          +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+       
+      .controls  
+        a.control(href="/settings")
+          +setting('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+        a.control(href="/settings/account")
+          .user-icon 
+            span.user-initial Z
+
+    aside.app-controls 
+      header.head 
+        h2 Yappings 
+      
+      block page-controls 
+
+    main.content-wrapper 
+      block content

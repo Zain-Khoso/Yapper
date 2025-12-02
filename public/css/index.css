@@ -284,6 +284,23 @@ span.highlight {
   gap: 0.5rem;
 }
 
+.user-icon {
+  display: grid;
+  place-items: center;
+
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--color-foreground-secondary);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.user-icon .user-initial {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-background);
+}
+
 @media screen and (max-width: 768px) {
   body {
     padding: 1rem;

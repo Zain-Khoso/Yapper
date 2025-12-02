@@ -1,0 +1,252 @@
+.chats-list {
+  flex: 1;
+}
+
+.chats-list .chat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding-block: 0.75rem;
+  padding-inline: 1.5rem;
+  cursor: pointer;
+}
+
+.chats-list .chat:hover,
+.chats-list .chat.active {
+  background-color: var(--color-background-secondary);
+}
+
+.chats-list .chat .user-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.25rem;
+}
+
+.chats-list .chat .user-content .title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chats-list .chat .user-content .title .last-spoke {
+  font-size: 0.75rem;
+}
+
+.chats-list .chat .user-content .last-message {
+  font-size: 0.75rem;
+  color: var(--color-foreground-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatapp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+
+  width: 100%;
+  height: 100%;
+}
+
+.chatapp .chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--color-foreground-secondary);
+}
+
+.chatapp .chat-head .user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chatapp .chat-head .actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.chatapp .chat-head .actions .icon-btn {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.chatapp .chat-head .actions .icon-btn .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.chatapp .controller {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  width: 100%;
+  max-width: 768px;
+  margin-inline: auto;
+}
+
+.chatapp .controller .file-label {
+  display: grid;
+  place-items: center;
+
+  width: 1.5rem;
+  height: 1.5rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.chatapp .controller .file-label .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.chatapp .controller .file-label #file-input {
+  position: fixed;
+  left: -9999px;
+}
+
+.chatapp .controller .text-input {
+  flex: 1;
+
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-foreground-secondary);
+  border-radius: 0.5rem;
+}
+
+.chatapp .controller .text-input:focus {
+  border: 2px solid var(--color-foreground);
+}
+
+.chatapp .controller .send {
+  display: grid;
+  place-items: center;
+
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-foreground);
+}
+
+.chatapp .controller .send .icon {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.chatapp .messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Chrome, Edge, Safari */
+.chatapp .messages::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chatapp .messages::-webkit-scrollbar-track {
+  background: var(--color-background);
+  border-radius: 10px;
+}
+
+.chatapp .messages::-webkit-scrollbar-thumb {
+  background: var(--color-foreground-secondary);
+  border-radius: 10px;
+  border: 2px solid var(--color-background-secondary);
+}
+
+.chatapp .messages::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
+}
+
+.chatapp .messages .message-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: fit-content;
+}
+
+.chatapp .messages .message-wrapper.left {
+  align-items: start;
+}
+
+.chatapp .messages .message-wrapper.center {
+  align-items: center;
+}
+
+.chatapp .messages .message-wrapper.right {
+  align-items: end;
+}
+
+.chatapp .messages .message-wrapper .date-separator {
+  display: grid;
+  place-items: center;
+
+  color: var(--color-background);
+  background-color: var(--color-foreground-secondary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.chatapp .messages .message-wrapper .message-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  width: fit-content;
+  max-width: 480px;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.chatapp .messages .message-wrapper.left .message-box {
+  align-items: end;
+
+  color: var(--color-foreground);
+  background-color: var(--color-background-secondary);
+  border-top-left-radius: 0;
+}
+
+.chatapp .messages .message-wrapper.left .message-box .message-text {
+  color: var(--color-foreground);
+}
+
+.chatapp .messages .message-wrapper.left .message-box .time-text {
+  font-size: 0.75rem;
+  color: var(--color-foreground);
+}
+
+.chatapp .messages .message-wrapper.right .message-box {
+  align-items: start;
+
+  color: var(--color-background);
+  background-color: var(--color-foreground-secondary);
+  border-top-right-radius: 0;
+}
+
+.chatapp .messages .message-wrapper.right .message-box .message-text {
+  color: var(--color-background);
+}
+
+.chatapp .messages .message-wrapper.right .message-box .time-text {
+  font-size: 0.75rem;
+  color: var(--color-background);
+}
