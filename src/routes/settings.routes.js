@@ -2,7 +2,7 @@
 const { Router } = require('express');
 
 // Local Imports.
-const controller = require('../controllers/settings');
+const controller = require('../controllers/settings.controller');
 
 const router = Router();
 

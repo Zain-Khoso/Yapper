@@ -8,11 +8,11 @@ const path = require('path');
 const express = require('express');
 
 // Local Imports.
-const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static');
-const staticRouter = require('./src/routes/static');
-const authRouter = require('./src/routes/auth');
-const chatRouter = require('./src/routes/chat');
-const settingsRouter = require('./src/routes/settings');
+const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static.controller');
+const staticRouter = require('./src/routes/static.routes');
+const authRouter = require('./src/routes/auth.routes');
+const chatRouter = require('./src/routes/chat.routes');
+const settingsRouter = require('./src/routes/settings.routes');
 
 // Initializing Express.
 const app = express();

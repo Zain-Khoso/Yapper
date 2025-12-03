@@ -2,7 +2,7 @@
 const { Router } = require('express');
 
 // Local Imports.
-const controller = require('../controllers/chat');
+const controller = require('../controllers/chat.controller');
 
 const router = Router();
 

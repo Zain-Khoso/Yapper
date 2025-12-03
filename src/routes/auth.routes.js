@@ -2,7 +2,7 @@
 const { Router } = require('express');
 
 // Local Imports.
-const controller = require('../controllers/auth');
+const controller = require('../controllers/auth.controller');
 
 const router = Router();
 
