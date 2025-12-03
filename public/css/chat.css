@@ -136,7 +136,7 @@
   height: 2.5rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  background-color: var(--color-foreground);
+  background-color: var(--color-foreground-secondary);
 }
 
 .chatapp .controller .send .icon {
