@@ -4,6 +4,7 @@ include svgs/video
 include svgs/more-vertical
 include svgs/plus
 include svgs/send
+include svgs/arrow-back
 
 block page-styles 
   link(rel="stylesheet", href="/css/chat.css")
@@ -46,7 +47,10 @@ block page-controls
 block content
   .chatapp 
     header.chat-head 
+
       .user 
+        button 
+          +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
         .user-icon 
           span.user-initial H 
         

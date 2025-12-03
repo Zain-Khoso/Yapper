@@ -3,6 +3,8 @@ extends root
 include ../svgs/message-box
 include ../svgs/phone
 include ../svgs/settings
+include ../svgs/search
+include ../svgs/more-vertical
 
 block styles 
   link(rel="stylesheet", href="/css/app.css")
@@ -27,7 +29,15 @@ block body
 
     aside.app-controls 
       header.head 
-        h2 Yappings 
+        .wrapper 
+          h2 Yappings
+
+          button 
+            +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+
+        form#user-search.searchbar 
+          +search('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+          input#search-query.search-input(type="text", placeholder="Search")
       
       block page-controls 
 

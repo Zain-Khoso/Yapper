@@ -60,7 +60,73 @@
   padding-inline: 1.5rem;
 }
 
+.app .app-controls .head .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app .app-controls .head .wrapper button {
+  display: grid;
+  place-content: center;
+}
+
+.app .app-controls .head .wrapper .icon {
+  width: 2rem;
+  height: 2rem;
+}
+
 .app .content-wrapper {
   flex: 1;
   height: 100%;
+}
+
+.app .app-controls .head .searchbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-foreground-secondary);
+  border-radius: 0.5rem;
+}
+
+.app .app-controls .head .searchbar .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.app .app-controls .head .searchbar .search-input {
+  flex: 1;
+}
+
+@media screen and (max-width: 1024px) {
+  .app .app-controls {
+    width: 320px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app {
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  .app .left-bar {
+    display: none;
+  }
+
+  .app .app-controls {
+    width: 100%;
+    border: none;
+  }
+
+  .app .content-wrapper {
+    position: fixed;
+    top: 0;
+    left: 100%;
+
+    width: 100dvw;
+    height: 100dvh;
+  }
 }
