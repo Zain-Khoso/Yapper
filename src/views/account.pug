@@ -24,3 +24,46 @@ block content
         +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
       
       h2 Account 
+
+    section 
+      span.highlight Account 
+
+      ul.settings 
+        li.setting-item 
+          p.setting-label 
+            span.setting-name Email: 
+            span.setting-value abc@xyz.com
+
+          a.btn.outline(href="/change-email") Change
+
+        li.setting-item 
+          p.setting-label 
+            span.setting-name Password: 
+            span.setting-value ********
+
+          a.btn.outline(href="/change-password") Change
+
+        li.setting-item 
+          p.setting-label 
+            span.setting-name 
+            span.setting-value Logout
+
+          button.btn.danger Logout
+
+        li.setting-item 
+          p.setting-label 
+            span.setting-name  
+            span.setting-value Account Deletion
+
+          button.btn.danger Delete 
+
+    section 
+      span.highlight Subscription 
+
+      ul.settings 
+        li.setting-item 
+          p.setting-label 
+            span.setting-name  
+            span.setting-value Want to tweak your subscription? 
+
+          button.btn.outline Manage

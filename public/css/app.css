@@ -124,7 +124,7 @@
   .app .content-wrapper {
     position: fixed;
     top: 0;
-    left: 100%;
+    left: 0%;
 
     width: 100dvw;
     height: 100dvh;

@@ -184,6 +184,18 @@ span {
   background-color: var(--color-foreground);
 }
 
+.btn.danger {
+  color: var(--color-background);
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn.danger:hover,
+.btn.danger:focus-visible {
+  color: var(--color-danger);
+  background-color: transparent;
+}
+
 .btn:disabled {
   opacity: 0.6 !important;
   outline-color: transparent !important;
