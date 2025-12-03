@@ -16,13 +16,14 @@ block body
     nav.left-bar 
       .controls  
         a.control(href="/chat")
-          +messageBox('icon', 'fill-foreground', 'stroke-foreground')
+          +messageBox('icon', 
+            path === 'chat' ? 'fill-foreground' : 'fill-foreground-secondary', path ===  'chat' ?  'stroke-foreground' : 'stroke-foreground-secondary')
         a.control(href="/calls")
-          +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+          +phone('icon', path === 'calls' ? 'fill-foreground' : 'fill-foreground-secondary', path === 'calls' ?  'stroke-foreground' : 'stroke-foreground-secondary')
        
       .controls  
         a.control(href="/settings")
-          +setting('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+          +setting('icon', path === 'settings' ? 'fill-foreground' : 'fill-foreground-secondary', path === 'settings' ?  'stroke-foreground' : 'stroke-foreground-secondary')
         a.control(href="/settings/account")
           .user-icon 
             span.user-initial Z
@@ -30,14 +31,15 @@ block body
     aside.app-controls 
       header.head 
         .wrapper 
-          h2 Yappings
+          h2 #{heading}
 
           button 
             +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
 
-        form#user-search.searchbar 
-          +search('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-          input#search-query.search-input(type="text", placeholder="Search")
+        if path === 'chat'
+          form#user-search.searchbar 
+            +search('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            input#search-query.search-input(type="text", placeholder="Search")
       
       block page-controls 
 

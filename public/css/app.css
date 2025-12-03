@@ -67,7 +67,7 @@
 }
 
 .app .app-controls .head .wrapper button {
-  display: grid;
+  display: none;
   place-content: center;
 }
 
@@ -128,5 +128,9 @@
 
     width: 100dvw;
     height: 100dvh;
+  }
+
+  .app .app-controls .head .wrapper button {
+    display: grid;
   }
 }

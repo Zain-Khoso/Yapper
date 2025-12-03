@@ -12,6 +12,7 @@ const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/stati
 const staticRouter = require('./src/routes/static');
 const authRouter = require('./src/routes/auth');
 const chatRouter = require('./src/routes/chat');
+const settingsRouter = require('./src/routes/settings');
 
 // Initializing Express.
 const app = express();
@@ -28,6 +29,7 @@ app.use(express.json());
 
 // Routes.
 app.use(staticRouter, authRouter, chatRouter);
+app.use('/settings', settingsRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);
