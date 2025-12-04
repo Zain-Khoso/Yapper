@@ -7,6 +7,8 @@ include svgs/checkedbox
 block scripts 
   script(src="https://unpkg.com/validator@latest/validator.min.js")
 
+  script(type="module", src="/js/create-account.js", defer) 
+
 block content 
   main.page 
     header.heading
@@ -16,6 +18,8 @@ block content
     form#form
       section.inputs-group 
         +entry("email", "Email", "abc@xyz.com")
+
+        +entry("displayName", "Display Name", "Abc Xyz")
 
         +entry("password", "Password", "********", "password", "password")
 
