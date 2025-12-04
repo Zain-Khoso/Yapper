@@ -8,6 +8,7 @@ const path = require('path');
 const express = require('express');
 
 // Local Imports.
+const sequelize = require('./src/utils/database');
 const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static.controller');
 const staticRouter = require('./src/routes/static.routes');
 const authRouter = require('./src/routes/auth.routes');
@@ -36,4 +37,7 @@ app.use(getNotFoundPage);
 app.use(getServerErrorPage);
 
 // Running the server.
-app.listen(process.env.PORT);
+sequelize
+  .sync({ force: true })
+  .then(() => app.listen(process.env.PORT))
+  .catch((error) => console.log(error));
