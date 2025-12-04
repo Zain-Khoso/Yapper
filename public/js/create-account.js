@@ -17,6 +17,9 @@ let isLoading = false;
 // DOM Selections.
 const elem_Form = document.getElementById('form');
 
+// Functions.
+
+// Function to handle form submittion.
 const handleSubmit = async function (event) {
   if (isLoading) return;
 
