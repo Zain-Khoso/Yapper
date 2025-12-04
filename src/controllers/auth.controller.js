@@ -93,6 +93,41 @@ exports.getLoginPage = function (req, res) {
   res.render('login', { metadata });
 };
 
+exports.postLogin = function (req, res) {
+  let { email, password } = req.body;
+
+  User.findOne({ where: { email } })
+    .then((user) => {
+      if (!user)
+        return Promise.reject({ email: 'Invalid credential.', password: 'Invalid credential.' });
+
+      return Promise.all([user, bcrypt.compare(password, user.password)]);
+    })
+    .then(([user, isPasswordValid]) => {
+      if (!isPasswordValid)
+        return Promise.reject({ email: 'Invalid credential.', password: 'Invalid credential.' });
+
+      req.session.isAuthenticated = true;
+      req.session.user = user;
+
+      res.status(200).json({ errors: {} });
+    })
+    .catch((errors) => {
+      if (!Object.keys(errors).includes('email')) {
+        console.log(errors);
+        return res.status(500).json({
+          errors: {
+            root: 'Something went wrong.',
+          },
+        });
+      }
+
+      res.status(409).json({
+        errors,
+      });
+    });
+};
+
 exports.getForgotPasswordPage = function (req, res) {
   const metadata = getMetadata({
     title: 'Forgot Password',

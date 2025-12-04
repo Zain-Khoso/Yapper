@@ -17,6 +17,9 @@ router.post('/account/create', controller.postCreateAccount);
 // GET: Login Page.
 router.get('/login', controller.getLoginPage);
 
+// POST: Login.
+router.post('/account/login', controller.postLogin);
+
 // GET: Forgot Password Page.
 router.get('/forgot-password', controller.getForgotPasswordPage);
 

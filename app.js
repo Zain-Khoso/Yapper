@@ -29,7 +29,7 @@ app.set('trust proxy', app.get('env') === 'production' ? 1 : 0);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
-    name: 'yapper.auth',
+    name: 'yapper.session',
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
