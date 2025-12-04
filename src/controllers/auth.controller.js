@@ -1,5 +1,6 @@
 // Local Imports.
 const getMetadata = require('../utils/metadata');
+const User = require('../models/user.model');
 
 exports.getCreateAccountPage = function (req, res) {
   const metadata = getMetadata({

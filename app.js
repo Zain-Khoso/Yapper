@@ -38,6 +38,6 @@ app.use(getServerErrorPage);
 
 // Running the server.
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => app.listen(process.env.PORT))
   .catch((error) => console.log(error));
