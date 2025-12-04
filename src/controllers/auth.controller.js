@@ -96,6 +96,17 @@ exports.getLoginPage = function (req, res) {
 exports.postLogin = function (req, res) {
   let { email, password } = req.body;
 
+  // Sanitizing body data.
+  email = validator.trim(email);
+  email = validator.normalizeEmail(email, {
+    gmail_remove_dots: false,
+    gmail_remove_subaddress: false,
+    outlookdotcom_remove_subaddress: false,
+    yahoo_remove_subaddress: false,
+    icloud_remove_subaddress: false,
+  });
+  password = validator.trim(password);
+
   User.findOne({ where: { email } })
     .then((user) => {
       if (!user)
@@ -126,6 +137,17 @@ exports.postLogin = function (req, res) {
         errors,
       });
     });
+};
+
+exports.getLogout = function (req, res) {
+  req.session.destroy((error) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ errors: { root: 'Something went wrong' } });
+    } else {
+      res.status(200).json({ errors: {} });
+    }
+  });
 };
 
 exports.getForgotPasswordPage = function (req, res) {

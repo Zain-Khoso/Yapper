@@ -17,9 +17,9 @@ const elem_Form = document.getElementById('form');
 
 // Function to handle form submittion.
 const handleSubmit = async function (event) {
-  if (isLoading) return;
-
   event.preventDefault();
+
+  if (isLoading) return;
 
   // Form Validations.
   const isEmailValid = Email.validate((value) => {

@@ -9,13 +9,15 @@ include svgs/arrow-back
 block page-styles 
   link(rel="stylesheet", href="/css/account.css")
 
+block scripts 
+  script(type="module", src="/js/account.js", defer) 
+
 block page-controls 
   ul.page-list 
     li.page-option.active 
       a(href="/settings/account") Account
     li.page-option 
       a(href="/premium") Premium
-
 
 block content
   .page-content 
@@ -48,7 +50,7 @@ block content
             span.setting-name 
             span.setting-value Logout
 
-          button.btn.danger Logout
+          button#btn-logout.btn.danger Logout
 
         li.setting-item 
           p.setting-label 

@@ -24,6 +24,9 @@ router.get('/login', protectFromAuthenticatedUsers, controller.getLoginPage);
 // POST: Login.
 router.post('/account/login', protectFromAuthenticatedUsers, controller.postLogin);
 
+// GET: Logout.
+router.get('/account/logout', protectFromUnAuthenticatedUsers, controller.getLogout);
+
 // GET: Forgot Password Page.
 router.get('/forgot-password', controller.getForgotPasswordPage);
 
