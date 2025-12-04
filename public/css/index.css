@@ -75,6 +75,7 @@ body {
   width: 100dvw;
   background-color: var(--color-background);
   padding: 1.5rem 1rem;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -192,6 +193,18 @@ span {
 .btn.danger:hover,
 .btn.danger:focus-visible {
   color: var(--color-danger);
+  background-color: transparent;
+}
+
+.btn.success {
+  color: var(--color-background);
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.btn.success:hover,
+.btn.success:focus-visible {
+  color: var(--color-success);
   background-color: transparent;
 }
 

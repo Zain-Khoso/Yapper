@@ -4,11 +4,13 @@
 const showError = function (errorName, errorMessage) {
   return Swal.fire({
     icon: 'error',
+    iconColor: 'var(--color-danger)',
     title: `${errorName} Error`,
     text: errorMessage,
-    iconColor: 'var(--color-danger)',
-    confirmButtonColor: 'var(--color-danger)',
     theme: 'auto',
+    customClass: {
+      confirmButton: 'btn danger',
+    },
   });
 };
 
@@ -16,10 +18,12 @@ const showError = function (errorName, errorMessage) {
 const showSuccess = function (title, text) {
   return Swal.fire({
     icon: 'success',
+    iconColor: 'var(--color-success)',
     title,
     text,
-    iconColor: 'var(--color-success)',
-    confirmButtonColor: 'var(--color-success)',
     theme: 'auto',
+    customClass: {
+      confirmButton: 'btn success',
+    },
   });
 };
