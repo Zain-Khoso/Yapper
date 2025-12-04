@@ -64,7 +64,6 @@
   color: var(--color-foreground);
   list-style-type: none;
   text-decoration: none;
-  overflow-x: hidden;
 }
 
 *::selection {
