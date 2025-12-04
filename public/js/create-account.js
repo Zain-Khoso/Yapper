@@ -95,7 +95,7 @@ const handleSubmit = async function (event) {
       password: Password.getValue(),
     });
 
-    location.assign('/?model=confirmEmail');
+    location.assign('/login');
   } catch (response) {
     isLoading = false;
 
