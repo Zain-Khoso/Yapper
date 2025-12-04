@@ -11,6 +11,9 @@ const router = Router();
 // GET: Create Account Page.
 router.get('/create-account', controller.getCreateAccountPage);
 
+// POST: Create Account.
+router.post('/account/create', controller.postCreateAccount);
+
 // GET: Login Page.
 router.get('/login', controller.getLoginPage);
 

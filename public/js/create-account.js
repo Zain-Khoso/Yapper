@@ -11,17 +11,22 @@ const ConfirmPassword = new Entry('confirmPassword');
 const Terms = new Checkbox('terms');
 const Policies = new Checkbox('policies');
 
+// Variables.
+let isLoading = false;
+
 // DOM Selections.
 const elem_Form = document.getElementById('form');
 
 const handleSubmit = async function (event) {
+  if (isLoading) return;
+
   event.preventDefault();
 
   // Form Validations.
   const isEmailValid = Email.validate((value) => {
-    if (value === '') return 'Email is required';
+    if (value.trim() === '') return 'Email is required.';
 
-    if (!validator.isEmail(value)) return 'Email is not valid';
+    if (!validator.isEmail(value)) return 'Email is not valid.';
 
     return true;
   });
@@ -29,9 +34,11 @@ const handleSubmit = async function (event) {
   if (!isEmailValid) return;
 
   const isDisplayNameValid = DisplayName.validate((value) => {
-    if (value === '') return 'Display Name is required';
+    if (value.trim() === '') return 'Display Name is required.';
 
-    if (value.length > 16) return 'Display Name cannot exceed 16 characters';
+    if (value.trim().length < 3) return 'Display Name cannot be of less than 3 characters.';
+
+    if (value.length > 16) return 'Display Name cannot be of more than 16 characters.';
 
     return true;
   });
@@ -41,7 +48,8 @@ const handleSubmit = async function (event) {
   const isPasswordValid = Password.validate((value) => {
     if (value === '') return 'Password is required';
 
-    if (!validator.isStrongPassword(value)) return 'Password is not strong enough';
+    if (!validator.isStrongPassword(value))
+      return 'Password must contain a lowercase, an uppercase, a number and a symbol characters.';
 
     return true;
   });
@@ -76,13 +84,26 @@ const handleSubmit = async function (event) {
 
   // Form Submittion.
   try {
-    console.log({
+    isLoading = true;
+
+    await axios.post('/account/create', {
       email: Email.getValue(),
       displayName: DisplayName.getValue(),
       password: Password.getValue(),
     });
-  } catch (error) {
-    showError('Server', 'Something went wrong');
+
+    location.assign('/?model=confirmEmail');
+  } catch (response) {
+    isLoading = false;
+
+    // Extracting Error Information.
+    const { errors } = response.response.data;
+
+    if (errors?.email) Email.setError(errors.email);
+    if (errors?.displayName) DisplayName.setError(errors.displayName);
+    if (errors?.password) Password.setError(errors.password);
+
+    if (errors?.root) showError('Server', errors.root);
   }
 };
 
