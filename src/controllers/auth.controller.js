@@ -386,3 +386,39 @@ exports.postChangeEmail = function (req, res) {
       });
     });
 };
+
+exports.postChangeDisplayName = function (req, res) {
+  let { displayName } = req.body;
+
+  // Sanitizing body data.
+  displayName = validator.trim(displayName);
+
+  // Validating body data.
+  const result_displayName = schema_displayName.safeParse(displayName);
+
+  if (!result_displayName.success) {
+    return res.status(409).json({
+      errors: {
+        root: result_displayName?.error?.issues?.at(0)?.message || null,
+      },
+    });
+  }
+
+  User.update({ displayName }, { where: { email: req.session.user.email } })
+    .then((response) => {
+      if (response.at(0) <= 0) return Promise.reject();
+
+      req.session.user.displayName = displayName;
+
+      res.status(202).json({ errors: {} });
+    })
+    .catch((errors) => {
+      console.log(errors);
+
+      res.status(500).json({
+        errors: {
+          root: 'Something went wrong.',
+        },
+      });
+    });
+};

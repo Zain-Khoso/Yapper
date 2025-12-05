@@ -2,8 +2,10 @@
 
 // Constants.
 const userEmail = document.getElementById('userData-email').textContent;
+const userDisplayName = document.getElementById('userData-displayName').textContent;
 
 // DOM Selections.
+const elem_BtnChangeDisplayName = document.getElementById('btn-change-displayName');
 const elem_BtnChangePassowrd = document.getElementById('btn-change-password');
 const elem_BtnLogout = document.getElementById('btn-logout');
 const elem_BtnDelete = document.getElementById('btn-account-delete');
@@ -12,6 +14,59 @@ const elem_BtnDelete = document.getElementById('btn-account-delete');
 let isLoading = false;
 
 // Functions.
+
+// Function to handle change displauName action.
+const handleChangeDisplayName = async function (event) {
+  if (isLoading) return;
+
+  const confirmation = await Swal.fire({
+    icon: 'question',
+    iconColor: 'var(--color-foreground)',
+    title: 'Change Name',
+    text: 'Please enter your desired new name then click confirm, to confirm the change.',
+    theme: 'auto',
+    showCancelButton: true,
+    confirmButtonText: 'Confirm',
+    cancelButtonText: 'Cancel',
+    input: 'text',
+    inputLabel: 'New Name',
+    inputPlaceholder: userDisplayName,
+    inputValidator: (value) => {
+      if (value.trim() === '') return 'Display Name is required.';
+
+      if (value.trim().length < 3) return 'Display Name cannot be of less than 3 characters.';
+
+      if (value.trim().length > 16) return 'Display Name cannot be of more than 16 characters.';
+    },
+    customClass: {
+      confirmButton: 'btn success',
+      cancelButton: 'btn outline',
+    },
+  });
+
+  if (!confirmation.isConfirmed) return;
+
+  isLoading = true;
+
+  // Form Submittion.
+  try {
+    await axios.post('/change-displayName', { displayName: confirmation.value });
+
+    await showSuccess(
+      'Name Changed',
+      `You're name has been changed from ${userDisplayName} to ${confirmation.value}`
+    );
+
+    location.reload();
+  } catch (response) {
+    isLoading = false;
+
+    // Extracting Error Information.
+    const { errors } = response?.response?.data;
+
+    showError('Server', errors?.root || '');
+  }
+};
 
 // Function to handle change passowrd action.
 const handleChangePassowrd = async function (event) {
@@ -93,6 +148,7 @@ const handleLogout = async function (event) {
 };
 
 // Event Listeners.
+elem_BtnChangeDisplayName.addEventListener('click', handleChangeDisplayName);
 elem_BtnChangePassowrd.addEventListener('click', handleChangePassowrd);
-elem_BtnLogout.addEventListener('click', handleLogout);
 elem_BtnDelete.addEventListener('click', handleAccountDelete);
+elem_BtnLogout.addEventListener('click', handleLogout);

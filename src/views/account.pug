@@ -40,6 +40,13 @@ block content
 
         li.setting-item 
           p.setting-label 
+            span.setting-name Name: 
+            span#userData-displayName.setting-value #{user.displayName}
+
+          button#btn-change-displayName.btn.outline Change
+
+        li.setting-item 
+          p.setting-label 
             span.setting-name Password: 
             span.setting-value ********
 

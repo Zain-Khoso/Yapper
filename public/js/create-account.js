@@ -41,7 +41,7 @@ const handleSubmit = async function (event) {
 
     if (value.trim().length < 3) return 'Display Name cannot be of less than 3 characters.';
 
-    if (value.length > 16) return 'Display Name cannot be of more than 16 characters.';
+    if (value.trim().length > 16) return 'Display Name cannot be of more than 16 characters.';
 
     return true;
   });

@@ -48,4 +48,11 @@ router.post('/change-password/:token', controller.postChangePassword);
 // POST: Change Email.
 router.post('/change-email', protectFromUnAuthenticatedUsers, controller.postChangeEmail);
 
+// POST: Change Display Name.
+router.post(
+  '/change-displayName',
+  protectFromUnAuthenticatedUsers,
+  controller.postChangeDisplayName
+);
+
 module.exports = router;
