@@ -319,6 +319,10 @@ span.highlight {
   overflow: hidden;
 }
 
+.user-icon.active {
+  background-color: var(--color-foreground);
+}
+
 .user-icon .user-initial {
   font-size: 2rem;
   font-weight: 600;

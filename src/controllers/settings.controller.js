@@ -26,7 +26,7 @@ exports.getAccountPage = function (req, res, _) {
 
   res.render('account', {
     metadata,
-    path: 'settings',
+    path: 'account',
     heading: 'Settings',
     user: req.session.user,
   });

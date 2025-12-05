@@ -25,7 +25,7 @@ block body
         a.control(href="/settings")
           +setting('icon', path === 'settings' ? 'fill-foreground' : 'fill-foreground-secondary', path === 'settings' ?  'stroke-foreground' : 'stroke-foreground-secondary')
         a.control(href="/settings/account")
-          .user-icon 
+          div(class=`${path === 'account' ? 'user-icon active' : 'user-icon'}`)
             span.user-initial Z
 
     aside.app-controls 
