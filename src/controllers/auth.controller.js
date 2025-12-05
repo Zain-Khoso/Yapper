@@ -174,7 +174,7 @@ exports.getForgotPasswordPage = function (req, res) {
 };
 
 exports.postActionToken = function (req, res) {
-  let { email } = req.body;
+  let { email, sendEmail = false } = req.body;
 
   // Sanitizing body data.
   email = validator.trim(email);
@@ -188,12 +188,19 @@ exports.postActionToken = function (req, res) {
 
   const actionToken = randomBytes(16).toString('hex');
   const actionTokenExpires = new Date(Date.now() + 1000 * 60 * 5);
+  const redirectTo = `/change-password/${actionToken}`;
 
   User.update({ actionToken, actionTokenExpires }, { where: { email } })
     .then((response) => {
       if (response.at(0) <= 0) return Promise.reject({ email: 'Invalid email.' });
 
-      res.status(202).json({ actionToken });
+      if (sendEmail) {
+        // Send an actual email.
+
+        console.log('\n\n\tRedirect To: ' + redirectTo + '\n\n');
+
+        res.status(202).json({});
+      } else res.status(202).json({ redirectTo: `/change-password/${actionToken}` });
     })
     .catch((errors) => {
       if (!Object.keys(errors).includes('email')) {

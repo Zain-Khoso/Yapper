@@ -22,10 +22,9 @@ const handleChangePassowrd = async function (event) {
   try {
     const { data } = await axios.post('/change-password-token', { email: userEmail });
 
-    location.assign(`/change-password/${data.actionToken}`);
+    location.assign(data.redirectTo);
   } catch (response) {
     isLoading = false;
-    console.log(response);
 
     // Extracting Error Information.
     const { errors } = response?.response?.data;
