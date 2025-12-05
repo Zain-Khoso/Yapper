@@ -204,5 +204,59 @@ exports.getChangeEmailPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('change-email', { metadata });
+  res.render('change-email', {
+    metadata,
+    user: req.session.user,
+  });
+};
+
+exports.postChangeEmail = function (req, res) {
+  let { newEmail } = req.body;
+
+  // Sanitizing body data.
+  newEmail = validator.trim(newEmail);
+  newEmail = validator.normalizeEmail(newEmail, {
+    gmail_remove_dots: false,
+    gmail_remove_subaddress: false,
+    outlookdotcom_remove_subaddress: false,
+    yahoo_remove_subaddress: false,
+    icloud_remove_subaddress: false,
+  });
+
+  // Validating body data.
+  const result_newEmail = schema_email.safeParse(newEmail);
+
+  if (!result_newEmail.success) {
+    return res.status(409).json({
+      errors: {
+        newEmail: result_newEmail?.error?.issues?.at(0)?.message || null,
+      },
+    });
+  }
+
+  User.findOne({ where: { email: newEmail } })
+    .then((user) => {
+      if (user) return Promise.reject({ newEmail: 'User already exists with this email.' });
+
+      return User.update({ email: newEmail }, { where: { email: req.session.user.email } });
+    })
+    .then(() => {
+      req.session.user.email = newEmail;
+
+      res.status(201).json({ errors: {} });
+    })
+    .catch((errors) => {
+      if (!Object.keys(errors).includes('newEmail')) {
+        console.log(errors);
+        return res.status(500).json({
+          errors: {
+            root: 'Something went wrong.',
+          },
+        });
+      }
+
+      res.status(409).json({
+        errors,
+      });
+    });
 };

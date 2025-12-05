@@ -36,4 +36,7 @@ router.get('/change-password', controller.getChangePasswordPage);
 // GET: Change Email Page.
 router.get('/change-email', protectFromUnAuthenticatedUsers, controller.getChangeEmailPage);
 
+// POST: Change Email.
+router.post('/change-email', protectFromUnAuthenticatedUsers, controller.postChangeEmail);
+
 module.exports = router;

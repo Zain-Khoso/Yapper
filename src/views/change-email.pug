@@ -7,6 +7,8 @@ include svgs/checkedbox
 block scripts 
   script(src="https://unpkg.com/validator@latest/validator.min.js")
 
+  script(type="module", src="/js/change-email.js", defer) 
+
 block content 
   main.page 
     header.heading
@@ -15,9 +17,9 @@ block content
     
     form#form
       section.inputs-group 
-        +entry("newEmail", "New Email", "abc@xyz.com")
+        +entry("newEmail", "New Email", user.email)
 
-        +entry("confirmNewEmail", "Confirm New Email", "abc@xyz.com")
+        +entry("confirmNewEmail", "Confirm New Email", user.email)
 
       .btn-group.reverse
         button#submit.btn.primary Save New Email
