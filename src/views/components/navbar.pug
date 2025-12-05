@@ -7,8 +7,11 @@ mixin navbar(noActions=false)
       h1 Yapper
 
     if !noActions
-      .btn-group.reverse
-        a.btn.primary(href="/login") Login
-        a.btn.outline(href="/create-account") Create Account
+      if !isAuthenticated
+        .btn-group.reverse
+          a.btn.primary(href="/login") Login
+          a.btn.outline(href="/create-account") Create Account
+      else 
+        a.btn.primary(href="/chat") Start Yapping
   
   .separator.horizontal 

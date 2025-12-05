@@ -1,7 +1,7 @@
 // Local Imports.
 const getMetadata = require('../utils/metadata');
 
-exports.getLandingPage = function (req, res, next) {
+exports.getLandingPage = function (req, res) {
   const metadata = getMetadata({
     title: 'The Simple Chat App',
     description:
@@ -20,7 +20,7 @@ exports.getLandingPage = function (req, res, next) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('landing', { metadata });
+  res.render('landing', { metadata, isAuthenticated: req?.session?.isAuthenticated });
 };
 
 exports.getTermsAndConditionsPage = function (req, res) {
@@ -40,7 +40,7 @@ exports.getTermsAndConditionsPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('terms-and-conditions', { metadata });
+  res.render('terms-and-conditions', { metadata, isAuthenticated: req?.session?.isAuthenticated });
 };
 
 exports.getPrivacyPolicyPage = function (req, res) {
@@ -60,7 +60,7 @@ exports.getPrivacyPolicyPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('privacy-policy', { metadata });
+  res.render('privacy-policy', { metadata, isAuthenticated: req?.session?.isAuthenticated });
 };
 
 exports.getNotFoundPage = function (req, res) {
@@ -69,7 +69,7 @@ exports.getNotFoundPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.status(404).render('not-found', { metadata });
+  res.status(404).render('not-found', { metadata, isAuthenticated: req?.session?.isAuthenticated });
 };
 
 exports.getServerErrorPage = function (error, req, res, __) {
@@ -80,5 +80,7 @@ exports.getServerErrorPage = function (error, req, res, __) {
 
   console.log(error);
 
-  res.status(500).render('server-error', { metadata });
+  res
+    .status(500)
+    .render('server-error', { metadata, isAuthenticated: req?.session?.isAuthenticated });
 };
