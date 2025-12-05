@@ -1,5 +1,16 @@
 'use strict';
 
+const getTheme = function () {
+  let theme = localStorage.getItem('theme');
+
+  if (theme) return theme;
+
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (isDarkMode) return 'dark';
+  else return 'light';
+};
+
 // Function to use Swal for errors.
 const showError = function (errorName, errorMessage) {
   return Swal.fire({
@@ -7,7 +18,7 @@ const showError = function (errorName, errorMessage) {
     iconColor: 'var(--color-danger)',
     title: `${errorName} Error`,
     text: errorMessage,
-    theme: 'auto',
+    theme: getTheme(),
     customClass: {
       confirmButton: 'btn danger',
     },
@@ -21,7 +32,7 @@ const showSuccess = function (title, text) {
     iconColor: 'var(--color-success)',
     title,
     text,
-    theme: 'auto',
+    theme: getTheme(),
     customClass: {
       confirmButton: 'btn success',
     },

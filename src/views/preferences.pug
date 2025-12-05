@@ -1,0 +1,39 @@
+extends layouts/app
+
+include svgs/video
+include svgs/more-vertical
+include svgs/plus
+include svgs/send
+include svgs/arrow-back
+
+block page-styles 
+  link(rel="stylesheet", href="/css/account.css")
+
+block scripts 
+  script(type="module", src="/js/preferences.js", defer) 
+
+block page-controls 
+  ul.page-list 
+    li.page-option 
+      a(href="/settings/account") Account
+    li.page-option.active 
+      a(href="/preferences") Preferences 
+
+block content
+  .page-content 
+    header.page-head 
+      button 
+        +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+      
+      h2 Preferences 
+
+    section 
+      span.highlight User Interface 
+
+      ul.settings 
+        li.setting-item 
+          p.setting-label 
+            span.setting-name Theme: 
+            span#theme-value.setting-value 
+
+          button#theme-btn.btn.outline Change

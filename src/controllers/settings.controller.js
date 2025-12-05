@@ -31,3 +31,29 @@ exports.getAccountPage = function (req, res, _) {
     user: req.session.user,
   });
 };
+
+exports.getPreferencesPage = function (req, res, _) {
+  const metadata = getMetadata({
+    title: 'Preferences',
+    description:
+      'Customize your Yapper experience. Adjust theme, notifications, accessibility options, and other app preferences to make Yapper feel just the way you like it.',
+    keywords: [
+      'preferences',
+      'user preferences',
+      'theme settings',
+      'notification settings',
+      'accessibility settings',
+      'app customization',
+      'Yapper preferences',
+      'personalize Yapper',
+    ],
+    url: { hostname: req.hostname, path: req.url },
+  });
+
+  res.render('preferences', {
+    metadata,
+    path: 'settings',
+    heading: 'Settings',
+    user: req.session.user,
+  });
+};

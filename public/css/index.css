@@ -20,6 +20,10 @@
   --color-foreground-secondary: var(--color-dark-secondary);
 }
 
+#theme-value::after {
+  content: 'Lightmode';
+}
+
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -27,6 +31,10 @@
     --color-background-secondary: var(--color-dark-secondary);
     --color-foreground: var(--color-light);
     --color-foreground-secondary: var(--color-light-secondary);
+  }
+
+  #theme-value::after {
+    content: 'Darkmode';
   }
 }
 
@@ -38,12 +46,20 @@
   --color-foreground-secondary: var(--color-dark-secondary);
 }
 
+:root[data-theme='light'] #theme-value::after {
+  content: 'Lightmode';
+}
+
 /* Dark Mode */
 :root[data-theme='dark'] {
   --color-background: var(--color-dark);
   --color-background-secondary: var(--color-dark-secondary);
   --color-foreground: var(--color-light);
   --color-foreground-secondary: var(--color-light-secondary);
+}
+
+:root[data-theme='dark'] #theme-value::after {
+  content: 'Darkmode';
 }
 
 /* Global Style Reset */

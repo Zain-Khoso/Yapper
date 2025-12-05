@@ -15,4 +15,7 @@ router.get('/', protectFromUnAuthenticatedUsers, controller.getSettingsPage);
 // GET: Account Page.
 router.get('/account', protectFromUnAuthenticatedUsers, controller.getAccountPage);
 
+// GET: Preferences Page.
+router.get('/preferences', protectFromUnAuthenticatedUsers, controller.getPreferencesPage);
+
 module.exports = router;
