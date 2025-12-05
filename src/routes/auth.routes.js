@@ -36,6 +36,9 @@ router.post('/account/login', protectFromAuthenticatedUsers, controller.postLogi
 // GET: Logout.
 router.get('/account/logout', protectFromUnAuthenticatedUsers, controller.getLogout);
 
+// GET: Account Delete.
+router.get('/account/delete', protectFromUnAuthenticatedUsers, controller.getAccountDelete);
+
 // POST: Change Password Token.
 router.post('/change-password-token', controller.postActionToken);
 

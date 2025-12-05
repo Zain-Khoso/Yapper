@@ -154,6 +154,19 @@ exports.getLogout = function (req, res) {
   });
 };
 
+exports.getAccountDelete = function (req, res) {
+  User.destroy({ where: { email: req.session.user.email } }).then((user) => {
+    req.session.destroy((error) => {
+      if (error) {
+        console.log(error);
+        res.status(500).json({ errors: { root: 'Something went wrong' } });
+      } else {
+        res.status(200).json({ errors: {} });
+      }
+    });
+  });
+};
+
 exports.getForgotPasswordPage = function (req, res) {
   const metadata = getMetadata({
     title: 'Forgot Password',
