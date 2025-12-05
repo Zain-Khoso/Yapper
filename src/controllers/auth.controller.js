@@ -1,6 +1,10 @@
+// Node Imports.
+const { randomBytes } = require('crypto');
+
 // Lib Imports.
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 // Local Imports.
 const getMetadata = require('../utils/metadata');
@@ -169,7 +173,47 @@ exports.getForgotPasswordPage = function (req, res) {
   res.render('forgot-password', { metadata });
 };
 
-exports.getChangePasswordPage = function (req, res) {
+exports.postActionToken = function (req, res) {
+  let { email } = req.body;
+
+  // Sanitizing body data.
+  email = validator.trim(email);
+  email = validator.normalizeEmail(email, {
+    gmail_remove_dots: false,
+    gmail_remove_subaddress: false,
+    outlookdotcom_remove_subaddress: false,
+    yahoo_remove_subaddress: false,
+    icloud_remove_subaddress: false,
+  });
+
+  const actionToken = randomBytes(16).toString('hex');
+  const actionTokenExpires = new Date(Date.now() + 1000 * 60 * 5);
+
+  User.update({ actionToken, actionTokenExpires }, { where: { email } })
+    .then((response) => {
+      if (response.at(0) <= 0) return Promise.reject({ email: 'Invalid email.' });
+
+      res.status(202).json({ actionToken });
+    })
+    .catch((errors) => {
+      if (!Object.keys(errors).includes('email')) {
+        console.log(errors);
+        return res.status(500).json({
+          errors: {
+            root: 'Something went wrong.',
+          },
+        });
+      }
+
+      res.status(409).json({
+        errors,
+      });
+    });
+};
+
+exports.getChangePasswordPage = function (req, res, next) {
+  const { token } = req.params;
+
   const metadata = getMetadata({
     title: 'Change Password',
     description:
@@ -185,7 +229,69 @@ exports.getChangePasswordPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('change-password', { metadata });
+  User.findOne({
+    where: {
+      [Op.and]: [{ actionToken: token }, { actionTokenExpires: { [Op.gt]: new Date(Date.now()) } }],
+    },
+  })
+    .then((user) => {
+      if (!user) return next(Error('Invalid Token'));
+
+      res.render('change-password', { metadata });
+    })
+    .catch((error) => next(Error(error)));
+};
+
+exports.postChangePassword = function (req, res, next) {
+  const { token } = req.params;
+  let { password } = req.body;
+
+  // Sanitizing body data.
+  password = validator.trim(password);
+
+  // Validating body data.
+  const result_password = schema_password.safeParse(password);
+
+  if (!result_password.success) {
+    return res.status(409).json({
+      errors: {
+        newPassword: result_password?.error?.issues?.at(0)?.message || null,
+      },
+    });
+  }
+
+  bcrypt
+    .genSalt(parseInt(process.env.PASSWORD_SALT))
+    .then((salt) => bcrypt.hash(password, salt))
+    .then((hashedPassword) => {
+      return User.update(
+        {
+          password: hashedPassword,
+        },
+        {
+          where: {
+            [Op.and]: [
+              { actionToken: token },
+              { actionTokenExpires: { [Op.gt]: new Date(Date.now()) } },
+            ],
+          },
+        }
+      );
+    })
+    .then((response) => {
+      if (response.at(0) <= 0) return Promise.reject();
+
+      res.status(202).json({});
+    })
+    .catch((error) => {
+      console.log(error);
+
+      return res.status(500).json({
+        errors: {
+          root: 'Something went wrong.',
+        },
+      });
+    });
 };
 
 exports.getChangeEmailPage = function (req, res) {

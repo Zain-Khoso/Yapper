@@ -3,6 +3,7 @@ const { Router } = require('express');
 
 // Local Imports.
 const controller = require('../controllers/auth.controller');
+const { getServerErrorPage } = require('../controllers/static.controller');
 const {
   protectFromAuthenticatedUsers,
   protectFromUnAuthenticatedUsers,
@@ -30,8 +31,14 @@ router.get('/account/logout', protectFromUnAuthenticatedUsers, controller.getLog
 // GET: Forgot Password Page.
 router.get('/forgot-password', controller.getForgotPasswordPage);
 
+// POST: Change Password Token.
+router.post('/change-password-token', controller.postActionToken);
+
 // GET: Change Password Page.
-router.get('/change-password', controller.getChangePasswordPage);
+router.get('/change-password/:token', controller.getChangePasswordPage);
+
+// POST: Change Password.
+router.post('/change-password/:token', controller.postChangePassword);
 
 // GET: Change Email Page.
 router.get('/change-email', protectFromUnAuthenticatedUsers, controller.getChangeEmailPage);

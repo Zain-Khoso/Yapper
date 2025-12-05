@@ -52,7 +52,7 @@ const handleSubmit = async function (event) {
     if (value === '') return 'Password is required';
 
     if (!validator.isStrongPassword(value))
-      return 'Password must contain a lowercase, an uppercase, a number and a symbol characters.';
+      return 'Password must be 8 characters long with a lowercase, an uppercase, a number and a symbol characters.';
 
     return true;
   });

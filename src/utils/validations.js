@@ -18,7 +18,8 @@ const schema_password = z
   .trim()
   .min(1, { error: 'Password is required.' })
   .refine((password) => validator.isStrongPassword(password), {
-    error: 'Password must contain a lowercase, an uppercase, a number and a symbol characters.',
+    error:
+      'Password must be 8 characters long with a lowercase, an uppercase, a number and a symbol characters.',
   });
 
 module.exports = { schema_email, schema_displayName, schema_password };

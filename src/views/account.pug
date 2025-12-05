@@ -34,7 +34,7 @@ block content
         li.setting-item 
           p.setting-label 
             span.setting-name Email: 
-            span.setting-value #{user.email}
+            span#userData-email.setting-value #{user.email}
 
           a.btn.outline(href="/change-email") Change
 
@@ -43,7 +43,7 @@ block content
             span.setting-name Password: 
             span.setting-value ********
 
-          a.btn.outline(href="/change-password") Change
+          button#btn-change-password.btn.outline Change
 
         li.setting-item 
           p.setting-label 

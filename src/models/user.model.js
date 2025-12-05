@@ -29,6 +29,18 @@ const User = sequelize.define('User', {
     allowNull: false,
     unique: false,
   },
+
+  actionToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+  },
+
+  actionTokenExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    unique: true,
+  },
 });
 
 module.exports = User;
