@@ -22,7 +22,7 @@ router.get('/login', protectFromAuthenticatedUsers, controller.getLoginPage);
 router.get('/change-email', protectFromUnAuthenticatedUsers, controller.getChangeEmailPage);
 
 // GET: Forgot Password Page.
-router.get('/forgot-password', controller.getForgotPasswordPage);
+router.get('/forgot-password', protectFromAuthenticatedUsers, controller.getForgotPasswordPage);
 
 // GET: Change Password Page.
 router.get('/change-password/:token', controller.getChangePasswordPage);
