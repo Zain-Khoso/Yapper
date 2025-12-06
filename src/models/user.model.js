@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize');
 // Local Imports.
 const sequelize = require('../utils/database');
 
-// This is model is used to store the information related specifically to a user.
+// This model is used to store the information related specifically to a user.
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.UUID,
