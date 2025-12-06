@@ -37,9 +37,8 @@ block body
             +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
 
         if path === 'chat'
-          form#user-search.searchbar 
-            +search('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            input#search-query.search-input(type="text", placeholder="Search")
+          .btn-group
+            button#btn-add-chat.btn.primary Add a Yap
       
       block page-controls 
 

@@ -19,5 +19,10 @@ exports.getChatPage = function (req, res) {
     url: { hostname: req.hostname, path: req.url },
   });
 
-  res.render('chat', { metadata, path: 'chat', heading: 'Yaps' });
+  res.render('chat', {
+    metadata,
+    path: 'chat',
+    heading: 'Yaps',
+    chatrooms: [],
+  });
 };

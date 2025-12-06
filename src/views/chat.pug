@@ -5,52 +5,58 @@ include svgs/more-vertical
 include svgs/plus
 include svgs/send
 include svgs/arrow-back
+include svgs/empty-chat-illustration
 
 block page-styles 
   link(rel="stylesheet", href="/css/chat.css")
 
+block scripts 
+  script(type="module", src="/js/chatapp.js", defer) 
+
 block page-controls 
-  ul.chats-list 
-    li.chat 
-      .user-icon 
-        span.user-initial A
-      
-      .user-content 
-        .title 
-          span.highlight Adeen
-          span.last-spoke Today
+  ul#chatslist.chats-list 
+    if (chatrooms.length > 0)
+      li.chat 
+        .user-icon 
+          span.user-initial A
         
-        span.last-message Mr. White 
+        .user-content 
+          .title 
+            span.highlight Adeen
+            span.last-spoke Today
+          
+          span.last-message Mr. White 
 
-    li.chat.active 
-      .user-icon 
-        span.user-initial H
-      
-      .user-content 
-        .title 
-          span.highlight Hamza
-          span.last-spoke Sunday
+      li.chat.active 
+        .user-icon 
+          span.user-initial H
         
-        span.last-message Qari saab is after me 
+        .user-content 
+          .title 
+            span.highlight Hamza
+            span.last-spoke Sunday
+          
+          span.last-message Qari saab is after me 
 
-    li.chat 
-      .user-icon 
-        span.user-initial Q
-      
-      .user-content 
-        .title 
-          span.highlight Qari Saab
-          span.last-spoke Saturday
+      li.chat 
+        .user-icon 
+          span.user-initial Q
         
-        span.last-message Hamza just block me 
+        .user-content 
+          .title 
+            span.highlight Qari Saab
+            span.last-spoke Saturday
+          
+          span.last-message Hamza just block me 
 
 block content
-  .chatapp 
+  .chatapp.hidden#chatapp-ui  
     header.chat-head 
 
       .user 
-        button 
+        button.back 
           +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+        
         .user-icon 
           span.user-initial H 
         
@@ -107,3 +113,10 @@ block content
 
       button.send
         +send('icon', 'fill-background', 'stroke-background')
+
+  .chatapp-empty.hidden#chatapp-empty-ui
+    h1 It's quiet here… 
+
+    p Pick a user, say hello, and your conversation will show up here.
+    
+    +emptyChatIllustration("illustration")

@@ -64,8 +64,12 @@
 }
 
 .chatapp .chat-head button {
-  display: none;
+  display: grid;
   place-items: center;
+}
+
+.chatapp .chat-head button.back {
+  display: none;
 }
 
 .chatapp .chat-head button .icon {
@@ -262,6 +266,29 @@
   color: var(--color-background);
 }
 
+.chatapp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+}
+
+.chatapp-empty p {
+  width: 100%;
+  max-width: 768px;
+  text-align: center;
+}
+
+.chatapp-empty .illustration {
+  width: 100%;
+  max-width: 480px;
+}
+
 @media screen and (max-width: 1024px) {
   .chatapp .chat-head .user h2 {
     font-size: 1.5rem;
@@ -283,7 +310,11 @@
     padding: 1rem;
   }
 
-  .chatapp .chat-head button {
+  .chatapp .chat-head .actions {
+    display: none;
+  }
+
+  .chatapp .chat-head button.back {
     display: grid;
   }
 

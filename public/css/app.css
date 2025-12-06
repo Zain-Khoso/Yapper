@@ -81,25 +81,6 @@
   height: 100%;
 }
 
-.app .app-controls .head .searchbar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--color-foreground-secondary);
-  border-radius: 0.5rem;
-}
-
-.app .app-controls .head .searchbar .icon {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.app .app-controls .head .searchbar .search-input {
-  flex: 1;
-}
-
 @media screen and (max-width: 1024px) {
   .app .app-controls {
     width: 320px;
