@@ -89,6 +89,8 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+
+  min-width: 0;
 }
 
 .page-content section .settings .setting-item .setting-label .setting-value {
