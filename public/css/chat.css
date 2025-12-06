@@ -101,6 +101,10 @@
   height: 100%;
 }
 
+#dropdown-chat-mobile-options {
+  display: none;
+}
+
 .chatapp .controller {
   display: flex;
   align-items: center;
@@ -325,5 +329,9 @@
   .chatapp .controller {
     padding-inline: 1rem;
     padding-bottom: 0.5rem;
+  }
+
+  #dropdown-chat-mobile-options {
+    display: block;
   }
 }

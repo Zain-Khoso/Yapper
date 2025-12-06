@@ -6,11 +6,13 @@ include svgs/plus
 include svgs/send
 include svgs/arrow-back
 include svgs/empty-chat-illustration
+include svgs/delete
+include svgs/block
 
 block page-styles 
   link(rel="stylesheet", href="/css/chat.css")
 
-block scripts 
+block page-scripts 
   script(type="module", src="/js/chatapp.js", defer) 
 
 block page-controls 
@@ -52,9 +54,8 @@ block page-controls
 block content
   .chatapp.hidden#chatapp-ui  
     header.chat-head 
-
       .user 
-        button.back 
+        button.back#sidenav-btn 
           +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
         
         .user-icon 
@@ -65,11 +66,44 @@ block content
       .actions 
         button.icon-btn 
           +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+        
         button.icon-btn 
           +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-        button.icon-btn 
+        
+        div.dropdown#dropdown-chat-options
+          button.icon-btn 
+            +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+
+          .dropdown-list.right 
+            button.dropdown-item 
+              +delete('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+              span.label Delete Chat
+
+            button.dropdown-item 
+              +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+              span.label Block Chat 
+      
+      div.dropdown#dropdown-chat-mobile-options
+        button
           +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-    
+
+        .dropdown-list.right 
+          button.dropdown-item 
+            +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            span.label Voice Call
+          
+          button.dropdown-item 
+            +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            span.label Video Call
+
+          button.dropdown-item 
+            +delete('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            span.label Delete Chat
+
+          button.dropdown-item 
+            +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            span.label Block Chat 
+
     section.messages
       .message-wrapper.center 
         span.date-separator Today 

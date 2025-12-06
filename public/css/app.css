@@ -66,6 +66,10 @@
   justify-content: space-between;
 }
 
+.app .app-controls .head .wrapper #dropdown-pages {
+  display: none;
+}
+
 .app .app-controls .head .wrapper button {
   display: none;
   place-content: center;
@@ -79,6 +83,8 @@
 .app .content-wrapper {
   flex: 1;
   height: 100%;
+
+  transition: left 200ms ease-in;
 }
 
 @media screen and (max-width: 1024px) {
@@ -105,10 +111,18 @@
   .app .content-wrapper {
     position: fixed;
     top: 0;
-    left: 0%;
+    left: 0;
 
     width: 100dvw;
     height: 100dvh;
+  }
+
+  .app .content-wrapper.close {
+    left: 100%;
+  }
+
+  .app .app-controls .head .wrapper #dropdown-pages {
+    display: block;
   }
 
   .app .app-controls .head .wrapper button {

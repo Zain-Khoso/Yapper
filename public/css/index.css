@@ -345,6 +345,93 @@ span.highlight {
   color: var(--color-background);
 }
 
+.dropdown {
+  position: relative;
+
+  width: fit-content;
+  height: fit-content;
+}
+
+.dropdown .dropdown-list {
+  position: absolute;
+  top: 300%;
+  display: none;
+
+  width: fit-content;
+  height: fit-content;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-foreground);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    top 300ms ease-out,
+    opacity 300ms ease-out;
+}
+
+.dropdown .dropdown-list.show {
+  top: 120%;
+  opacity: 1;
+}
+
+.dropdown .dropdown-list.left {
+  left: 0;
+}
+
+.dropdown .dropdown-list.right {
+  right: 0;
+}
+
+.dropdown .dropdown-list .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  width: 100%;
+  background-color: var(--color-background);
+  padding: 0.5rem 1.5rem;
+}
+
+.dropdown .dropdown-list .dropdown-item.active,
+.dropdown .dropdown-list .dropdown-item:hover {
+  background-color: var(--color-background-secondary);
+}
+
+.dropdown .dropdown-list .dropdown-item .icon {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.dropdown .dropdown-list .dropdown-item.active .icon .stroke-background-secondary,
+.dropdown .dropdown-list .dropdown-item:hover .icon .stroke-background-secondary {
+  stroke: var(--color-background);
+}
+
+.dropdown .dropdown-list .dropdown-item.active .icon .stroke-foreground-secondary,
+.dropdown .dropdown-list .dropdown-item:hover .icon .stroke-foreground-secondary {
+  stroke: var(--color-foreground);
+}
+
+.dropdown .dropdown-list .dropdown-item.active .icon .fill-background-secondary,
+.dropdown .dropdown-list .dropdown-item:hover .icon .fill-background-secondary {
+  fill: var(--color-background);
+}
+
+.dropdown .dropdown-list .dropdown-item.active .icon .fill-foreground-secondary,
+.dropdown .dropdown-list .dropdown-item:hover .icon .fill-foreground-secondary {
+  fill: var(--color-foreground);
+}
+
+.dropdown .dropdown-list .dropdown-item .label {
+  color: var(--color-foreground-secondary);
+  text-wrap: nowrap;
+}
+
+.dropdown .dropdown-list .dropdown-item.active .label,
+.dropdown .dropdown-list .dropdown-item:hover .label {
+  color: var(--color-foreground);
+}
+
 @media screen and (max-width: 768px) {
   body {
     padding: 1rem;

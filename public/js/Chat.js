@@ -4,7 +4,8 @@ export class Chat {
     this.elem_ChatInterface = document.getElementById('chatapp-ui');
     this.elem_EmptyInterface = document.getElementById('chatapp-empty-ui');
 
-    if (this.elem_ChatsList.children.length > 0) this.showChatInterface();
+    // if (this.elem_ChatsList.children.length > 0) this.showChatInterface();
+    if (true) this.showChatInterface();
     else this.showEmptyInterface();
   }
 

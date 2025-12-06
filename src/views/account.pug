@@ -9,7 +9,7 @@ include svgs/arrow-back
 block page-styles 
   link(rel="stylesheet", href="/css/account.css")
 
-block scripts 
+block page-scripts 
   script(type="module", src="/js/account.js", defer) 
 
 block page-controls 
@@ -22,7 +22,7 @@ block page-controls
 block content
   .page-content 
     header.page-head 
-      button 
+      button#sidenav-btn 
         +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
       
       h2 Account 

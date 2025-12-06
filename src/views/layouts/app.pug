@@ -11,6 +11,11 @@ block styles
 
   block page-styles 
 
+block scripts 
+  script(type="module", src="/js/app.js", defer) 
+
+  block page-scripts
+
 block body 
   body.app 
     nav.left-bar 
@@ -33,8 +38,25 @@ block body
         .wrapper 
           h2 #{heading}
 
-          button 
-            +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+          div.dropdown#dropdown-pages
+            button 
+              +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            
+            .dropdown-list.right
+              a(href="/chat", class=`${path === "chat" ? "dropdown-item active" : "dropdown-item"}`)
+                +messageBox('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+
+                span.label Chat
+              
+              a(href="/calls", class=`${path === "calls" ? "dropdown-item active" : "dropdown-item"}`)
+                +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+
+                span.label Calls
+
+              a(href="/settings", class=`${path === "settings" || path === "account" ? "dropdown-item active" : "dropdown-item"}`)
+                +setting('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+
+                span.label Settings
 
         if path === 'chat'
           .btn-group
@@ -42,5 +64,5 @@ block body
       
       block page-controls 
 
-    main.content-wrapper 
+    main#page-content.content-wrapper 
       block content
