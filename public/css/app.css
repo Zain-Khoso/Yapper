@@ -1,3 +1,7 @@
+body.swal2-height-auto.swal2-height-auto {
+  height: 100dvh !important;
+}
+
 .app {
   display: flex;
   align-items: center;

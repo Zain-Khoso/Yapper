@@ -13,6 +13,7 @@ const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD,
   dialect: 'mysql',
   host: DATABASE_HOST,
   port: DATABASE_PORT,
+  logging: false,
 });
 
 module.exports = sequelize;

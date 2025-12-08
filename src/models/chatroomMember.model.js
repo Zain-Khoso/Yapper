@@ -30,7 +30,7 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
     },
   },
 
-  blocked: {
+  isBlocked: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },

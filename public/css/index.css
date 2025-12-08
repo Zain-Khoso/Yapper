@@ -192,6 +192,7 @@ span {
 .btn.outline,
 .btn.outline {
   border-color: var(--color-foreground);
+  color: var(--color-foreground);
 }
 
 .btn.outline:hover,
