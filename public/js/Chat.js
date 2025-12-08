@@ -4,13 +4,18 @@ export class Chat {
     this.elem_ChatsList = document.getElementById('chatslist');
     this.elem_ChatInterface = document.getElementById('chatapp-ui');
     this.elem_EmptyInterface = document.getElementById('chatapp-empty-ui');
+    this.elem_ChatInterfaceUserInitial =
+      this.elem_ChatInterface.querySelector('#chatapp-user-initial');
+    this.elem_ChatInterfaceUserDisplayName = this.elem_ChatInterface.querySelector(
+      '#chatapp-user-displayName'
+    );
+    this.elem_MessageList = this.elem_ChatInterface.querySelector('.messages');
 
     // Values.
     this.rooms = new Map();
-    this.activeRoom = {};
+    this.activeRoomId = '';
 
-    if (this.elem_ChatsList.children.length > 0) this.showChatInterface();
-    else this.showEmptyInterface();
+    this.getChatrooms();
   }
 
   showChatInterface() {
@@ -24,15 +29,87 @@ export class Chat {
     document.querySelector('.content-wrapper').classList.add('close');
   }
 
+  getActiveRoom() {
+    return this.rooms.get(this.activeRoomId);
+  }
+
+  setActiveRoom(roomId) {
+    this.activeRoomId = roomId;
+    const activeRoom = this.getActiveRoom();
+
+    this.elem_ChatsList
+      .querySelectorAll('li.chat')
+      .forEach((elem) =>
+        elem.classList.toggle('active', elem.getAttribute('data-roomId') === activeRoom.id)
+      );
+
+    this.elem_ChatInterfaceUserInitial.textContent = activeRoom.receiver.pfp;
+    this.elem_ChatInterfaceUserDisplayName.textContent = activeRoom.receiver.displayName;
+
+    this.elem_MessageList.innerHTML = '';
+  }
+
+  async getChatrooms() {
+    try {
+      const { data: chatrooms } = await axios.get('/chat/room/all');
+
+      this.addRooms(chatrooms);
+
+      if (chatrooms.length > 0) this.showChatInterface();
+      else this.showEmptyInterface();
+    } catch (error) {
+      if (error.errors) return showError('Server', error.errors.root);
+
+      this.showEmptyInterface();
+    }
+  }
+
+  addRooms(rooms) {
+    rooms.forEach((room) => {
+      this.rooms.set(room.id, room);
+
+      const {
+        id: roomId,
+        receiver: { pfp, displayName },
+        lastSpoke,
+        lastMessage,
+      } = room;
+
+      this.elem_ChatsList.insertAdjacentHTML(
+        'beforeend',
+        `
+        <li class="chat" data-roomId=${roomId}>
+          <div class="user-icon"> 
+            <span class="user-initial"> ${pfp} </span>
+          </div>
+          
+          <div class="user-content">
+            <div class="title">
+              <span class="highlight"> ${displayName} </span>
+              <span class="last-spoke"> ${lastSpoke} </span>
+            </div>
+            
+            
+            <span class="last-message"> ${lastMessage} </span>
+          </div>
+        </li>
+        `
+      );
+    });
+
+    this.setActiveRoom(rooms.at(0).id);
+  }
+
   addRoom(room) {
     if (this.rooms.has(room.id)) return;
     else this.rooms.set(room.id, room);
 
-    const roomId = room.id;
-    const pfp = room.receiver.displayName.at(0).toUpperCase();
-    const displayName = room.receiver.displayName;
-    const lastSpoke = '';
-    const lastMessage = '';
+    const {
+      id: roomId,
+      receiver: { pfp, displayName },
+      lastSpoke,
+      lastMessage,
+    } = room;
 
     this.elem_ChatsList.insertAdjacentHTML(
       'afterbegin',
@@ -58,13 +135,38 @@ export class Chat {
     this.setActiveRoom(roomId);
   }
 
-  setActiveRoom(roomId) {
-    this.elem_ChatsList
-      .querySelectorAll('li.chat')
-      .forEach((elem) =>
-        elem.classList.toggle('active', elem.getAttribute('data-roomId') === roomId)
-      );
+  addMessages(messages) {
+    const activeRoom = this.getActiveRoom();
 
-    this.activeRoom = this.rooms.get(roomId);
+    messages.forEach((message) => {
+      const isSender = activeRoom.sender.id === message.senderId;
+
+      this.elem_MessageList.insertAdjacentHTML(
+        'afterbegin',
+        `
+          <div class="message-wrapper ${isSender ? 'right' : 'left'}"> 
+            <div class="message-box"> 
+              <p class="message-text">Yup, just wrapped it up. Starting on the chat list UI now. </p>
+              <span class="time-text">16:32</span>
+            </div>
+          </div>
+        `
+      );
+    });
   }
 }
+
+`
+  .message-wrapper.center 
+    span.date-separator Today
+  
+  .message-wrapper.left 
+    .message-box 
+      p.message-text Hey! Did you finish the login page?
+      span.time-text 16:32
+       
+  .message-wrapper.right 
+    .message-box 
+      p.message-text Yup, just wrapped it up. Starting on the chat list UI now.
+      span.time-text 16:32 
+`;

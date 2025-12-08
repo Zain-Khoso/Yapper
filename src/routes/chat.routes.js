@@ -11,6 +11,9 @@ const router = Router();
 // GET: Chat Page.
 router.get('/', controller.getChatPage);
 
+// GET: All Chatrooms of the current user.
+router.get('/room/all', controller.getChatrooms);
+
 // POST: Add Chatroom.
 router.post('/room/add', controller.postAddChatroom);
 

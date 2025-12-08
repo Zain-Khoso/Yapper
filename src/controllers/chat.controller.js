@@ -1,11 +1,11 @@
 // Lib Imports.
 const validator = require('validator');
-const { Op } = require('sequelize');
 
 // Local Imports.
 const sequelize = require('../utils/database');
 const User = require('../models/user.model');
 const Chatroom = require('../models/chatroom.model');
+const Message = require('../models/message.model');
 const getMetadata = require('../utils/metadata');
 const { schema_email } = require('../utils/validations');
 const { formatChatroom } = require('../utils/formatters');
@@ -32,8 +32,44 @@ exports.getChatPage = function (req, res) {
     metadata,
     path: 'chat',
     heading: 'Yaps',
-    chatrooms: [],
   });
+};
+
+exports.getChatrooms = function (req, res, next) {
+  const senderId = req.session.user.id;
+
+  User.findByPk(senderId, {
+    attributes: [],
+    include: {
+      model: Chatroom,
+      attributes: ['id', 'updatedAt'],
+      through: { attributes: [] },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'displayName'],
+          through: { attributes: ['id', 'isBlocked'] },
+        },
+        {
+          model: Message,
+          attributes: ['id', 'isFile', 'content', 'senderId'],
+          order: [['createdAt', 'DESC']],
+          limit: 20,
+        },
+      ],
+    },
+    order: [[Chatroom, 'createdAt', 'DESC']],
+  })
+    .then((user) =>
+      res
+        .status(200)
+        .json(user.Chatrooms.map((chatroom) => formatChatroom(chatroom, req.session.user.id)))
+    )
+    .catch((error) => {
+      console.log('\n\n', error);
+
+      next(Error());
+    });
 };
 
 exports.postAddChatroom = function (req, res) {

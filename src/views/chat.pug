@@ -19,39 +19,6 @@ block page-scripts
 
 block page-controls 
   ul#chatslist.chats-list 
-    if (chatrooms.length > 0)
-      li.chat 
-        .user-icon 
-          span.user-initial A
-        
-        .user-content 
-          .title 
-            span.highlight Adeen
-            span.last-spoke Today
-          
-          span.last-message Mr. White 
-
-      li.chat.active 
-        .user-icon 
-          span.user-initial H
-        
-        .user-content 
-          .title 
-            span.highlight Hamza
-            span.last-spoke Sunday
-          
-          span.last-message Qari saab is after me 
-
-      li.chat 
-        .user-icon 
-          span.user-initial Q
-        
-        .user-content 
-          .title 
-            span.highlight Qari Saab
-            span.last-spoke Saturday
-          
-          span.last-message Hamza just block me 
 
 block content
   .chatapp.hidden#chatapp-ui  
@@ -60,10 +27,10 @@ block content
         button.back#sidenav-btn 
           +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
         
-        .user-icon 
-          span.user-initial H 
+        .user-icon
+          span.user-initial#chatapp-user-initial
         
-        h2 Hamza 
+        h2#chatapp-user-displayName
       
       .actions 
         button.icon-btn 
@@ -107,38 +74,6 @@ block content
             span.label Block Chat 
 
     section.messages
-      .message-wrapper.center 
-        span.date-separator Today 
-
-      .message-wrapper.left 
-        .message-box 
-          p.message-text Hey! Did you finish the login page?
-          span.time-text 16:32
-           
-      .message-wrapper.right 
-        .message-box 
-          p.message-text Yup, just wrapped it up. Starting on the chat list UI now.
-          span.time-text 16:32 
-
-      .message-wrapper.left 
-        .message-box 
-          p.message-text Nicee. Send me a screenshot when you're done?
-          span.time-text 16:33
-           
-      .message-wrapper.right 
-        .message-box 
-          p.message-text Sure thing. Also, should we keep the theme light or dark by default?
-          span.time-text 16:33 
-
-      .message-wrapper.left 
-        .message-box 
-          p.message-text Dark. Always dark 😆
-          span.time-text 16:35
-           
-      .message-wrapper.right 
-        .message-box 
-          p.message-text Bet. Dark it is.
-          span.time-text 16:40 
 
     form.controller
       label.file-label
@@ -150,7 +85,7 @@ block content
       button.send
         +send('icon', 'fill-background', 'stroke-background')
 
-  .chatapp-empty.hidden#chatapp-empty-ui
+  .chatapp-empty#chatapp-empty-ui
     h1 It's quiet here… 
 
     p Pick a user, say hello, and your conversation will show up here.
