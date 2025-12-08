@@ -5,6 +5,7 @@ const validator = require('validator');
 const sequelize = require('../utils/database');
 const User = require('../models/user.model');
 const Chatroom = require('../models/chatroom.model');
+const ChatroomMember = require('../models/chatroomMember.model');
 const Message = require('../models/message.model');
 const getMetadata = require('../utils/metadata');
 const { schema_email } = require('../utils/validations');
@@ -157,4 +158,48 @@ exports.postAddChatroom = function (req, res) {
       else if (error?.errors) res.status(409).json(error);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });
+};
+
+exports.putBlockChat = function (req, res) {
+  const { roomId, receiverId } = req.body;
+
+  ChatroomMember.update(
+    {
+      isBlocked: true,
+    },
+    {
+      where: {
+        ChatroomId: roomId,
+        UserId: receiverId,
+      },
+    }
+  )
+    .then((chatroomMembers) => {
+      if (chatroomMembers.at(0) !== 1) throw new Error();
+
+      res.status(200).json();
+    })
+    .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
+};
+
+exports.putUnblockChat = function (req, res) {
+  const { roomId, receiverId } = req.body;
+
+  ChatroomMember.update(
+    {
+      isBlocked: false,
+    },
+    {
+      where: {
+        ChatroomId: roomId,
+        UserId: receiverId,
+      },
+    }
+  )
+    .then((chatroomMembers) => {
+      if (chatroomMembers.at(0) !== 1) throw new Error();
+
+      res.status(200).json();
+    })
+    .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };

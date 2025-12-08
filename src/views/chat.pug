@@ -44,13 +44,17 @@ block content
             +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
 
           .dropdown-list.right 
-            button.dropdown-item 
+            button.dropdown-item#btn-chat-delete
               +delete('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
               span.label Delete Chat
 
-            button.dropdown-item 
+            button.dropdown-item#btn-chat-block
               +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
               span.label Block Chat 
+
+            button.dropdown-item.hidden#btn-chat-unblock
+              +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+              span.label Unblock Chat 
       
       div.dropdown#dropdown-chat-mobile-options
         button
@@ -75,14 +79,14 @@ block content
 
     section.messages
 
-    form.controller
+    form.controller#message-form
       label.file-label
-        input#file-input(type="file")
+        input#message-file-input(type="file")
         +plus('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
       
-      input.text-input(type="text", placeholder="Type your message...")
+      input.text-input#message-text-input(type="text", placeholder="Type your message...")
 
-      button.send
+      button.send#message-send-btn
         +send('icon', 'fill-background', 'stroke-background')
 
   .chatapp-empty#chatapp-empty-ui

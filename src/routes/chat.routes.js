@@ -17,4 +17,10 @@ router.get('/room/all', controller.getChatrooms);
 // POST: Add Chatroom.
 router.post('/room/add', controller.postAddChatroom);
 
+// PUT: Block Chat.
+router.put('/room/block', controller.putBlockChat);
+
+// PUT: Unblock Chat.
+router.put('/room/unblock', controller.putUnblockChat);
+
 module.exports = router;

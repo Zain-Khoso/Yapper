@@ -1,9 +1,12 @@
 export class Chat {
   constructor() {
     // DOM Selections.
-    this.elem_ChatsList = document.getElementById('chatslist');
     this.elem_ChatInterface = document.getElementById('chatapp-ui');
     this.elem_EmptyInterface = document.getElementById('chatapp-empty-ui');
+
+    this.elem_BtnAddChat = document.getElementById('btn-add-chat');
+    this.elem_ChatsList = document.getElementById('chatslist');
+
     this.elem_ChatInterfaceUserInitial =
       this.elem_ChatInterface.querySelector('#chatapp-user-initial');
     this.elem_ChatInterfaceUserDisplayName = this.elem_ChatInterface.querySelector(
@@ -11,7 +14,17 @@ export class Chat {
     );
     this.elem_BtnCallVoice = document.getElementById('btn-call-voice');
     this.elem_BtnCallVideo = document.getElementById('btn-call-video');
+    this.elem_BtnChatDelete = document.getElementById('btn-chat-delete');
+    this.elem_BtnChatBlock = document.getElementById('btn-chat-block');
+    this.elem_BtnChatUnblock = document.getElementById('btn-chat-unblock');
+
     this.elem_MessageList = this.elem_ChatInterface.querySelector('.messages');
+
+    this.elem_MessageForm = document.getElementById('message-form');
+    this.elem_MessageFileInput = document.getElementById('message-file-input');
+    this.elem_MessageFileInputLabel = this.elem_MessageFileInput.closest('.file-label');
+    this.elem_MessageTextInput = document.getElementById('message-text-input');
+    this.elem_MessageSendBtn = document.getElementById('message-send-btn');
 
     // Values.
     this.rooms = new Map();
@@ -49,8 +62,10 @@ export class Chat {
 
     this.elem_ChatInterfaceUserInitial.textContent = activeRoom.receiver.pfp;
     this.elem_ChatInterfaceUserDisplayName.textContent = activeRoom.receiver.displayName;
-
     this.elem_MessageList.innerHTML = '';
+    this.addMessages(activeRoom.messages);
+
+    this.updateBlockState();
   }
 
   async getChatrooms() {
@@ -137,6 +152,75 @@ export class Chat {
     );
 
     this.setActiveRoom(roomId);
+  }
+
+  async blockRoom() {
+    let activeRoom = this.getActiveRoom();
+
+    try {
+      await axios.put('/chat/room/block', {
+        roomId: activeRoom.id,
+        receiverId: activeRoom.receiver.id,
+      });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        receiver: { ...activeRoom.receiver, isBlocked: true },
+      });
+
+      this.updateBlockState();
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async unblockRoom() {
+    let activeRoom = this.getActiveRoom();
+
+    try {
+      await axios.put('/chat/room/unblock', {
+        roomId: activeRoom.id,
+        receiverId: activeRoom.receiver.id,
+      });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        receiver: { ...activeRoom.receiver, isBlocked: false },
+      });
+
+      this.updateBlockState();
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  updateBlockState() {
+    const activeRoom = this.rooms.get(this.activeRoomId);
+
+    // Showing/Hiding block buttons.
+    this.elem_BtnChatBlock.classList.toggle('hidden', activeRoom.receiver.isBlocked);
+    this.elem_BtnChatUnblock.classList.toggle('hidden', !activeRoom.receiver.isBlocked);
+
+    // Reseting the Message Form's state.
+    this.elem_MessageFileInput.value = null;
+    this.elem_MessageTextInput.value = null;
+
+    // Changing the Message form's state if/not disabled.
+    const isFormDisabled = activeRoom.receiver.isBlocked || activeRoom.sender.isBlocked;
+
+    this.elem_MessageFileInputLabel.classList.toggle('hidden', isFormDisabled);
+    this.elem_MessageSendBtn.classList.toggle('hidden', isFormDisabled);
+    isFormDisabled
+      ? this.elem_MessageTextInput.setAttribute('disabled', true)
+      : this.elem_MessageTextInput.removeAttribute('disabled');
+    this.elem_MessageTextInput.setAttribute(
+      'placeholder',
+      activeRoom.receiver.isBlocked
+        ? 'You have blocked this user'
+        : activeRoom.sender.isBlocked
+          ? 'This user has blocked You'
+          : 'Type your message...'
+    );
   }
 
   addMessages(messages) {

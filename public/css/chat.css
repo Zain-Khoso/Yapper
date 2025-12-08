@@ -130,7 +130,7 @@
   height: 100%;
 }
 
-.chatapp .controller .file-label #file-input {
+.chatapp .controller .file-label #message-file-input {
   position: fixed;
   left: -9999px;
 }

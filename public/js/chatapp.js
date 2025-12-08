@@ -6,8 +6,6 @@ import { Chat } from './Chat.js';
 // Contants.
 const App = new Chat();
 
-const elem_BtnAddChat = document.getElementById('btn-add-chat');
-
 // Functions.
 const handleAddChatClick = async function () {
   const question = await Swal.fire({
@@ -72,7 +70,10 @@ const handleWillBeAddedShortly = function () {
 };
 
 // Event Listeners.
-elem_BtnAddChat.addEventListener('click', handleAddChatClick);
+App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
 App.elem_BtnCallVoice.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
+App.elem_BtnChatDelete.addEventListener('click', handleWillBeAddedShortly);
+App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
+App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
