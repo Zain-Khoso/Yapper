@@ -34,6 +34,8 @@ export class Chat {
   }
 
   setActiveRoom(roomId) {
+    if (roomId === this.activeRoomId) return;
+
     this.activeRoomId = roomId;
     const activeRoom = this.getActiveRoom();
 
@@ -101,7 +103,7 @@ export class Chat {
   }
 
   addRoom(room) {
-    if (this.rooms.has(room.id)) return;
+    if (this.rooms.has(room.id)) return this.setActiveRoom(room.id);
     else this.rooms.set(room.id, room);
 
     const {

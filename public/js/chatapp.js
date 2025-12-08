@@ -5,6 +5,7 @@ import { Chat } from './Chat.js';
 
 // Contants.
 const App = new Chat();
+
 const elem_BtnAddChat = document.getElementById('btn-add-chat');
 
 // Functions.
@@ -52,5 +53,12 @@ const handleAddChatClick = async function () {
   }
 };
 
+const handleChatChange = function ({ target }) {
+  const elem_ChatOption = target.closest('.chat');
+
+  if (elem_ChatOption) App.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
+};
+
 // Event Listeners.
 elem_BtnAddChat.addEventListener('click', handleAddChatClick);
+App.elem_ChatsList.addEventListener('click', handleChatChange);
