@@ -45,7 +45,7 @@ function formatLastSeen(inputDate) {
 exports.formatChatroom = function (chatroom, senderId) {
   const sender = formatUser(chatroom.Users.find((user) => user.id === senderId));
   const receiver = formatUser(chatroom.Users.find((user) => user.id !== senderId));
-  const messages = chatroom?.Messages.map((message) => message.toJSON()) ?? [];
+  const messages = chatroom?.Messages?.map((message) => message.toJSON()) ?? [];
 
   const data = {
     id: chatroom.id,
