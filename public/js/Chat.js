@@ -9,6 +9,8 @@ export class Chat {
     this.elem_ChatInterfaceUserDisplayName = this.elem_ChatInterface.querySelector(
       '#chatapp-user-displayName'
     );
+    this.elem_BtnCallVoice = document.getElementById('btn-call-voice');
+    this.elem_BtnCallVideo = document.getElementById('btn-call-video');
     this.elem_MessageList = this.elem_ChatInterface.querySelector('.messages');
 
     // Values.

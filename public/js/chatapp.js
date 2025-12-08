@@ -59,6 +59,20 @@ const handleChatChange = function ({ target }) {
   if (elem_ChatOption) App.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
 };
 
+const handleWillBeAddedShortly = function () {
+  Swal.fire({
+    icon: 'info',
+    iconColor: 'var(--color-foreground)',
+    title: 'Coming Soon',
+    theme: getTheme(),
+    customClass: {
+      confirmButton: 'btn primary',
+    },
+  });
+};
+
 // Event Listeners.
 elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
+App.elem_BtnCallVoice.addEventListener('click', handleWillBeAddedShortly);
+App.elem_BtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
