@@ -60,7 +60,7 @@ exports.getChatrooms = function (req, res, next) {
         },
       ],
     },
-    order: [[Chatroom, 'createdAt', 'DESC']],
+    order: [[Chatroom, 'updatedAt', 'DESC']],
   })
     .then((user) =>
       res
@@ -212,34 +212,39 @@ exports.postSendMessage = function (req, res) {
   if (roomId.trim() === '') return res.status(400).json();
   if (content.trim() === '') return res.status(400).json();
 
-  Chatroom.findByPk(roomId, {
-    attributes: ['id'],
-    include: {
-      model: User,
-      attributes: ['id'],
-      through: { attributes: ['isBlocked'] },
-    },
-  })
-    .then((chatroom) => {
-      if (!chatroom) throw new Error();
+  sequelize
+    .transaction((t) =>
+      Chatroom.findByPk(roomId, {
+        attributes: ['id', 'updatedAt'],
+        include: {
+          model: User,
+          attributes: ['id'],
+          through: { attributes: ['isBlocked'] },
+        },
+        transaction: t,
+      })
+        .then((chatroom) => {
+          if (!chatroom) throw new Error();
 
-      const { isBlocked: isSenderBlocked } = chatroom.Users.find(
-        (user) => user.id === senderId
-      ).ChatroomMember;
-      const { isBlocked: isReceiverBlocked } = chatroom.Users.find(
-        (user) => user.id !== senderId
-      ).ChatroomMember;
+          const { isBlocked: isSenderBlocked } = chatroom.Users.find(
+            (user) => user.id === senderId
+          ).ChatroomMember;
+          const { isBlocked: isReceiverBlocked } = chatroom.Users.find(
+            (user) => user.id !== senderId
+          ).ChatroomMember;
 
-      if (isSenderBlocked)
-        throw { errors: { root: 'Cannot send message to someone who has block you.' } };
-      if (isReceiverBlocked)
-        throw { errors: { root: 'Cannot send message to someone whom you have blocked.' } };
+          if (isSenderBlocked)
+            throw { errors: { root: 'Cannot send message to someone who has block you.' } };
+          if (isReceiverBlocked)
+            throw { errors: { root: 'Cannot send message to someone whom you have blocked.' } };
 
-      return chatroom.createMessage({ content, senderId });
-    })
+          chatroom.changed('updatedAt', true);
+          return chatroom.save({ transaction: t });
+        })
+        .then((chatroom) => chatroom.createMessage({ content, senderId }, { transaction: t }))
+    )
     .then((message) => res.status(201).json(formatMessage(message, senderId)))
     .catch((error) => {
-      console.log(error);
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });

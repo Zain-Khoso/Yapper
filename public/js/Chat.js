@@ -129,6 +129,10 @@ export class Chat {
     elem_RoomName.textContent = displayName;
     elem_RoomLastSpoke.textContent = lastSpoke;
     elem_RoomLastMessage.textContent = lastMessage;
+
+    const roomHTML = elem_Room.outerHTML;
+    elem_Room.remove();
+    this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
   updateRoomBlock() {

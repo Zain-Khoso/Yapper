@@ -7,9 +7,11 @@
   align-items: center;
   gap: 0.75rem;
 
+  max-width: 100%;
   padding-block: 0.75rem;
   padding-inline: 1.5rem;
   cursor: pointer;
+  overflow-x: hidden;
 }
 
 .chats-list .chat:hover,
@@ -22,6 +24,7 @@
   display: flex;
   flex-direction: column;
 
+  overflow-x: hidden;
   gap: 0.25rem;
 }
 
@@ -234,6 +237,14 @@
   max-width: 480px;
   padding: 0.75rem;
   border-radius: 0.5rem;
+  overflow-x: hidden;
+}
+
+.chatapp .messages .message-wrapper .message-box .message-text {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .chatapp .messages .message-wrapper.left .message-box {
