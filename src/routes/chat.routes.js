@@ -11,6 +11,9 @@ const router = Router();
 // GET: Chat Page.
 router.get('/', controller.getChatPage);
 
+// PUT: Delete All Messages for this user.
+router.put('/delete', controller.putDeleteChat);
+
 // GET: All Chatrooms of the current user.
 router.get('/room/all', controller.getChatrooms);
 

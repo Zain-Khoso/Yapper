@@ -203,6 +203,31 @@ exports.putUnblockChat = function (req, res) {
     .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };
 
+exports.putDeleteChat = function (req, res) {
+  const { roomId } = req.body;
+  const senderId = req.session.user.id;
+
+  if (!roomId) res.status(400).json({ errors: { root: 'Something went wrong' } });
+
+  ChatroomMember.update(
+    { messagesDeletedAt: new Date() },
+    {
+      where: {
+        ChatroomId: roomId,
+        UserId: senderId,
+      },
+    }
+  )
+    .then((rowsUpdated) => {
+      if (rowsUpdated?.at(0) !== 1) throw new Error();
+
+      res.status(200).json();
+    })
+    .catch(() => {
+      res.status(500).json({ errors: { root: 'Something went wrong.' } });
+    });
+};
+
 exports.postSendMessage = function (req, res) {
   const { roomId, content } = req.body;
   const senderId = req.session.user.id;
