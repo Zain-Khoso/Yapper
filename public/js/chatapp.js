@@ -85,8 +85,9 @@ const handleMessageSend = async function (event) {
 
 const handleMessageDelete = async function (event) {
   const target = event?.target?.closest('.message-box');
+  const messageId = target.getAttribute('data-messageId');
 
-  if (!target) return;
+  if (!target || !App.canDeleteMessage(messageId)) return;
 
   event.preventDefault();
 
@@ -106,7 +107,7 @@ const handleMessageDelete = async function (event) {
 
   if (!confirmation.isConfirmed) return;
 
-  App.deleteMessage(target.getAttribute('data-messageId'));
+  App.deleteMessage(messageId);
 
   App.elem_MessageTextInput.value = null;
 };

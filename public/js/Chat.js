@@ -208,6 +208,10 @@ export class Chat {
     this.elem_MessageList.querySelector(`div.message-box[data-messageId="${id}"]`).remove();
   }
 
+  canDeleteMessage(id) {
+    return this.getActiveRoom()?.messages?.find((message) => message.id === id)?.isSender ?? false;
+  }
+
   async getRooms() {
     try {
       const { data: chatrooms } = await axios.get('/chat/room/all');
