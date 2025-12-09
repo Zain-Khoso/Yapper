@@ -14,11 +14,6 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
     defaultValue: DataTypes.UUIDV4(),
   },
 
-  isDeleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
-
   UserId: {
     type: DataTypes.STRING,
     references: {
