@@ -22,6 +22,11 @@ const Chatroom = sequelize.define('Chatroom', {
     type: DataTypes.BOOLEAN,
     default: false,
   },
+
+  lastMessageAt: {
+    type: DataTypes.DATE,
+    default: () => new Date(),
+  },
 });
 
 module.exports = Chatroom;
