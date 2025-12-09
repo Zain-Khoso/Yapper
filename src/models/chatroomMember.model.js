@@ -40,7 +40,7 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
     defaultValue: false,
   },
 
-  messagesDeleteAt: {
+  messagesDeletedAt: {
     type: DataTypes.DATE,
     defaultValue: () => new Date(Date.now()),
   },
