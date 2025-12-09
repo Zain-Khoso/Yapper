@@ -184,11 +184,7 @@ exports.getChat = function (req, res, next) {
     .then((messages) =>
       res.status(200).json(messages.map((message) => formatMessage(message, senderId)))
     )
-    .catch((error) => {
-      console.log('\n\n', error);
-
-      next(Error());
-    });
+    .catch((error) => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };
 
 exports.putBlockChat = function (req, res) {
