@@ -1,9 +1,12 @@
 function formatUser(user) {
+  const isDeleted = Object.keys(user).length === 0;
+
   return {
-    id: user.id,
-    pfp: user.displayName.at(0).toUpperCase(),
-    displayName: user.displayName,
-    isBlocked: user.ChatroomMember.isBlocked,
+    id: isDeleted ? '' : user.id,
+    pfp: isDeleted ? 'Y' : user?.displayName?.at(0)?.toUpperCase(),
+    displayName: isDeleted ? 'Yapper User' : user.displayName,
+    isBlocked: user?.ChatroomMember?.isBlocked === true ? true : false,
+    isDeleted,
   };
 }
 
@@ -57,13 +60,13 @@ function formatMessage(message, senderId) {
 }
 
 function formatChatroom(chatroom, senderId) {
-  const sender = formatUser(chatroom.Users.find((user) => user.id === senderId));
-  const receiver = formatUser(chatroom.Users.find((user) => user.id !== senderId));
+  const sender = formatUser(chatroom.Users.find((user) => user.id === senderId) ?? {});
+  const receiver = formatUser(chatroom.Users.find((user) => user.id !== senderId) ?? {});
   const messages = chatroom?.Messages?.map((message) => formatMessage(message, senderId)) ?? [];
 
   const data = {
     id: chatroom.id,
-    lastSpoke: formatLastSeen(chatroom.updatedAt),
+    lastSpoke: formatLastSeen(chatroom.lastMessageAt),
     lastMessage: messages.at(0)?.content ?? '',
     sender,
     receiver,

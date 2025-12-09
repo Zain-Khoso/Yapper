@@ -43,6 +43,7 @@ const handleAddChatClick = async function () {
 
     App.addRoom(chatroom);
     App.setActiveRoom(chatroom.id);
+    App.showChatInterface();
   } catch (response) {
     // Extracting Error Information.
     const { errors } = response.response.data;

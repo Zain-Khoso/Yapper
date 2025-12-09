@@ -62,13 +62,10 @@ export class Chat {
         elem.classList.toggle('active', elem.getAttribute('data-roomId') === activeRoom.id)
       );
 
-    this.elem_ChatInterfaceUserInitial.textContent = activeRoom.receiver.pfp;
-    this.elem_ChatInterfaceUserDisplayName.textContent = activeRoom.receiver.displayName;
+    this.updateChatHeader();
+
     this.elem_MessageList.innerHTML = '';
-
     activeRoom.messages.forEach((message) => this.addMessage(message, 'afterbegin'));
-
-    this.updateRoomBlock();
   }
 
   scrollToEnd() {
@@ -135,32 +132,55 @@ export class Chat {
     this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
-  updateRoomBlock() {
-    const activeRoom = this.rooms.get(this.activeRoomId);
+  updateChatHeader() {
+    const {
+      receiver: { pfp, displayName, isBlocked, isDeleted },
+    } = this.getActiveRoom();
 
-    // Showing/Hiding block buttons.
-    this.elem_BtnChatBlock.classList.toggle('hidden', activeRoom.receiver.isBlocked);
-    this.elem_BtnChatUnblock.classList.toggle('hidden', !activeRoom.receiver.isBlocked);
+    // Update Header Copy.
+    this.elem_ChatInterfaceUserInitial.textContent = pfp;
+    this.elem_ChatInterfaceUserDisplayName.textContent = displayName;
 
-    // Reseting the Message Form's state.
+    // Showing/Hiding controls.
+    this.elem_BtnCallVoice.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_BtnCallVideo.classList.toggle('hidden', isDeleted || isBlocked);
+
+    this.elem_BtnChatDelete.closest('.dropdown').classList.toggle('hidden', isDeleted);
+
+    this.elem_BtnChatBlock.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_BtnChatUnblock.classList.toggle('hidden', isDeleted || !isBlocked);
+    this.elem_BtnChatDelete.classList.toggle('hidden', isDeleted);
+
+    this.updateMessageForm();
+  }
+
+  updateMessageForm() {
+    const activeRoom = this.getActiveRoom();
+
+    // Checking weather the form will should be disabled or not.
+    const isFormDisabled =
+      activeRoom.receiver.isBlocked || activeRoom.receiver.isDeleted || activeRoom.sender.isBlocked;
+
+    // Resetting the Message Form's state.
     this.elem_MessageFileInput.value = null;
     this.elem_MessageTextInput.value = null;
 
-    // Changing the Message form's state if/not disabled.
-    const isFormDisabled = activeRoom.receiver.isBlocked || activeRoom.sender.isBlocked;
-
     this.elem_MessageFileInputLabel.classList.toggle('hidden', isFormDisabled);
     this.elem_MessageSendBtn.classList.toggle('hidden', isFormDisabled);
+
     isFormDisabled
       ? this.elem_MessageTextInput.setAttribute('disabled', true)
       : this.elem_MessageTextInput.removeAttribute('disabled');
+
     this.elem_MessageTextInput.setAttribute(
       'placeholder',
-      activeRoom.receiver.isBlocked
-        ? 'You have blocked this user'
-        : activeRoom.sender.isBlocked
-          ? 'This user has blocked You'
-          : 'Type your message...'
+      activeRoom.receiver.isDeleted
+        ? 'Deleted User'
+        : activeRoom.receiver.isBlocked
+          ? 'You have blocked this user'
+          : activeRoom.sender.isBlocked
+            ? 'This user has blocked You'
+            : 'Type your message...'
     );
   }
 
@@ -210,7 +230,7 @@ export class Chat {
         receiver: { ...activeRoom.receiver, isBlocked: true },
       });
 
-      this.updateRoomBlock();
+      this.updateChatHeader();
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
     }
@@ -230,7 +250,7 @@ export class Chat {
         receiver: { ...activeRoom.receiver, isBlocked: false },
       });
 
-      this.updateRoomBlock();
+      this.updateChatHeader();
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
     }

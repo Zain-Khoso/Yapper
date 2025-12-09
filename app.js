@@ -61,22 +61,16 @@ app.use(getNotFoundPage);
 app.use(getServerErrorPage);
 
 // Model Associations.
-User.belongsToMany(Chatroom, {
-  through: ChatroomMember,
-  onDelete: 'SET NULL',
-});
-Chatroom.belongsToMany(User, {
-  through: ChatroomMember,
-  onDelete: 'SET NULL',
-});
+User.belongsToMany(Chatroom, { through: ChatroomMember });
+Chatroom.belongsToMany(User, { through: ChatroomMember });
 
 Chatroom.hasMany(Message, {
   foreignKey: 'roomId',
-  onDelete: 'RESTRICT',
+  onDelete: 'CASCADE',
 });
 Message.belongsTo(Chatroom, {
   foreignKey: 'roomId',
-  onDelete: 'RESTRICT',
+  onDelete: 'CASCADE',
 });
 
 User.hasMany(Message, {
@@ -90,6 +84,6 @@ Message.belongsTo(User, {
 
 // Running the server.
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => app.listen(process.env.PORT))
   .catch((error) => console.log(error));

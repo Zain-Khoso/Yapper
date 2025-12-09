@@ -43,7 +43,7 @@ exports.getChatrooms = function (req, res, next) {
     attributes: [],
     include: {
       model: Chatroom,
-      attributes: ['id', 'updatedAt'],
+      attributes: ['id', 'lastMessageAt'],
       through: { attributes: [] },
       include: [
         {
@@ -60,12 +60,10 @@ exports.getChatrooms = function (req, res, next) {
         },
       ],
     },
-    order: [[Chatroom, 'updatedAt', 'DESC']],
+    order: [[Chatroom, 'lastMessageAt', 'DESC']],
   })
     .then((user) =>
-      res
-        .status(200)
-        .json(user.Chatrooms.map((chatroom) => formatChatroom(chatroom, req.session.user.id)))
+      res.status(200).json(user.Chatrooms.map((chatroom) => formatChatroom(chatroom, senderId)))
     )
     .catch((error) => {
       console.log('\n\n', error);
@@ -141,7 +139,7 @@ exports.postAddChatroom = function (req, res) {
         )
         .then(([chatroomMember]) =>
           Chatroom.findByPk(chatroomMember.ChatroomId, {
-            attributes: ['id', 'updatedAt'],
+            attributes: ['id', 'lastMessageAt'],
             include: {
               model: User,
               attributes: ['id', 'displayName'],
@@ -215,7 +213,7 @@ exports.postSendMessage = function (req, res) {
   sequelize
     .transaction((t) =>
       Chatroom.findByPk(roomId, {
-        attributes: ['id', 'updatedAt'],
+        attributes: ['id', 'lastMessageAt'],
         include: {
           model: User,
           attributes: ['id'],
@@ -238,8 +236,7 @@ exports.postSendMessage = function (req, res) {
           if (isReceiverBlocked)
             throw { errors: { root: 'Cannot send message to someone whom you have blocked.' } };
 
-          chatroom.changed('updatedAt', true);
-          return chatroom.save({ transaction: t });
+          return chatroom.update({ lastMessageAt: new Date() }, { transaction: t });
         })
         .then((chatroom) => chatroom.createMessage({ content, senderId }, { transaction: t }))
     )

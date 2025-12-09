@@ -15,17 +15,17 @@ const Chatroom = sequelize.define('Chatroom', {
 
   name: {
     type: DataTypes.STRING(16),
-    allowNull: true,
+    defaultValue: '',
   },
 
   isGroup: {
     type: DataTypes.BOOLEAN,
-    default: false,
+    defaultValue: false,
   },
 
   lastMessageAt: {
     type: DataTypes.DATE,
-    default: () => new Date(),
+    defaultValue: () => new Date(),
   },
 });
 
