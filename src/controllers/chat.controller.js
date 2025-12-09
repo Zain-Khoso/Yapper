@@ -1,5 +1,6 @@
 // Lib Imports.
 const validator = require('validator');
+const { Op } = require('sequelize');
 
 // Local Imports.
 const sequelize = require('../utils/database');
@@ -50,13 +51,6 @@ exports.getChatrooms = function (req, res, next) {
           model: User,
           attributes: ['id', 'displayName'],
           through: { attributes: ['id', 'isBlocked'] },
-        },
-        {
-          model: Message,
-          attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
-          order: [['createdAt', 'DESC']],
-          limit: 100,
-          separate: true,
         },
       ],
     },
@@ -156,6 +150,44 @@ exports.postAddChatroom = function (req, res) {
       if (error?.chatroom) res.status(200).json(error);
       else if (error?.errors) res.status(409).json(error);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
+    });
+};
+
+exports.getChat = function (req, res, next) {
+  const { roomId } = req.params;
+  const senderId = req.session.user.id;
+
+  User.findByPk(senderId, {
+    attributes: ['id'],
+    include: {
+      model: Chatroom,
+      where: {
+        id: roomId,
+      },
+      attributes: ['id'],
+      through: { attributes: ['id', 'messagesDeletedAt'] },
+    },
+  })
+    .then((user) => {
+      if (!user || user.Chatrooms.length === 0) throw new Error();
+
+      return user.Chatrooms.at(0).getMessages({
+        attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
+        where: {
+          createdAt: {
+            [Op.gt]: user.Chatrooms.at(0).ChatroomMember.messagesDeletedAt,
+          },
+        },
+        order: [['createdAt', 'DESC']],
+      });
+    })
+    .then((messages) =>
+      res.status(200).json(messages.map((message) => formatMessage(message, senderId)))
+    )
+    .catch((error) => {
+      console.log('\n\n', error);
+
+      next(Error());
     });
 };
 

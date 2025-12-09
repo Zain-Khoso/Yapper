@@ -26,6 +26,9 @@ router.put('/room/block', controller.putBlockChat);
 // PUT: Unblock Chat.
 router.put('/room/unblock', controller.putUnblockChat);
 
+// GET: Get all messages of the given room.
+router.get('/room/:roomId/all', controller.getChat);
+
 // POST: Send Message.
 router.post('/message/send', controller.postSendMessage);
 

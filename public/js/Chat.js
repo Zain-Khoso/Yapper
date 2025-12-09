@@ -221,10 +221,29 @@ export class Chat {
       const { data: chatrooms } = await axios.get('/chat/room/all');
 
       chatrooms.forEach((room) => this.addRoom(room, 'beforeend'));
-      this.setActiveRoom(chatrooms.at(0).id);
 
-      if (chatrooms.length > 0) this.showChatInterface();
-      else this.showEmptyInterface();
+      if (chatrooms.length > 0) {
+        await this.getChat(chatrooms.at(0).id);
+        this.setActiveRoom(chatrooms.at(0).id);
+        this.showChatInterface();
+      } else this.showEmptyInterface();
+    } catch (error) {
+      if (error.errors) return showError('Server', error.errors.root);
+
+      this.showEmptyInterface();
+    }
+  }
+
+  async getChat(roomId) {
+    const room = this.rooms.get(roomId);
+
+    try {
+      const { data: messages } = await axios.get(`/chat/room/${room.id}/all`);
+
+      this.rooms.set(room.id, {
+        ...room,
+        messages,
+      });
     } catch (error) {
       if (error.errors) return showError('Server', error.errors.root);
 
