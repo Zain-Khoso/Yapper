@@ -83,6 +83,34 @@ const handleMessageSend = async function (event) {
   App.elem_MessageTextInput.value = null;
 };
 
+const handleMessageDelete = async function (event) {
+  const target = event?.target?.closest('.message-box');
+
+  if (!target) return;
+
+  event.preventDefault();
+
+  const confirmation = await Swal.fire({
+    icon: 'question',
+    iconColor: 'var(--color-foreground)',
+    title: 'Delete Message?',
+    theme: getTheme(),
+    showCancelButton: true,
+    confirmButtonText: 'DELETE',
+    cancelButtonText: 'CANCEL',
+    customClass: {
+      confirmButton: 'btn danger',
+      cancelButton: 'btn primary',
+    },
+  });
+
+  if (!confirmation.isConfirmed) return;
+
+  App.deleteMessage(target.getAttribute('data-messageId'));
+
+  App.elem_MessageTextInput.value = null;
+};
+
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
@@ -92,3 +120,4 @@ App.elem_BtnChatDelete.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);
+App.elem_MessageList.addEventListener('contextmenu', handleMessageDelete);

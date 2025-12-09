@@ -206,6 +206,10 @@
   min-height: fit-content;
 }
 
+.chatapp .messages .message-wrapper:not(:has(.message-box), :has(.date-separator)) {
+  display: none;
+}
+
 .chatapp .messages .message-wrapper.left {
   align-items: start;
 }

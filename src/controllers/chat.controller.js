@@ -246,3 +246,24 @@ exports.postSendMessage = function (req, res) {
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });
 };
+
+exports.deleteMessage = function (req, res) {
+  const { id: messageId } = req.params;
+  const senderId = req.session.user.id;
+
+  sequelize
+    .transaction((t) =>
+      Message.findByPk(messageId, { transaction: t }).then((message) => {
+        if (!message) throw new Error();
+
+        if (senderId !== message.senderId) throw new Error();
+
+        return message.destroy({ transaction: t });
+      })
+    )
+    .then((message) => res.status(200).json({ messageId: message.id }))
+    .catch((error) => {
+      if (error?.errors) res.status(400).json(error.errors);
+      else res.status(500).json({ errors: { root: 'Something went wrong.' } });
+    });
+};

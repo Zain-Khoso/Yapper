@@ -126,6 +126,10 @@ export class Chat {
     elem_RoomName.textContent = displayName;
     elem_RoomLastSpoke.textContent = lastSpoke;
     elem_RoomLastMessage.textContent = lastMessage;
+  }
+
+  moveRoomToTop(id) {
+    const elem_Room = this.elem_ChatsList.querySelector(`li.chat[data-roomId="${id}"]`);
 
     const roomHTML = elem_Room.outerHTML;
     elem_Room.remove();
@@ -189,7 +193,7 @@ export class Chat {
       at,
       `
         <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
-          <div class="message-box"> 
+          <div class="message-box" data-messageId="${message.id}"> 
             <p class="message-text">${message.content}</p>
             <span class="time-text">${message.sentAt}</span>
           </div>
@@ -198,6 +202,10 @@ export class Chat {
     );
 
     this.scrollToEnd();
+  }
+
+  removeMessage(id) {
+    this.elem_MessageList.querySelector(`div.message-box[data-messageId="${id}"]`).remove();
   }
 
   async getRooms() {
@@ -273,6 +281,33 @@ export class Chat {
       });
 
       this.addMessage(message);
+      this.updateRoom(activeRoom.id);
+      this.moveRoomToTop(activeRoom.id);
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async deleteMessage(id) {
+    const activeRoom = this.getActiveRoom();
+
+    try {
+      const {
+        data: { messageId },
+      } = await axios.delete(`/chat/message/${id}`);
+
+      // Deleting the deleted message from local state.
+      activeRoom.messages.splice(
+        activeRoom.messages.findIndex((message) => message.id === messageId),
+        1
+      );
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        lastMessage: activeRoom.messages.at(0)?.content ?? '',
+      });
+
+      this.removeMessage(messageId);
       this.updateRoom(activeRoom.id);
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');

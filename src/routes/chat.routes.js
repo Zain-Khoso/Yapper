@@ -26,4 +26,7 @@ router.put('/room/unblock', controller.putUnblockChat);
 // POST: Send Message.
 router.post('/message/send', controller.postSendMessage);
 
+// DELETE: Delete Message.
+router.delete('/message/:id', controller.deleteMessage);
+
 module.exports = router;
