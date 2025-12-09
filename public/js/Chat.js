@@ -30,12 +30,14 @@ export class Chat {
     this.rooms = new Map();
     this.activeRoomId = '';
 
-    this.getChatrooms();
+    this.getRooms();
   }
 
   showChatInterface() {
     this.elem_ChatInterface.classList.remove('hidden');
     this.elem_EmptyInterface.classList.add('hidden');
+
+    this.scrollToEnd();
   }
 
   showEmptyInterface() {
@@ -63,63 +65,20 @@ export class Chat {
     this.elem_ChatInterfaceUserInitial.textContent = activeRoom.receiver.pfp;
     this.elem_ChatInterfaceUserDisplayName.textContent = activeRoom.receiver.displayName;
     this.elem_MessageList.innerHTML = '';
-    this.addMessages(activeRoom.messages);
 
-    this.updateBlockState();
+    activeRoom.messages.forEach((message) => this.addMessage(message, 'afterbegin'));
+
+    this.updateRoomBlock();
   }
 
-  async getChatrooms() {
-    try {
-      const { data: chatrooms } = await axios.get('/chat/room/all');
-
-      this.addRooms(chatrooms);
-
-      if (chatrooms.length > 0) this.showChatInterface();
-      else this.showEmptyInterface();
-    } catch (error) {
-      if (error.errors) return showError('Server', error.errors.root);
-
-      this.showEmptyInterface();
-    }
-  }
-
-  addRooms(rooms) {
-    rooms.forEach((room) => {
-      this.rooms.set(room.id, room);
-
-      const {
-        id: roomId,
-        receiver: { pfp, displayName },
-        lastSpoke,
-        lastMessage,
-      } = room;
-
-      this.elem_ChatsList.insertAdjacentHTML(
-        'beforeend',
-        `
-        <li class="chat" data-roomId=${roomId}>
-          <div class="user-icon"> 
-            <span class="user-initial"> ${pfp} </span>
-          </div>
-          
-          <div class="user-content">
-            <div class="title">
-              <span class="highlight"> ${displayName} </span>
-              <span class="last-spoke"> ${lastSpoke} </span>
-            </div>
-            
-            
-            <span class="last-message"> ${lastMessage} </span>
-          </div>
-        </li>
-        `
-      );
+  scrollToEnd() {
+    this.elem_MessageList.scrollTo({
+      top: this.elem_MessageList.scrollHeight,
+      behavior: 'smooth',
     });
-
-    this.setActiveRoom(rooms.at(0).id);
   }
 
-  addRoom(room) {
+  addRoom(room, at = 'afterbegin') {
     if (this.rooms.has(room.id)) return this.setActiveRoom(room.id);
     else this.rooms.set(room.id, room);
 
@@ -131,7 +90,7 @@ export class Chat {
     } = room;
 
     this.elem_ChatsList.insertAdjacentHTML(
-      'afterbegin',
+      at,
       `
       <li class="chat" data-roomId=${roomId}>
         <div class="user-icon"> 
@@ -150,51 +109,29 @@ export class Chat {
       </li>
       `
     );
-
-    this.setActiveRoom(roomId);
   }
 
-  async blockRoom() {
-    let activeRoom = this.getActiveRoom();
+  updateRoom(id) {
+    const {
+      id: roomId,
+      receiver: { pfp, displayName },
+      lastSpoke,
+      lastMessage,
+    } = this.rooms.get(id);
 
-    try {
-      await axios.put('/chat/room/block', {
-        roomId: activeRoom.id,
-        receiverId: activeRoom.receiver.id,
-      });
+    const elem_Room = this.elem_ChatsList.querySelector(`li.chat[data-roomId="${roomId}"]`);
+    const elem_RoomPfp = elem_Room.querySelector('.user-initial');
+    const elem_RoomName = elem_Room.querySelector('.highlight');
+    const elem_RoomLastSpoke = elem_Room.querySelector('.last-spoke');
+    const elem_RoomLastMessage = elem_Room.querySelector('.last-message');
 
-      this.rooms.set(this.activeRoomId, {
-        ...activeRoom,
-        receiver: { ...activeRoom.receiver, isBlocked: true },
-      });
-
-      this.updateBlockState();
-    } catch (response) {
-      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
-    }
+    elem_RoomPfp.textContent = pfp;
+    elem_RoomName.textContent = displayName;
+    elem_RoomLastSpoke.textContent = lastSpoke;
+    elem_RoomLastMessage.textContent = lastMessage;
   }
 
-  async unblockRoom() {
-    let activeRoom = this.getActiveRoom();
-
-    try {
-      await axios.put('/chat/room/unblock', {
-        roomId: activeRoom.id,
-        receiverId: activeRoom.receiver.id,
-      });
-
-      this.rooms.set(this.activeRoomId, {
-        ...activeRoom,
-        receiver: { ...activeRoom.receiver, isBlocked: false },
-      });
-
-      this.updateBlockState();
-    } catch (response) {
-      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
-    }
-  }
-
-  updateBlockState() {
+  updateRoomBlock() {
     const activeRoom = this.rooms.get(this.activeRoomId);
 
     // Showing/Hiding block buttons.
@@ -223,24 +160,99 @@ export class Chat {
     );
   }
 
-  addMessages(messages) {
+  addMessage(message, at = 'beforeend') {
+    this.elem_MessageList.insertAdjacentHTML(
+      at,
+      `
+        <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+          <div class="message-box"> 
+            <p class="message-text">${message.content}</p>
+            <span class="time-text">${message.sentAt}</span>
+          </div>
+        </div>
+      `
+    );
+
+    this.scrollToEnd();
+  }
+
+  async getRooms() {
+    try {
+      const { data: chatrooms } = await axios.get('/chat/room/all');
+
+      chatrooms.forEach((room) => this.addRoom(room, 'beforeend'));
+      this.setActiveRoom(chatrooms.at(0).id);
+
+      if (chatrooms.length > 0) this.showChatInterface();
+      else this.showEmptyInterface();
+    } catch (error) {
+      if (error.errors) return showError('Server', error.errors.root);
+
+      this.showEmptyInterface();
+    }
+  }
+
+  async blockRoom() {
+    let activeRoom = this.getActiveRoom();
+
+    try {
+      await axios.put('/chat/room/block', {
+        roomId: activeRoom.id,
+        receiverId: activeRoom.receiver.id,
+      });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        receiver: { ...activeRoom.receiver, isBlocked: true },
+      });
+
+      this.updateRoomBlock();
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async unblockRoom() {
+    let activeRoom = this.getActiveRoom();
+
+    try {
+      await axios.put('/chat/room/unblock', {
+        roomId: activeRoom.id,
+        receiverId: activeRoom.receiver.id,
+      });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        receiver: { ...activeRoom.receiver, isBlocked: false },
+      });
+
+      this.updateRoomBlock();
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async sendMessage(messageText) {
     const activeRoom = this.getActiveRoom();
 
-    messages.forEach((message) => {
-      const isSender = activeRoom.sender.id === message.senderId;
+    try {
+      const { data: message } = await axios.post('/chat/message/send', {
+        roomId: activeRoom.id,
+        content: messageText,
+      });
 
-      this.elem_MessageList.insertAdjacentHTML(
-        'afterbegin',
-        `
-          <div class="message-wrapper ${isSender ? 'right' : 'left'}"> 
-            <div class="message-box"> 
-              <p class="message-text">Yup, just wrapped it up. Starting on the chat list UI now. </p>
-              <span class="time-text">16:32</span>
-            </div>
-          </div>
-        `
-      );
-    });
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        lastSpoke: message.sentAt,
+        lastMessage: message.content,
+        messages: [message, ...activeRoom.messages],
+      });
+
+      this.addMessage(message);
+      this.updateRoom(activeRoom.id);
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
   }
 }
 

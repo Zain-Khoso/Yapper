@@ -9,7 +9,7 @@ const ChatroomMember = require('../models/chatroomMember.model');
 const Message = require('../models/message.model');
 const getMetadata = require('../utils/metadata');
 const { schema_email } = require('../utils/validations');
-const { formatChatroom } = require('../utils/formatters');
+const { formatChatroom, formatMessage } = require('../utils/formatters');
 
 exports.getChatPage = function (req, res) {
   const metadata = getMetadata({
@@ -53,9 +53,10 @@ exports.getChatrooms = function (req, res, next) {
         },
         {
           model: Message,
-          attributes: ['id', 'isFile', 'content', 'senderId'],
+          attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
           order: [['createdAt', 'DESC']],
-          limit: 20,
+          limit: 100,
+          separate: true,
         },
       ],
     },
@@ -202,4 +203,44 @@ exports.putUnblockChat = function (req, res) {
       res.status(200).json();
     })
     .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
+};
+
+exports.postSendMessage = function (req, res) {
+  const { roomId, content } = req.body;
+  const senderId = req.session.user.id;
+
+  if (roomId.trim() === '') return res.status(400).json();
+  if (content.trim() === '') return res.status(400).json();
+
+  Chatroom.findByPk(roomId, {
+    attributes: ['id'],
+    include: {
+      model: User,
+      attributes: ['id'],
+      through: { attributes: ['isBlocked'] },
+    },
+  })
+    .then((chatroom) => {
+      if (!chatroom) throw new Error();
+
+      const { isBlocked: isSenderBlocked } = chatroom.Users.find(
+        (user) => user.id === senderId
+      ).ChatroomMember;
+      const { isBlocked: isReceiverBlocked } = chatroom.Users.find(
+        (user) => user.id !== senderId
+      ).ChatroomMember;
+
+      if (isSenderBlocked)
+        throw { errors: { root: 'Cannot send message to someone who has block you.' } };
+      if (isReceiverBlocked)
+        throw { errors: { root: 'Cannot send message to someone whom you have blocked.' } };
+
+      return chatroom.createMessage({ content, senderId });
+    })
+    .then((message) => res.status(201).json(formatMessage(message, senderId)))
+    .catch((error) => {
+      console.log(error);
+      if (error?.errors) res.status(400).json(error.errors);
+      else res.status(500).json({ errors: { root: 'Something went wrong.' } });
+    });
 };

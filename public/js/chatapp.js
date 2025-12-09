@@ -42,6 +42,7 @@ const handleAddChatClick = async function () {
     });
 
     App.addRoom(chatroom);
+    App.setActiveRoom(chatroom.id);
   } catch (response) {
     // Extracting Error Information.
     const { errors } = response.response.data;
@@ -69,6 +70,18 @@ const handleWillBeAddedShortly = function () {
   });
 };
 
+const handleMessageSend = async function (event) {
+  event.preventDefault();
+
+  const messageText = App.elem_MessageTextInput.value;
+
+  if (messageText.trim() === '') return;
+
+  App.sendMessage(messageText);
+
+  App.elem_MessageTextInput.value = null;
+};
+
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
@@ -77,3 +90,4 @@ App.elem_BtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnChatDelete.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
+App.elem_MessageForm.addEventListener('submit', handleMessageSend);

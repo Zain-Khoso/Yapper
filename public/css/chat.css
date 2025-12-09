@@ -237,7 +237,7 @@
 }
 
 .chatapp .messages .message-wrapper.left .message-box {
-  align-items: end;
+  align-items: start;
 
   color: var(--color-foreground);
   background-color: var(--color-background-secondary);
@@ -254,7 +254,7 @@
 }
 
 .chatapp .messages .message-wrapper.right .message-box {
-  align-items: start;
+  align-items: end;
 
   color: var(--color-background);
   background-color: var(--color-foreground-secondary);

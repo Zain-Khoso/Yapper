@@ -1,11 +1,11 @@
-const formatUser = function (user) {
+function formatUser(user) {
   return {
     id: user.id,
     pfp: user.displayName.at(0).toUpperCase(),
     displayName: user.displayName,
     isBlocked: user.ChatroomMember.isBlocked,
   };
-};
+}
 
 function formatLastSeen(inputDate) {
   const date = new Date(inputDate);
@@ -42,19 +42,32 @@ function formatLastSeen(inputDate) {
   return `${day}/${month}/${year}`;
 }
 
-exports.formatChatroom = function (chatroom, senderId) {
+function formatMessage(message, senderId) {
+  const createdAt = new Date(message.createdAt);
+
+  return {
+    id: message.id,
+    isSender: senderId === message.senderId,
+    content: message.content,
+    sentAt: `${createdAt.getHours()}:${createdAt.getMinutes()}`,
+  };
+}
+
+function formatChatroom(chatroom, senderId) {
   const sender = formatUser(chatroom.Users.find((user) => user.id === senderId));
   const receiver = formatUser(chatroom.Users.find((user) => user.id !== senderId));
-  const messages = chatroom?.Messages?.map((message) => message.toJSON()) ?? [];
+  const messages = chatroom?.Messages?.map((message) => formatMessage(message, senderId)) ?? [];
 
   const data = {
     id: chatroom.id,
     lastSpoke: formatLastSeen(chatroom.updatedAt),
-    lastMessage: messages.at(0) ?? '',
+    lastMessage: messages.at(0)?.content ?? '',
     sender,
     receiver,
     messages,
   };
 
   return data;
-};
+}
+
+module.exports = { formatChatroom, formatMessage };

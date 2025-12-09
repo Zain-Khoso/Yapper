@@ -23,4 +23,7 @@ router.put('/room/block', controller.putBlockChat);
 // PUT: Unblock Chat.
 router.put('/room/unblock', controller.putUnblockChat);
 
+// POST: Send Message.
+router.post('/message/send', controller.postSendMessage);
+
 module.exports = router;
