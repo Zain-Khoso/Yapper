@@ -1,6 +1,5 @@
 // Lib Imports.
 const validator = require('validator');
-const { Op } = require('sequelize');
 
 // Local Imports.
 const sequelize = require('../utils/database');
@@ -57,7 +56,7 @@ exports.getChatrooms = function (req, res, next) {
           attributes: ['id', 'isFile', 'content', 'createdAt'],
           order: [['createdAt', 'DESC']],
           limit: 1,
-          seperate: true,
+          separate: true,
         },
       ],
     },
@@ -130,7 +129,7 @@ exports.postAddChatroom = function (req, res) {
                   attributes: ['id', 'isFile', 'content', 'createdAt'],
                   order: [['createdAt', 'DESC']],
                   limit: 1,
-                  seperate: true,
+                  separate: true,
                 },
               ],
               transaction: t,
@@ -189,6 +188,7 @@ exports.getChat = function (req, res, next) {
         model: Message,
         attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
         order: [['createdAt', 'DESC']],
+        separate: true,
       },
     ],
   })
@@ -312,7 +312,7 @@ exports.deleteMessage = function (req, res) {
               attributes: ['id', 'isFile', 'content', 'createdAt'],
               order: [['createdAt', 'DESC']],
               limit: 1,
-              seperate: true,
+              separate: true,
             },
             transaction: t,
           });

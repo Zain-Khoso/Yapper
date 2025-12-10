@@ -61,15 +61,14 @@ function formatMessage(message, senderId) {
 function formatChatroom(chatroom, senderId) {
   const sender = formatUser(chatroom?.Users?.find((user) => user.id === senderId) ?? {});
   const receiver = formatUser(chatroom?.Users?.find((user) => user.id !== senderId) ?? {});
-  const messages = chatroom?.Messages?.map((message) => formatMessage(message, senderId)) ?? [];
 
   return {
     id: chatroom.id,
     lastSpoke: formatLastSeen(chatroom.lastMessageAt),
-    lastMessage: messages.at(0)?.content ?? '',
+    lastMessage: chatroom?.Messages?.at(0)?.content ?? '',
     sender,
     receiver,
-    messages,
+    messages: [],
   };
 }
 

@@ -46,28 +46,6 @@ export class Chat {
     document.querySelector('.content-wrapper').classList.add('close');
   }
 
-  getActiveRoom() {
-    return this.rooms.get(this.activeRoomId);
-  }
-
-  setActiveRoom(roomId) {
-    if (roomId === this.activeRoomId) return;
-
-    this.activeRoomId = roomId;
-    const activeRoom = this.getActiveRoom();
-
-    this.elem_ChatsList
-      .querySelectorAll('li.chat')
-      .forEach((elem) =>
-        elem.classList.toggle('active', elem.getAttribute('data-roomId') === activeRoom.id)
-      );
-
-    this.updateChatHeader();
-
-    this.elem_MessageList.innerHTML = '';
-    activeRoom.messages.forEach((message) => this.addMessage(message, 'afterbegin'));
-  }
-
   scrollToEnd() {
     this.elem_MessageList.scrollTo({
       top: this.elem_MessageList.scrollHeight,
@@ -214,6 +192,36 @@ export class Chat {
     return this.getActiveRoom()?.messages?.find((message) => message.id === id)?.isSender ?? false;
   }
 
+  getActiveRoom() {
+    return this.rooms.get(this.activeRoomId);
+  }
+
+  async setActiveRoom(roomId) {
+    if (roomId === this.activeRoomId) return;
+
+    this.activeRoomId = roomId;
+    const activeRoom = this.getActiveRoom();
+
+    const chat = () =>
+      activeRoom.messages.length > 0 ? Promise.resolve() : this.getChat(activeRoom.id);
+
+    this.elem_ChatsList
+      .querySelectorAll('li.chat')
+      .forEach((elem) =>
+        elem.classList.toggle('active', elem.getAttribute('data-roomId') === activeRoom.id)
+      );
+
+    this.updateChatHeader();
+
+    this.elem_MessageList.innerHTML = '';
+
+    await chat();
+
+    this.rooms
+      .get(activeRoom.id)
+      .messages.forEach((message) => this.addMessage(message, 'afterbegin'));
+  }
+
   async getRooms() {
     try {
       const { data: chatrooms } = await axios.get('/chat/room/all');
@@ -221,8 +229,7 @@ export class Chat {
       chatrooms.forEach((room) => this.addRoom(room, 'beforeend'));
 
       if (chatrooms.length > 0) {
-        await this.getChat(chatrooms.at(0).id);
-        this.setActiveRoom(chatrooms.at(0).id);
+        await this.setActiveRoom(chatrooms.at(0).id);
         this.showChatInterface();
       } else this.showEmptyInterface();
     } catch (error) {
