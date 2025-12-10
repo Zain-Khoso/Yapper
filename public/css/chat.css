@@ -201,6 +201,7 @@
 .chatapp .messages .message-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 
   width: 100%;
   min-height: fit-content;
@@ -256,6 +257,9 @@
 
   color: var(--color-foreground);
   background-color: var(--color-background-secondary);
+}
+
+.chatapp .messages .message-wrapper.left .message-box:first-child {
   border-top-left-radius: 0;
 }
 
@@ -273,6 +277,9 @@
 
   color: var(--color-background);
   background-color: var(--color-foreground-secondary);
+}
+
+.chatapp .messages .message-wrapper.right .message-box:first-child {
   border-top-right-radius: 0;
 }
 

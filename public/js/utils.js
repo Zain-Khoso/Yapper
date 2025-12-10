@@ -78,6 +78,26 @@ const closeAllDropdowns = () => {
   document.querySelectorAll('.dropdown-list.show').forEach(closeDropdown);
 };
 
+function formatDateString(date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function isSameDate(one, two) {
+  if (!one || !two) return false;
+
+  if (
+    one.getUTCFullYear() === two.getUTCFullYear() &&
+    one.getUTCMonth() === two.getUTCMonth() &&
+    one.getUTCDate() === two.getUTCDate()
+  )
+    return true;
+  else return false;
+}
+
 // Event Listeners.
 elem_Dropdowns.forEach((dropdown) => {
   const control = dropdown.querySelector('button');

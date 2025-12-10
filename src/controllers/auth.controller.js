@@ -64,7 +64,6 @@ exports.postCreateAccount = function (req, res) {
     .then(() => res.status(201).json({ errors: {} }))
     .catch((errors) => {
       if (!Object.keys(errors).includes('email')) {
-        console.log(errors);
         return res.status(500).json({
           errors: {
             root: 'Something went wrong.',
@@ -129,7 +128,6 @@ exports.postLogin = function (req, res) {
     })
     .catch((errors) => {
       if (!Object.keys(errors).includes('email')) {
-        console.log(errors);
         return res.status(500).json({
           errors: {
             root: 'Something went wrong.',
@@ -146,7 +144,6 @@ exports.postLogin = function (req, res) {
 exports.getLogout = function (req, res) {
   req.session.destroy((error) => {
     if (error) {
-      console.log(error);
       res.status(500).json({ errors: { root: 'Something went wrong' } });
     } else {
       res.status(200).json({ errors: {} });
@@ -158,7 +155,6 @@ exports.getAccountDelete = function (req, res) {
   User.destroy({ where: { email: req.session.user.email } }).then((user) => {
     req.session.destroy((error) => {
       if (error) {
-        console.log(error);
         res.status(500).json({ errors: { root: 'Something went wrong' } });
       } else {
         res.status(200).json({ errors: {} });
@@ -217,7 +213,6 @@ exports.postActionToken = function (req, res) {
     })
     .catch((errors) => {
       if (!Object.keys(errors).includes('email')) {
-        console.log(errors);
         return res.status(500).json({
           errors: {
             root: 'Something went wrong.',
@@ -304,8 +299,6 @@ exports.postChangePassword = function (req, res, next) {
       res.status(202).json({});
     })
     .catch((error) => {
-      console.log(error);
-
       return res.status(500).json({
         errors: {
           root: 'Something went wrong.',
@@ -373,7 +366,6 @@ exports.postChangeEmail = function (req, res) {
     })
     .catch((errors) => {
       if (!Object.keys(errors).includes('newEmail')) {
-        console.log(errors);
         return res.status(500).json({
           errors: {
             root: 'Something went wrong.',
@@ -413,8 +405,6 @@ exports.postChangeDisplayName = function (req, res) {
       res.status(202).json({ errors: {} });
     })
     .catch((errors) => {
-      console.log(errors);
-
       res.status(500).json({
         errors: {
           root: 'Something went wrong.',

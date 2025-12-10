@@ -9,7 +9,7 @@ const ChatroomMember = require('../models/chatroomMember.model');
 const Message = require('../models/message.model');
 const getMetadata = require('../utils/metadata');
 const { schema_email } = require('../utils/validations');
-const { formatChatroom, formatMessage } = require('../utils/formatters');
+const { formatChatroom, formatMessage, formatMessagesList } = require('../utils/formatters');
 
 exports.getChatPage = function (req, res) {
   const metadata = getMetadata({
@@ -65,11 +65,7 @@ exports.getChatrooms = function (req, res, next) {
     .then((user) =>
       res.status(200).json(user.Chatrooms.map((chatroom) => formatChatroom(chatroom, senderId)))
     )
-    .catch((error) => {
-      console.log('\n\n', error);
-
-      next(Error());
-    });
+    .catch((error) => next(Error()));
 };
 
 exports.postAddChatroom = function (req, res) {
@@ -168,7 +164,7 @@ exports.postAddChatroom = function (req, res) {
     });
 };
 
-exports.getChat = function (req, res, next) {
+exports.getChat = function (req, res) {
   const { roomId } = req.params;
   const senderId = req.session.user.id;
 
@@ -195,7 +191,7 @@ exports.getChat = function (req, res, next) {
     .then((chatroom) => {
       if (!chatroom) throw new Error();
 
-      res.status(200).json(chatroom.Messages.map((message) => formatMessage(message, senderId)));
+      res.status(200).json(formatMessagesList(chatroom.Messages, senderId));
     })
     .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };
@@ -332,7 +328,6 @@ exports.deleteMessage = function (req, res) {
     )
     .then((chatroom) => res.status(200).json(formatChatroom(chatroom)))
     .catch((error) => {
-      console.log(error);
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });

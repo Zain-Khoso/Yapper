@@ -45,17 +45,63 @@ function formatLastSeen(inputDate) {
   return `${day}/${month}/${year}`;
 }
 
+function formatDateString(date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 function formatMessage(message, senderId) {
-  const createdAt = new Date(message.createdAt);
+  const createdAt = message.createdAt;
   const sentAt = `${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
 
   return {
     id: message.id,
     isSender: senderId === message.senderId,
     content: message.content,
-    sentAt,
     isFile: message.isFile,
+    sentAt,
+    createdAt,
   };
+}
+
+function formatMessagesList(messages, senderId = '') {
+  if (messages.length === 0) return [];
+  if (senderId === '') throw new Error('senderId is required.');
+
+  const output = [];
+
+  for (let message of messages) {
+    message = formatMessage(message, senderId);
+    const currentCreatedAt = message.createdAt;
+
+    if (output.length === 0) output.push([message]);
+    else {
+      const lastEntry = output.at(-1);
+
+      if (Array.isArray(lastEntry)) {
+        const lastCreatedAt = lastEntry.at(-1).createdAt;
+
+        if (
+          lastCreatedAt.getUTCFullYear() === currentCreatedAt.getUTCFullYear() &&
+          lastCreatedAt.getUTCMonth() === currentCreatedAt.getUTCMonth() &&
+          lastCreatedAt.getUTCDate() === currentCreatedAt.getUTCDate()
+        ) {
+          if (lastEntry.at(-1).isSender === message.isSender) output.at(-1).push(message);
+          else output.push([message]);
+        } else {
+          output.push(formatDateString(lastCreatedAt));
+          output.push([message]);
+        }
+      } else output.push([message]);
+    }
+  }
+
+  if (output.length !== 0) output.push(formatDateString(output.at(-1).at(-1).createdAt));
+
+  return output;
 }
 
 function formatChatroom(chatroom, senderId) {
@@ -72,4 +118,4 @@ function formatChatroom(chatroom, senderId) {
   };
 }
 
-module.exports = { formatChatroom, formatMessage };
+module.exports = { formatChatroom, formatMessage, formatMessagesList };

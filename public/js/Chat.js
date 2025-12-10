@@ -168,18 +168,44 @@ export class Chat {
     );
   }
 
-  addMessage(message, at = 'beforeend') {
+  addDateSeparator(dateString, at = 'beforeend') {
     this.elem_MessageList.insertAdjacentHTML(
       at,
       `
-        <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
-          <div class="message-box" data-messageId="${message.id}"> 
-            <p class="message-text">${message.content}</p>
-            <span class="time-text">${message.sentAt}</span>
-          </div>
+        <div class="message-wrapper center" data-dateString="${dateString}">
+            <span class="date-separator">${dateString}</span>
         </div>
       `
     );
+
+    this.scrollToEnd();
+  }
+
+  addMessage(message, at = 'beforeend') {
+    const elem_LastMessageChild = Array.from(this.elem_MessageList.children).at(
+      at === 'beforeend' ? -1 : 0
+    );
+    const messageBox = `
+      <div class="message-box" data-messageId="${message.id}"> 
+        <p class="message-text">${message.content}</p>
+        <span class="time-text">${message.sentAt}</span>
+      </div>
+    `;
+
+    if (elem_LastMessageChild?.classList?.contains('right') && message?.isSender) {
+      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
+    } else if (elem_LastMessageChild?.classList?.contains('left') && !message?.isSender) {
+      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
+    } else {
+      this.elem_MessageList.insertAdjacentHTML(
+        at,
+        `
+          <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+            ${messageBox}
+          </div>
+        `
+      );
+    }
 
     this.scrollToEnd();
   }
@@ -189,7 +215,11 @@ export class Chat {
   }
 
   canDeleteMessage(id) {
-    return this.getActiveRoom()?.messages?.find((message) => message.id === id)?.isSender ?? false;
+    return (
+      this.getActiveRoom()
+        ?.messages?.flat()
+        ?.find((message) => message.id === id)?.isSender ?? false
+    );
   }
 
   getActiveRoom() {
@@ -217,9 +247,10 @@ export class Chat {
 
     await chat();
 
-    this.rooms
-      .get(activeRoom.id)
-      .messages.forEach((message) => this.addMessage(message, 'afterbegin'));
+    this.rooms.get(activeRoom.id).messages.forEach((entry) => {
+      if (typeof entry === 'string') this.addDateSeparator(entry, 'afterbegin');
+      else entry.forEach((message) => this.addMessage(message, 'afterbegin'));
+    });
   }
 
   async getRooms() {
@@ -305,11 +336,24 @@ export class Chat {
         content: messageText,
       });
 
+      const newMessages = activeRoom?.messages ?? [];
+      const messageCreatedAt = new Date(message.createdAt);
+      const latestMessage = activeRoom?.messages?.at(0)?.at(0) ?? null;
+      const latestMessageCreatedAt = new Date(latestMessage?.createdAt) ?? null;
+
+      if (newMessages.length === 0 || !isSameDate(latestMessageCreatedAt, messageCreatedAt)) {
+        newMessages.unshift(formatDateString(messageCreatedAt));
+        newMessages.unshift([message]);
+        this.addDateSeparator(formatDateString(messageCreatedAt));
+      } else {
+        newMessages.at(0).unshift(message);
+      }
+
       this.rooms.set(this.activeRoomId, {
         ...activeRoom,
         lastSpoke: message.sentAt,
         lastMessage: message.content,
-        messages: [message, ...activeRoom.messages],
+        messages: newMessages,
       });
 
       this.addMessage(message);
@@ -327,15 +371,33 @@ export class Chat {
       const { data: chatroom } = await axios.delete(`/chat/message/${id}`);
 
       // Deleting the deleted message from local state.
-      activeRoom.messages.splice(
-        activeRoom.messages.findIndex((message) => message.id === id),
-        1
-      );
+      const newMessages = activeRoom.messages
+        .map((entry) => {
+          if (typeof entry !== 'string') {
+            entry.splice(
+              entry.findIndex((message) => message.id === id),
+              1
+            );
+          }
+
+          return entry;
+        })
+        .filter((entry) => entry.length > 0)
+        .filter((entry, index, entries) => {
+          if (index === 0 && typeof entry === 'string') return false;
+
+          const lastEntry = entries.at(index - 1);
+
+          if (typeof lastEntry === 'string' && typeof entry === 'string') return false;
+
+          return true;
+        });
 
       this.rooms.set(this.activeRoomId, {
         ...activeRoom,
         lastSpoke: chatroom.lastSpoke,
         lastMessage: chatroom.lastMessage,
+        messages: newMessages,
       });
 
       this.removeMessage(id);
@@ -345,18 +407,3 @@ export class Chat {
     }
   }
 }
-
-`
-  .message-wrapper.center 
-    span.date-separator Today
-  
-  .message-wrapper.left 
-    .message-box 
-      p.message-text Hey! Did you finish the login page?
-      span.time-text 16:32
-       
-  .message-wrapper.right 
-    .message-box 
-      p.message-text Yup, just wrapped it up. Starting on the chat list UI now.
-      span.time-text 16:32 
-`;
