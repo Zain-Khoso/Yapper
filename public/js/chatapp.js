@@ -20,6 +20,9 @@ const handleAddChatClick = async function () {
     input: 'text',
     inputLabel: 'Email',
     inputPlaceholder: 'abc@xyz.com',
+    inputAttributes: {
+      autocomplete: 'off',
+    },
     inputValidator: (value) => {
       if (value.trim() === '') return 'Email is required.';
 
