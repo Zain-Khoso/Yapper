@@ -85,9 +85,9 @@ function formatMessagesList(messages, senderId = '') {
         const lastCreatedAt = lastEntry.at(-1).createdAt;
 
         if (
-          lastCreatedAt.getUTCFullYear() === currentCreatedAt.getUTCFullYear() &&
-          lastCreatedAt.getUTCMonth() === currentCreatedAt.getUTCMonth() &&
-          lastCreatedAt.getUTCDate() === currentCreatedAt.getUTCDate()
+          lastCreatedAt.getFullYear() === currentCreatedAt.getFullYear() &&
+          lastCreatedAt.getMonth() === currentCreatedAt.getMonth() &&
+          lastCreatedAt.getDate() === currentCreatedAt.getDate()
         ) {
           if (lastEntry.at(-1).isSender === message.isSender) output.at(-1).push(message);
           else output.push([message]);

@@ -5,6 +5,9 @@ import { Chat } from './Chat.js';
 
 // Contants.
 const App = new Chat();
+const emoji = new EmojiConvertor();
+emoji.replace_mode = 'unified';
+emoji.allow_native = true;
 
 // Functions.
 const handleAddChatClick = async function () {
@@ -113,6 +116,10 @@ const handleMessageDelete = async function (event) {
   App.deleteMessage(messageId);
 };
 
+const handleMessageTextInput = function ({ target }) {
+  target.value = emoji.replace_colons(target.value);
+};
+
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
@@ -122,3 +129,4 @@ App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);
 App.elem_MessageList.addEventListener('contextmenu', handleMessageDelete);
+App.elem_MessageTextInput.addEventListener('input', handleMessageTextInput);

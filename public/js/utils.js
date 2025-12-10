@@ -90,9 +90,9 @@ function isSameDate(one, two) {
   if (!one || !two) return false;
 
   if (
-    one.getUTCFullYear() === two.getUTCFullYear() &&
-    one.getUTCMonth() === two.getUTCMonth() &&
-    one.getUTCDate() === two.getUTCDate()
+    one.getFullYear() === two.getFullYear() &&
+    one.getMonth() === two.getMonth() &&
+    one.getDate() === two.getDate()
   )
     return true;
   else return false;

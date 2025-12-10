@@ -182,6 +182,8 @@ export class Chat {
   }
 
   addMessage(message, at = 'beforeend') {
+    message.content = Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
+
     const elem_LastMessageChild = Array.from(this.elem_MessageList.children).at(
       at === 'beforeend' ? -1 : 0
     );
@@ -260,12 +262,12 @@ export class Chat {
       chatrooms.forEach((room) => this.addRoom(room, 'beforeend'));
 
       if (chatrooms.length > 0) {
-        await this.setActiveRoom(chatrooms.at(0).id);
         this.showChatInterface();
+        await this.setActiveRoom(chatrooms.at(0).id);
       } else this.showEmptyInterface();
     } catch (error) {
       if (error.errors) return showError('Server', error.errors.root);
-
+      console.log(error);
       this.showEmptyInterface();
     }
   }

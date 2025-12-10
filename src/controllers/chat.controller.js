@@ -1,5 +1,6 @@
 // Lib Imports.
 const validator = require('validator');
+const he = require('he');
 
 // Local Imports.
 const sequelize = require('../utils/database');
@@ -275,7 +276,12 @@ exports.postSendMessage = function (req, res) {
 
           return chatroom.update({ lastMessageAt: new Date() }, { transaction: t });
         })
-        .then((chatroom) => chatroom.createMessage({ content, senderId }, { transaction: t }))
+        .then((chatroom) =>
+          chatroom.createMessage(
+            { content: he.encode(content, { allowUnsafeSymbols: true }), senderId },
+            { transaction: t }
+          )
+        )
     )
     .then((message) => res.status(201).json(formatMessage(message, senderId)))
     .catch((error) => {

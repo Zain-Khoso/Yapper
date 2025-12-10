@@ -267,6 +267,13 @@
   color: var(--color-foreground);
 }
 
+.chatapp .messages .message-wrapper.left .message-box .message-text a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+  color: var(--color-foreground);
+}
+
 .chatapp .messages .message-wrapper.left .message-box .time-text {
   font-size: 0.75rem;
   color: var(--color-foreground);
@@ -284,6 +291,13 @@
 }
 
 .chatapp .messages .message-wrapper.right .message-box .message-text {
+  color: var(--color-background);
+}
+
+.chatapp .messages .message-wrapper.right .message-box .message-text a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
   color: var(--color-background);
 }
 
