@@ -78,7 +78,7 @@ block content
         input#message-file-input(type="file")
         +plus('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
       
-      input.text-input#message-text-input(type="text", placeholder="Type your message...", autocomplete="off")
+      textarea.text-input#message-text-input(placeholder="Type your message...", autocomplete="off", rows=1)
 
       button.send#message-send-btn
         +send('icon', 'fill-background', 'stroke-background')

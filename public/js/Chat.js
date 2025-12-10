@@ -253,6 +253,8 @@ export class Chat {
       if (typeof entry === 'string') this.addDateSeparator(entry, 'afterbegin');
       else entry.forEach((message) => this.addMessage(message, 'afterbegin'));
     });
+
+    this.elem_MessageTextInput.focus();
   }
 
   async getRooms() {

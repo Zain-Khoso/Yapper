@@ -78,7 +78,7 @@ const handleWillBeAddedShortly = function () {
 };
 
 const handleMessageSend = async function (event) {
-  event.preventDefault();
+  event?.preventDefault();
 
   const messageText = App.elem_MessageTextInput.value;
 
@@ -120,6 +120,13 @@ const handleMessageTextInput = function ({ target }) {
   target.value = emoji.replace_colons(target.value);
 };
 
+const handleMessageKeydown = function (event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    handleMessageSend();
+  }
+};
+
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
@@ -130,3 +137,4 @@ App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);
 App.elem_MessageList.addEventListener('contextmenu', handleMessageDelete);
 App.elem_MessageTextInput.addEventListener('input', handleMessageTextInput);
+App.elem_MessageTextInput.addEventListener('keydown', handleMessageKeydown);
