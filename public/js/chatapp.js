@@ -62,7 +62,10 @@ const handleAddChatClick = async function () {
 const handleChatChange = function ({ target }) {
   const elem_ChatOption = target.closest('.chat');
 
-  if (elem_ChatOption) App.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
+  if (!elem_ChatOption) return;
+
+  App.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
+  App.elem_AppContent.classList.remove('close');
 };
 
 const handleWillBeAddedShortly = function () {
@@ -134,6 +137,10 @@ App.elem_BtnCallVoice.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
+App.elem_MobileBtnCallVoice.addEventListener('click', handleWillBeAddedShortly);
+App.elem_MobileBtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
+App.elem_MobileBtnChatBlock.addEventListener('click', () => App.blockRoom());
+App.elem_MobileBtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);
 App.elem_MessageList.addEventListener('contextmenu', handleMessageDelete);
 App.elem_MessageTextInput.addEventListener('input', handleMessageTextInput);

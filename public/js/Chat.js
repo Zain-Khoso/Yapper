@@ -1,6 +1,7 @@
 export class Chat {
   constructor() {
     // DOM Selections.
+    this.elem_AppContent = document.getElementById('page-content');
     this.elem_ChatInterface = document.getElementById('chatapp-ui');
     this.elem_EmptyInterface = document.getElementById('chatapp-empty-ui');
 
@@ -14,9 +15,12 @@ export class Chat {
     );
     this.elem_BtnCallVoice = document.getElementById('btn-call-voice');
     this.elem_BtnCallVideo = document.getElementById('btn-call-video');
-    this.elem_BtnChatDelete = document.getElementById('btn-chat-delete');
     this.elem_BtnChatBlock = document.getElementById('btn-chat-block');
     this.elem_BtnChatUnblock = document.getElementById('btn-chat-unblock');
+    this.elem_MobileBtnCallVoice = document.getElementById('mobile-btn-call-voice');
+    this.elem_MobileBtnCallVideo = document.getElementById('mobile-btn-call-video');
+    this.elem_MobileBtnChatBlock = document.getElementById('mobile-btn-chat-block');
+    this.elem_MobileBtnChatUnblock = document.getElementById('mobile-btn-chat-unblock');
 
     this.elem_MessageList = this.elem_ChatInterface.querySelector('.messages');
 
@@ -49,7 +53,6 @@ export class Chat {
   scrollToEnd() {
     this.elem_MessageList.scrollTo({
       top: this.elem_MessageList.scrollHeight,
-      behavior: 'smooth',
     });
   }
 
@@ -129,11 +132,16 @@ export class Chat {
     // Showing/Hiding controls.
     this.elem_BtnCallVoice.classList.toggle('hidden', isDeleted || isBlocked);
     this.elem_BtnCallVideo.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileBtnCallVoice.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileBtnCallVideo.classList.toggle('hidden', isDeleted || isBlocked);
 
     this.elem_BtnChatBlock.closest('.dropdown').classList.toggle('hidden', isDeleted);
+    this.elem_MobileBtnChatBlock.closest('.dropdown').classList.toggle('hidden', isDeleted);
 
     this.elem_BtnChatBlock.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileBtnChatBlock.classList.toggle('hidden', isDeleted || isBlocked);
     this.elem_BtnChatUnblock.classList.toggle('hidden', isDeleted || !isBlocked);
+    this.elem_MobileBtnChatUnblock.classList.toggle('hidden', isDeleted || !isBlocked);
 
     this.updateMessageForm();
   }

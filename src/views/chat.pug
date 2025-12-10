@@ -59,17 +59,21 @@ block content
           +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
 
         .dropdown-list.right 
-          button.dropdown-item 
+          button#mobile-btn-call-voice.dropdown-item 
             +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
             span.label Voice Call
           
-          button.dropdown-item 
+          button#mobile-btn-call-video.dropdown-item 
             +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
             span.label Video Call
 
-          button.dropdown-item 
+          button#mobile-btn-chat-block.dropdown-item 
             +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
             span.label Block Chat 
+          
+          button#mobile-btn-chat-unblock.dropdown-item 
+            +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+            span.label Unblock Chat 
 
     section.messages
 
