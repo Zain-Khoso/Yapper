@@ -152,11 +152,10 @@ export class Chat {
     this.elem_BtnCallVoice.classList.toggle('hidden', isDeleted || isBlocked);
     this.elem_BtnCallVideo.classList.toggle('hidden', isDeleted || isBlocked);
 
-    this.elem_BtnChatDelete.closest('.dropdown').classList.toggle('hidden', isDeleted);
+    this.elem_BtnChatBlock.closest('.dropdown').classList.toggle('hidden', isDeleted);
 
     this.elem_BtnChatBlock.classList.toggle('hidden', isDeleted || isBlocked);
     this.elem_BtnChatUnblock.classList.toggle('hidden', isDeleted || !isBlocked);
-    this.elem_BtnChatDelete.classList.toggle('hidden', isDeleted);
 
     this.updateMessageForm();
   }
@@ -213,10 +212,6 @@ export class Chat {
 
   canDeleteMessage(id) {
     return this.getActiveRoom()?.messages?.find((message) => message.id === id)?.isSender ?? false;
-  }
-
-  canDeleteChat() {
-    return (this.getActiveRoom()?.messages?.length ?? 0) > 0;
   }
 
   async getRooms() {
@@ -289,28 +284,6 @@ export class Chat {
       });
 
       this.updateChatHeader();
-    } catch (response) {
-      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
-    }
-  }
-
-  async deleteChat() {
-    const activeRoom = this.getActiveRoom();
-
-    try {
-      await axios.put(`/chat/delete`, {
-        roomId: this.activeRoomId,
-      });
-
-      this.rooms.set(this.activeRoomId, {
-        ...activeRoom,
-        lastMessage: '',
-        lastSpoke: '',
-        messages: [],
-      });
-
-      this.elem_MessageList.innerHTML = '';
-      this.updateRoom(activeRoom.id);
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
     }

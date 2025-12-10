@@ -84,6 +84,6 @@ Message.belongsTo(User, {
 
 // Running the server.
 sequelize
-  .sync({ force: false })
+  .sync({ force: true })
   .then(() => app.listen(process.env.PORT))
   .catch((error) => console.log(error));

@@ -110,34 +110,11 @@ const handleMessageDelete = async function (event) {
   App.deleteMessage(messageId);
 };
 
-const handleDeleteChat = async function () {
-  if (!App.canDeleteChat()) return;
-
-  const confirmation = await Swal.fire({
-    icon: 'question',
-    iconColor: 'var(--color-foreground)',
-    title: 'Delete Chat?',
-    theme: getTheme(),
-    showCancelButton: true,
-    confirmButtonText: 'DELETE',
-    cancelButtonText: 'CANCEL',
-    customClass: {
-      confirmButton: 'btn danger',
-      cancelButton: 'btn primary',
-    },
-  });
-
-  if (!confirmation.isConfirmed) return;
-
-  App.deleteChat();
-};
-
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
 App.elem_BtnCallVoice.addEventListener('click', handleWillBeAddedShortly);
 App.elem_BtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
-App.elem_BtnChatDelete.addEventListener('click', handleDeleteChat);
 App.elem_BtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_BtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);

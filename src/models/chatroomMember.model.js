@@ -34,11 +34,6 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-
-  messagesDeletedAt: {
-    type: DataTypes.DATE,
-    defaultValue: () => new Date(Date.now()),
-  },
 });
 
 module.exports = ChatroomMember;

@@ -157,34 +157,31 @@ exports.getChat = function (req, res, next) {
   const { roomId } = req.params;
   const senderId = req.session.user.id;
 
-  User.findByPk(senderId, {
+  Chatroom.findOne({
     attributes: ['id'],
-    include: {
-      model: Chatroom,
-      where: {
-        id: roomId,
-      },
-      attributes: ['id'],
-      through: { attributes: ['id', 'messagesDeletedAt'] },
-    },
-  })
-    .then((user) => {
-      if (!user || user.Chatrooms.length === 0) throw new Error();
-
-      return user.Chatrooms.at(0).getMessages({
-        attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
+    where: { id: roomId },
+    include: [
+      {
+        model: User,
         where: {
-          createdAt: {
-            [Op.gt]: user.Chatrooms.at(0).ChatroomMember.messagesDeletedAt,
-          },
+          id: senderId,
         },
+        attributes: ['id'],
+        through: { attributes: [] },
+      },
+      {
+        model: Message,
+        attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
         order: [['createdAt', 'DESC']],
-      });
+      },
+    ],
+  })
+    .then((chatroom) => {
+      if (!chatroom) throw new Error();
+
+      res.status(200).json(chatroom.Messages.map((message) => formatMessage(message, senderId)));
     })
-    .then((messages) =>
-      res.status(200).json(messages.map((message) => formatMessage(message, senderId)))
-    )
-    .catch((error) => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
+    .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };
 
 exports.putBlockChat = function (req, res) {
@@ -229,31 +226,6 @@ exports.putUnblockChat = function (req, res) {
       res.status(200).json();
     })
     .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
-};
-
-exports.putDeleteChat = function (req, res) {
-  const { roomId } = req.body;
-  const senderId = req.session.user.id;
-
-  if (!roomId) res.status(400).json({ errors: { root: 'Something went wrong' } });
-
-  ChatroomMember.update(
-    { messagesDeletedAt: new Date() },
-    {
-      where: {
-        ChatroomId: roomId,
-        UserId: senderId,
-      },
-    }
-  )
-    .then((rowsUpdated) => {
-      if (rowsUpdated?.at(0) !== 1) throw new Error();
-
-      res.status(200).json();
-    })
-    .catch(() => {
-      res.status(500).json({ errors: { root: 'Something went wrong.' } });
-    });
 };
 
 exports.postSendMessage = function (req, res) {

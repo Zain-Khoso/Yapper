@@ -43,11 +43,7 @@ block content
           button.icon-btn 
             +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
 
-          .dropdown-list.right 
-            button.dropdown-item#btn-chat-delete
-              +delete('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-              span.label Delete Chat
-
+          .dropdown-list.right
             button.dropdown-item#btn-chat-block
               +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
               span.label Block Chat 
@@ -68,10 +64,6 @@ block content
           button.dropdown-item 
             +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
             span.label Video Call
-
-          button.dropdown-item 
-            +delete('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            span.label Delete Chat
 
           button.dropdown-item 
             +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
