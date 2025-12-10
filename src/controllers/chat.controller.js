@@ -52,6 +52,13 @@ exports.getChatrooms = function (req, res, next) {
           attributes: ['id', 'displayName'],
           through: { attributes: ['id', 'isBlocked'] },
         },
+        {
+          model: Message,
+          attributes: ['id', 'isFile', 'content', 'createdAt'],
+          order: [['createdAt', 'DESC']],
+          limit: 1,
+          seperate: true,
+        },
       ],
     },
     order: [[Chatroom, 'lastMessageAt', 'DESC']],
@@ -108,15 +115,24 @@ exports.postAddChatroom = function (req, res) {
           return Promise.all([
             receiver,
             Chatroom.findAll({
-              attributes: ['id', 'updatedAt'],
-              include: {
-                model: User,
-                where: {
-                  id: [receiver.id, session.user.id],
+              attributes: ['id', 'lastMessageAt'],
+              include: [
+                {
+                  model: User,
+                  where: {
+                    id: [receiver.id, session.user.id],
+                  },
+                  attributes: ['id', 'displayName'],
+                  through: { attributes: ['id', 'isBlocked'] },
                 },
-                attributes: ['id', 'displayName'],
-                through: { attributes: ['id', 'isBlocked'] },
-              },
+                {
+                  model: Message,
+                  attributes: ['id', 'isFile', 'content', 'createdAt'],
+                  order: [['createdAt', 'DESC']],
+                  limit: 1,
+                  seperate: true,
+                },
+              ],
               transaction: t,
             }),
           ]);
@@ -278,16 +294,45 @@ exports.deleteMessage = function (req, res) {
 
   sequelize
     .transaction((t) =>
-      Message.findByPk(messageId, { transaction: t }).then((message) => {
-        if (!message) throw new Error();
+      Message.findByPk(messageId, { transaction: t })
+        .then((message) => {
+          if (!message) throw new Error();
 
-        if (senderId !== message.senderId) throw new Error();
+          if (senderId !== message.senderId) throw new Error();
 
-        return message.destroy({ transaction: t });
-      })
+          return message.destroy({ transaction: t });
+        })
+        .then((message) => {
+          if (!message) throw new Error();
+
+          return Chatroom.findByPk(message.roomId, {
+            attributes: ['id', 'lastMessageAt', 'createdAt'],
+            include: {
+              model: Message,
+              attributes: ['id', 'isFile', 'content', 'createdAt'],
+              order: [['createdAt', 'DESC']],
+              limit: 1,
+              seperate: true,
+            },
+            transaction: t,
+          });
+        })
+        .then((chatroom) => {
+          if (!chatroom) throw new Error();
+
+          const lastMessage = chatroom?.Messages?.at(0);
+
+          return chatroom.update(
+            {
+              lastMessageAt: lastMessage ? lastMessage.createdAt : chatroom.createdAt,
+            },
+            { transaction: t }
+          );
+        })
     )
-    .then((message) => res.status(200).json({ messageId: message.id }))
+    .then((chatroom) => res.status(200).json(formatChatroom(chatroom)))
     .catch((error) => {
+      console.log(error);
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });

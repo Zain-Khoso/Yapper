@@ -47,24 +47,23 @@ function formatLastSeen(inputDate) {
 
 function formatMessage(message, senderId) {
   const createdAt = new Date(message.createdAt);
-  const sentAt = `${
-    createdAt.getHours() > 9 ? createdAt.getHours() : '0' + createdAt.getHours()
-  }:${createdAt.getMinutes() > 9 ? createdAt.getMinutes() : '0' + createdAt.getMinutes()}`;
+  const sentAt = `${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
 
   return {
     id: message.id,
     isSender: senderId === message.senderId,
     content: message.content,
     sentAt,
+    isFile: message.isFile,
   };
 }
 
 function formatChatroom(chatroom, senderId) {
-  const sender = formatUser(chatroom.Users.find((user) => user.id === senderId) ?? {});
-  const receiver = formatUser(chatroom.Users.find((user) => user.id !== senderId) ?? {});
+  const sender = formatUser(chatroom?.Users?.find((user) => user.id === senderId) ?? {});
+  const receiver = formatUser(chatroom?.Users?.find((user) => user.id !== senderId) ?? {});
   const messages = chatroom?.Messages?.map((message) => formatMessage(message, senderId)) ?? [];
 
-  const data = {
+  return {
     id: chatroom.id,
     lastSpoke: formatLastSeen(chatroom.lastMessageAt),
     lastMessage: messages.at(0)?.content ?? '',
@@ -72,8 +71,6 @@ function formatChatroom(chatroom, senderId) {
     receiver,
     messages,
   };
-
-  return data;
 }
 
 module.exports = { formatChatroom, formatMessage };

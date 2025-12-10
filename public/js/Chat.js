@@ -317,22 +317,21 @@ export class Chat {
     const activeRoom = this.getActiveRoom();
 
     try {
-      const {
-        data: { messageId },
-      } = await axios.delete(`/chat/message/${id}`);
+      const { data: chatroom } = await axios.delete(`/chat/message/${id}`);
 
       // Deleting the deleted message from local state.
       activeRoom.messages.splice(
-        activeRoom.messages.findIndex((message) => message.id === messageId),
+        activeRoom.messages.findIndex((message) => message.id === id),
         1
       );
 
       this.rooms.set(this.activeRoomId, {
         ...activeRoom,
-        lastMessage: activeRoom.messages.at(0)?.content ?? '',
+        lastSpoke: chatroom.lastSpoke,
+        lastMessage: chatroom.lastMessage,
       });
 
-      this.removeMessage(messageId);
+      this.removeMessage(id);
       this.updateRoom(activeRoom.id);
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
