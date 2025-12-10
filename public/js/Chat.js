@@ -141,6 +141,9 @@ export class Chat {
       receiver: { pfp, displayName, isBlocked, isDeleted },
     } = this.getActiveRoom();
 
+    // Updating Document Title.
+    document.title = `${displayName} | Yapper`;
+
     // Update Header Copy.
     this.elem_ChatInterfaceUserInitial.textContent = pfp;
     this.elem_ChatInterfaceUserDisplayName.textContent = displayName;

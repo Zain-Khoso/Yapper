@@ -47,9 +47,9 @@ function formatLastSeen(inputDate) {
 
 function formatMessage(message, senderId) {
   const createdAt = new Date(message.createdAt);
-  const sentAt = `${createdAt.getHours()}:${
-    createdAt.getMinutes() > 9 ? createdAt.getMinutes() : '0' + createdAt.getMinutes()
-  }`;
+  const sentAt = `${
+    createdAt.getHours() > 9 ? createdAt.getHours() : '0' + createdAt.getHours()
+  }:${createdAt.getMinutes() > 9 ? createdAt.getMinutes() : '0' + createdAt.getMinutes()}`;
 
   return {
     id: message.id,
