@@ -6,7 +6,7 @@ mixin entry(id, label, placeholder, variant="default", type="text")
     label.label(for=id) #{label}
     
     label.input-wrapper
-      input(type=type, id=id, placeholder=placeholder)
+      input(type=type, id=id, placeholder=placeholder, autocomplete="off")
       
       if variant === 'password' 
         button.password-visibility-btn 
