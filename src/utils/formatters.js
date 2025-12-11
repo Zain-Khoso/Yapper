@@ -5,6 +5,7 @@ function formatUser(user) {
     id: isDeleted ? '' : user.id,
     pfp: isDeleted ? 'Y' : user?.displayName?.at(0)?.toUpperCase(),
     displayName: isDeleted ? 'Yapper User' : user.displayName,
+    lastReadAt: user?.ChatroomMember?.lastReadAt,
     isBlocked: user?.ChatroomMember?.isBlocked === true ? true : false,
     isDeleted,
   };
@@ -112,9 +113,10 @@ function formatChatroom(chatroom, senderId) {
     id: chatroom.id,
     lastSpoke: formatLastSeen(chatroom.lastMessageAt),
     lastMessage: chatroom?.Messages?.at(0)?.content ?? '',
+    unreadCount: chatroom?.unreadCount ?? 0,
+    messages: [],
     sender,
     receiver,
-    messages: [],
   };
 }
 

@@ -37,12 +37,37 @@
   font-size: 0.75rem;
 }
 
-.chats-list .chat .user-content .last-message {
+.chats-list .chat .user-content .subtitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem;
+
+  overflow-x: hidden;
+}
+
+.chats-list .chat .user-content .subtitle .last-message {
   font-size: 0.75rem;
   color: var(--color-foreground-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.chats-list .chat .user-content .subtitle .new-message-count {
+  display: none;
+  place-items: center;
+
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-background);
+  background-color: var(--color-foreground-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 50%;
+}
+
+.chats-list .chat.unread .user-content .subtitle .new-message-count {
+  display: grid;
 }
 
 .chatapp {

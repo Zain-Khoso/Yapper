@@ -65,12 +65,13 @@ export class Chat {
       receiver: { pfp, displayName },
       lastSpoke,
       lastMessage,
+      unreadCount,
     } = room;
 
     this.elem_ChatsList.insertAdjacentHTML(
       at,
       `
-      <li class="chat" data-roomId=${roomId}>
+      <li class="chat ${unreadCount === 0 ? '' : 'unread'}" data-roomId=${roomId}>
         <div class="user-icon"> 
           <span class="user-initial"> ${pfp} </span>
         </div>
@@ -82,7 +83,10 @@ export class Chat {
           </div>
           
           
-          <span class="last-message"> ${lastMessage} </span>
+          <div class="subtitle">
+            <span class="last-message"> ${lastMessage} </span>
+            <span class="new-message-count"> ${unreadCount > 99 ? '99+' : unreadCount} </span>
+          </div>
         </div>
       </li>
       `
@@ -263,6 +267,8 @@ export class Chat {
     });
 
     this.elem_MessageTextInput.focus();
+
+    this.setLastRead();
   }
 
   async getRooms() {
@@ -296,6 +302,37 @@ export class Chat {
       if (error.errors) return showError('Server', error.errors.root);
 
       this.showEmptyInterface();
+    }
+  }
+
+  async setLastRead() {
+    const activeRoom = this.getActiveRoom();
+
+    if (
+      activeRoom.messages.length === 0 ||
+      new Date(activeRoom.sender.lastReadAt) >= new Date(activeRoom.messages.at(0).at(0).createdAt)
+    )
+      return;
+
+    try {
+      const newLastReadAt = activeRoom.messages.at(0)?.at(0).createdAt;
+
+      await axios.put('/chat/room/read-receipt', {
+        roomId: activeRoom.id,
+        lastReadAt: newLastReadAt,
+      });
+
+      this.rooms.set(activeRoom.id, {
+        ...activeRoom,
+        sender: { ...activeRoom.sender, lastReadAt: newLastReadAt },
+        unreadCount: 0,
+      });
+
+      this.elem_ChatsList
+        .querySelector(`.chat[data-roomId="${activeRoom.id}"]`)
+        .classList.remove('unread');
+    } catch (error) {
+      console.log(error);
     }
   }
 

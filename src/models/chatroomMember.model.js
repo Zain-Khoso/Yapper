@@ -34,6 +34,11 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+
+  lastReadAt: {
+    type: DataTypes.DATE,
+    defaultValue: () => new Date(),
+  },
 });
 
 module.exports = ChatroomMember;

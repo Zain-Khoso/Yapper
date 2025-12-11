@@ -82,6 +82,15 @@ Message.belongsTo(User, {
   onDelete: 'SET NULL',
 });
 
+ChatroomMember.hasMany(Message, {
+  foreignKey: 'chatroomMemberId',
+  onDelete: 'SET NULL',
+});
+Message.belongsTo(ChatroomMember, {
+  foreignKey: 'chatroomMemberId',
+  onDelete: 'SET NULL',
+});
+
 // Running the server.
 sequelize
   .sync({ force: false })

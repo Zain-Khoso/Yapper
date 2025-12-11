@@ -1,6 +1,7 @@
 // Lib Imports.
 const validator = require('validator');
 const he = require('he');
+const { Op, col, fn, where } = require('sequelize');
 
 // Local Imports.
 const sequelize = require('../utils/database');
@@ -50,7 +51,7 @@ exports.getChatrooms = function (req, res, next) {
         {
           model: User,
           attributes: ['id', 'displayName'],
-          through: { attributes: ['id', 'isBlocked'] },
+          through: { attributes: ['id', 'isBlocked', 'lastReadAt'] },
         },
         {
           model: Message,
@@ -63,10 +64,52 @@ exports.getChatrooms = function (req, res, next) {
     },
     order: [[Chatroom, 'lastMessageAt', 'DESC']],
   })
-    .then((user) =>
-      res.status(200).json(user.Chatrooms.map((chatroom) => formatChatroom(chatroom, senderId)))
-    )
-    .catch((error) => next(Error()));
+    .then((user) => {
+      const chatroomIds = user.Chatrooms.map((chatroom) => chatroom.id);
+
+      return Promise.all([
+        user,
+        Chatroom.findAll({
+          attributes: ['id', [fn('COUNT', col('Messages.id')), 'unreadCount']],
+          where: { id: chatroomIds },
+          include: [
+            {
+              model: User,
+              attributes: [],
+              through: {
+                model: ChatroomMember,
+                attributes: ['lastReadAt'],
+              },
+              where: { id: senderId },
+              required: true,
+            },
+            {
+              model: Message,
+              attributes: [],
+              where: where(col('Messages.createdAt'), '>', col('Users.ChatroomMember.lastReadAt')),
+              required: false,
+            },
+          ],
+          group: ['Chatroom.id', 'Users.ChatroomMember.lastReadAt'],
+          raw: true,
+        }),
+      ]);
+    })
+    .then(([user, unreadCounts]) => {
+      const unreadMap = new Map();
+      unreadCounts.forEach((unread) => unreadMap.set(unread.id, unread.unreadCount));
+
+      const chatrooms = user.Chatrooms.map((chatroom) => {
+        chatroom.unreadCount = unreadMap.get(chatroom.id);
+
+        return formatChatroom(chatroom, senderId);
+      });
+
+      res.status(200).json(chatrooms);
+    })
+    .catch((error) => {
+      next(Error(error));
+    });
 };
 
 exports.postAddChatroom = function (req, res) {
@@ -119,7 +162,7 @@ exports.postAddChatroom = function (req, res) {
                     id: [receiver.id, session.user.id],
                   },
                   attributes: ['id', 'displayName'],
-                  through: { attributes: ['id', 'isBlocked'] },
+                  through: { attributes: ['id', 'isBlocked', 'lastReadAt'] },
                 },
                 {
                   model: Message,
@@ -149,7 +192,7 @@ exports.postAddChatroom = function (req, res) {
             include: {
               model: User,
               attributes: ['id', 'displayName'],
-              through: { attributes: ['id', 'isBlocked'] },
+              through: { attributes: ['id', 'isBlocked', 'lastReadAt'] },
             },
             transaction: t,
           })
@@ -255,7 +298,7 @@ exports.postSendMessage = function (req, res) {
         include: {
           model: User,
           attributes: ['id'],
-          through: { attributes: ['isBlocked'] },
+          through: { attributes: ['id', 'isBlocked', 'lastReadAt'] },
         },
         transaction: t,
       })
@@ -277,14 +320,25 @@ exports.postSendMessage = function (req, res) {
           return chatroom.update({ lastMessageAt: new Date() }, { transaction: t });
         })
         .then((chatroom) =>
-          chatroom.createMessage(
-            { content: he.encode(content, { allowUnsafeSymbols: true }), senderId },
-            { transaction: t }
-          )
+          Promise.all([
+            chatroom.createMessage(
+              {
+                content: he.encode(content, { allowUnsafeSymbols: true }),
+                senderId,
+                chatroomMemberId: chatroom.Users.find((u) => u.id === senderId).ChatroomMember.id,
+              },
+              { transaction: t }
+            ),
+            ChatroomMember.update(
+              { lastReadAt: new Date() },
+              { where: { ChatroomId: roomId, UserId: senderId }, transaction: t }
+            ),
+          ])
         )
     )
-    .then((message) => res.status(201).json(formatMessage(message, senderId)))
+    .then(([message]) => res.status(201).json(formatMessage(message, senderId)))
     .catch((error) => {
+      console.log(error);
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });
@@ -337,4 +391,29 @@ exports.deleteMessage = function (req, res) {
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
     });
+};
+
+exports.putUpdateReadReceipt = function (req, res) {
+  const { roomId, lastReadAt } = req.body;
+
+  ChatroomMember.update(
+    {
+      lastReadAt,
+    },
+    {
+      where: {
+        ChatroomId: roomId,
+        UserId: req.session.user.id,
+        lastReadAt: {
+          [Op.lt]: lastReadAt,
+        },
+      },
+    }
+  )
+    .then((chatroomMembers) => {
+      if (chatroomMembers.at(0) !== 1) throw new Error();
+
+      res.status(200).json();
+    })
+    .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
 };
