@@ -20,6 +20,7 @@
   },
   "packageManager": "pnpm@10.25.0",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
     "connect-session-sequelize": "^8.0.4",
     "dotenv": "^17.2.3",

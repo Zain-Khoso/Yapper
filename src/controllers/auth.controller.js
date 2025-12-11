@@ -5,11 +5,15 @@ const { randomBytes } = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
+const sendGrid = require('@sendgrid/mail');
 
 // Local Imports.
 const getMetadata = require('../utils/metadata');
 const User = require('../models/user.model');
 const { schema_email, schema_displayName, schema_password } = require('../utils/validations');
+
+// Configs.
+sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.getCreateAccountPage = function (req, res) {
   const metadata = getMetadata({
@@ -204,11 +208,22 @@ exports.postActionToken = function (req, res) {
       if (response.at(0) <= 0) return Promise.reject({ email: 'Invalid email.' });
 
       if (sendEmail) {
-        // Send an actual email.
-
         console.log('\n\n\tRedirect To: ' + redirectTo + '\n\n');
-
         res.status(202).json({});
+
+        return sendGrid
+          .send({
+            to: email,
+            from: 'zain.khoso.dev@gmail.com',
+            subject: 'Yapper Account Password Reset',
+            text: `To reset your password on Yapper. Follow this link: https://yapper.site${redirectTo}`,
+            html: `
+            <p>
+              To reset your password on Yapper. Follow this link: <a href="https://yapper.site${redirectTo}">https://yapper.site${redirectTo}</a>
+            </p>
+          `,
+          })
+          .then(() => console.log('Email Sent'));
       } else res.status(202).json({ redirectTo: `/change-password/${actionToken}` });
     })
     .catch((errors) => {
