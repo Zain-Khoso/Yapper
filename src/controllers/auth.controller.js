@@ -201,30 +201,29 @@ exports.postActionToken = function (req, res) {
 
   const actionToken = randomBytes(16).toString('hex');
   const actionTokenExpires = new Date(Date.now() + 1000 * 60 * 5);
-  const redirectTo = `/change-password/${actionToken}`;
+  const isProd = req.app.get('env') === 'production';
+
+  const redirectTo = `${isProd ? 'https' : 'http'}://${req.hostname}${isProd ? '' : ':' + process.env.PORT}/change-password/${actionToken}`;
 
   User.update({ actionToken, actionTokenExpires }, { where: { email } })
     .then((response) => {
       if (response.at(0) <= 0) return Promise.reject({ email: 'Invalid email.' });
 
       if (sendEmail) {
-        console.log('\n\n\tRedirect To: ' + redirectTo + '\n\n');
-        res.status(202).json({});
+        res.status(202).json();
 
-        return sendGrid
-          .send({
-            to: email,
-            from: 'zain.khoso.dev@gmail.com',
-            subject: 'Yapper Account Password Reset',
-            text: `To reset your password on Yapper. Follow this link: https://yapper.site${redirectTo}`,
-            html: `
+        return sendGrid.send({
+          to: email,
+          from: process.env.YAPPER_EMAIL,
+          subject: 'Yapper Account Password Reset',
+          text: `To reset your password on Yapper. Follow this link: ${redirectTo}`,
+          html: `
             <p>
-              To reset your password on Yapper. Follow this link: <a href="https://yapper.site${redirectTo}">https://yapper.site${redirectTo}</a>
+              To reset your password on Yapper. Follow this link: <a href="${redirectTo}">${redirectTo}</a>
             </p>
           `,
-          })
-          .then(() => console.log('Email Sent'));
-      } else res.status(202).json({ redirectTo: `/change-password/${actionToken}` });
+        });
+      } else res.status(202).json({ redirectTo });
     })
     .catch((errors) => {
       if (!Object.keys(errors).includes('email')) {
