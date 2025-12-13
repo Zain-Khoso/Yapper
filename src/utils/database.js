@@ -2,18 +2,17 @@
 const Sequelize = require('sequelize');
 
 // Environment Variables.
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_HOST = process.env.DATABASE_HOST;
+const DATABASE_PORT = process.env.DATABASE_PORT;
+const DATABASE_USER = process.env.DATABASE_USER;
+const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
+const DATABASE_NAME = process.env.DATABASE_NAME;
 
 // Initializing Sequelize as the ORM for MySQL Database.
-const sequelize = new Sequelize(DATABASE_URL, {
-  dialect: 'postgres',
-
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, {
+  dialect: 'mysql',
+  host: DATABASE_HOST,
+  port: DATABASE_PORT,
   logging: false,
 });
 
