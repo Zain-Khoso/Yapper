@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "seed": "node src/utils/db-seeds.js",
     "dev": "nodemon app.js"
   },
   "keywords": [
