@@ -17,10 +17,6 @@ const authRouter = require('./src/routes/auth.routes');
 const chatRouter = require('./src/routes/chat.routes');
 const settingsRouter = require('./src/routes/settings.routes');
 const { protectFromUnAuthenticatedUsers } = require('./src/utils/middlewares');
-const User = require('./src/models/user.model');
-const Chatroom = require('./src/models/chatroom.model');
-const ChatroomMember = require('./src/models/chatroomMember.model');
-const Message = require('./src/models/message.model');
 
 // Initializing Express.
 const app = express();
@@ -61,35 +57,7 @@ app.use(getNotFoundPage);
 app.use(getServerErrorPage);
 
 // Model Associations.
-User.belongsToMany(Chatroom, { through: ChatroomMember });
-Chatroom.belongsToMany(User, { through: ChatroomMember });
-
-Chatroom.hasMany(Message, {
-  foreignKey: 'roomId',
-  onDelete: 'CASCADE',
-});
-Message.belongsTo(Chatroom, {
-  foreignKey: 'roomId',
-  onDelete: 'CASCADE',
-});
-
-User.hasMany(Message, {
-  foreignKey: 'senderId',
-  onDelete: 'SET NULL',
-});
-Message.belongsTo(User, {
-  foreignKey: 'senderId',
-  onDelete: 'SET NULL',
-});
-
-ChatroomMember.hasMany(Message, {
-  foreignKey: 'chatroomMemberId',
-  onDelete: 'SET NULL',
-});
-Message.belongsTo(ChatroomMember, {
-  foreignKey: 'chatroomMemberId',
-  onDelete: 'SET NULL',
-});
+require('./src/utils/associations');
 
 // Running the server.
 sequelize
