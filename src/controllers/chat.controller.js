@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const validator = require('validator');
 const he = require('he');
 const { Op, col, fn, where } = require('sequelize');
-const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // Local Imports.
@@ -383,32 +383,46 @@ exports.deleteMessage = function (req, res) {
         .then((message) => {
           if (!message) throw new Error();
 
-          return Chatroom.findByPk(message.roomId, {
-            attributes: ['id', 'lastMessageAt', 'createdAt'],
-            include: {
-              model: Message,
-              attributes: ['id', 'isFile', 'content', 'createdAt'],
-              order: [['createdAt', 'DESC']],
-              limit: 1,
-              separate: true,
-            },
-            transaction: t,
-          });
+          return Promise.all([
+            Chatroom.findByPk(message.roomId, {
+              attributes: ['id', 'lastMessageAt', 'createdAt'],
+              include: {
+                model: Message,
+                attributes: ['id', 'isFile', 'content', 'createdAt'],
+                order: [['createdAt', 'DESC']],
+                limit: 1,
+                separate: true,
+              },
+              transaction: t,
+            }),
+            message,
+          ]);
         })
-        .then((chatroom) => {
+        .then(([chatroom, message]) => {
           if (!chatroom) throw new Error();
 
           const lastMessage = chatroom?.Messages?.at(0);
 
-          return chatroom.update(
-            {
-              lastMessageAt: lastMessage ? lastMessage.createdAt : chatroom.createdAt,
-            },
-            { transaction: t }
-          );
+          return Promise.all([
+            chatroom.update(
+              {
+                lastMessageAt: lastMessage ? lastMessage.createdAt : chatroom.createdAt,
+              },
+              { transaction: t }
+            ),
+            message,
+          ]);
+        })
+        .then(([chatroom, message]) => {
+          const command = new DeleteObjectCommand({
+            Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+            Key: message.content,
+          });
+
+          return Promise.all([chatroom, storage.send(command)]);
         })
     )
-    .then((chatroom) => res.status(200).json(formatChatroom(chatroom)))
+    .then(([chatroom]) => res.status(200).json(formatChatroom(chatroom)))
     .catch((error) => {
       if (error?.errors) res.status(400).json(error.errors);
       else res.status(500).json({ errors: { root: 'Something went wrong.' } });
