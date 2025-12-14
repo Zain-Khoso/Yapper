@@ -299,6 +299,37 @@
   hyphens: auto;
 }
 
+.chatapp .messages .message-wrapper .message-box .file {
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+
+  overflow-x: hidden;
+}
+
+.chatapp .messages .message-wrapper .message-box .file .details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  overflow-x: hidden;
+}
+
+.chatapp .messages .message-wrapper .message-box .file .details .title {
+  width: 100%;
+
+  font-weight: 800;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.chatapp .messages .message-wrapper .message-box .file .details .subtitle {
+  font-size: 14px;
+}
+
 .chatapp .messages .message-wrapper.left .message-box {
   align-items: start;
 
@@ -318,6 +349,14 @@
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.25rem;
+  color: var(--color-foreground);
+}
+
+.chatapp .messages .message-wrapper .message-box .file {
+  color: var(--color-foreground);
+}
+
+.chatapp .messages .message-wrapper.left .message-box .file .details {
   color: var(--color-foreground);
 }
 
@@ -345,6 +384,14 @@
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 0.25rem;
+  color: var(--color-background);
+}
+
+.chatapp .messages .message-wrapper.right .message-box .file {
+  color: var(--color-background);
+}
+
+.chatapp .messages .message-wrapper.right .message-box .file .details {
   color: var(--color-background);
 }
 

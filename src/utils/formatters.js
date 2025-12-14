@@ -54,6 +54,24 @@ function formatDateString(date) {
   });
 }
 
+function formatFileType(type) {
+  let output = type.split('/').at(-1).toUpperCase();
+
+  if (output === 'PLAIN') output = 'TXT';
+
+  return output;
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const formatted = (bytes / Math.pow(1024, i)).toFixed(2);
+
+  return `${formatted} ${sizes[i]}`;
+}
+
 function formatMessage(message, senderId) {
   const createdAt = message.createdAt;
   const sentAt = `${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
@@ -63,6 +81,9 @@ function formatMessage(message, senderId) {
     isSender: senderId === message.senderId,
     content: message.content,
     isFile: message.isFile,
+    fileType: message.isFile ? formatFileType(message.fileType) : null,
+    fileName: message.isFile ? message.fileName : null,
+    fileSize: message.isFile ? formatFileSize(message.fileSize) : null,
     sentAt,
     createdAt,
   };
@@ -108,11 +129,17 @@ function formatMessagesList(messages, senderId = '') {
 function formatChatroom(chatroom, senderId) {
   const sender = formatUser(chatroom?.Users?.find((user) => user.id === senderId) ?? {});
   const receiver = formatUser(chatroom?.Users?.find((user) => user.id !== senderId) ?? {});
+  const lastMessage = chatroom?.Messages?.at(0);
 
   return {
     id: chatroom.id,
     lastSpoke: formatLastSeen(chatroom.lastMessageAt),
-    lastMessage: chatroom?.Messages?.at(0)?.content ?? '',
+    lastMessage:
+      lastMessage === undefined
+        ? ''
+        : lastMessage.isFile
+          ? lastMessage.fileName
+          : lastMessage.content,
     unreadCount: chatroom?.unreadCount ?? 0,
     messages: [],
     sender,

@@ -2,6 +2,10 @@
 const { z } = require('zod');
 const validator = require('validator');
 
+// Constants.
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
 // Field Schemas.
 const schema_email = z
   .email({ error: 'The email you have provided is not valid.' })
@@ -22,4 +26,14 @@ const schema_password = z
       'Password must be 8 characters long with a lowercase, an uppercase, a number and a symbol characters.',
   });
 
-module.exports = { schema_email, schema_displayName, schema_password };
+const schema_file = z.object({
+  type: z.string().refine((type) => ALLOWED_FILE_TYPES.includes(type), { message: 'Invalid File' }),
+  size: z.number().max(MAX_FILE_SIZE, { message: 'Invalid File' }),
+});
+
+module.exports = {
+  schema_email,
+  schema_displayName,
+  schema_password,
+  schema_file,
+};

@@ -1,7 +1,12 @@
+// Node Imports.
+const crypto = require('crypto');
+
 // Lib Imports.
 const validator = require('validator');
 const he = require('he');
 const { Op, col, fn, where } = require('sequelize');
+const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // Local Imports.
 const sequelize = require('../utils/database');
@@ -10,8 +15,9 @@ const Chatroom = require('../models/chatroom.model');
 const ChatroomMember = require('../models/chatroomMember.model');
 const Message = require('../models/message.model');
 const getMetadata = require('../utils/metadata');
-const { schema_email } = require('../utils/validations');
+const { schema_email, schema_file } = require('../utils/validations');
 const { formatChatroom, formatMessage, formatMessagesList } = require('../utils/formatters');
+const storage = require('../utils/storage');
 
 exports.getChatPage = function (req, res) {
   const metadata = getMetadata({
@@ -55,7 +61,7 @@ exports.getChatrooms = function (req, res, next) {
         },
         {
           model: Message,
-          attributes: ['id', 'isFile', 'content', 'createdAt'],
+          attributes: ['id', 'isFile', 'content', 'fileName', 'createdAt'],
           order: [['createdAt', 'DESC']],
           limit: 1,
           separate: true,
@@ -226,7 +232,16 @@ exports.getChat = function (req, res) {
       },
       {
         model: Message,
-        attributes: ['id', 'isFile', 'content', 'senderId', 'createdAt'],
+        attributes: [
+          'id',
+          'isFile',
+          'content',
+          'fileType',
+          'fileName',
+          'fileSize',
+          'senderId',
+          'createdAt',
+        ],
         order: [['createdAt', 'DESC']],
         separate: true,
       },
@@ -237,7 +252,10 @@ exports.getChat = function (req, res) {
 
       res.status(200).json(formatMessagesList(chatroom.Messages, senderId));
     })
-    .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
+    .catch((errors) => {
+      console.log(errors);
+      res.status(500).json({ errors: { root: 'Something went wrong.' } });
+    });
 };
 
 exports.putBlockChat = function (req, res) {
@@ -285,7 +303,7 @@ exports.putUnblockChat = function (req, res) {
 };
 
 exports.postSendMessage = function (req, res) {
-  const { roomId, content } = req.body;
+  const { roomId, content, fileType, fileName, fileSize, isFile } = req.body;
   const senderId = req.session.user.id;
 
   if (roomId.trim() === '') return res.status(400).json();
@@ -325,6 +343,10 @@ exports.postSendMessage = function (req, res) {
               {
                 content: he.encode(content, { allowUnsafeSymbols: true }),
                 senderId,
+                isFile,
+                fileType,
+                fileName,
+                fileSize,
                 chatroomMemberId: chatroom.Users.find((u) => u.id === senderId).ChatroomMember.id,
               },
               { transaction: t }
@@ -416,4 +438,51 @@ exports.putUpdateReadReceipt = function (req, res) {
       res.status(200).json();
     })
     .catch(() => res.status(500).json({ errors: { root: 'Something went wrong.' } }));
+};
+
+exports.postGetFileSignature = function (req, res) {
+  // Extracting Body Data.
+  const { type, size } = req.body;
+
+  // Validating body data.
+  const result_file = schema_file.safeParse({ type, size });
+
+  if (!result_file.success) {
+    return res.status(409).json({
+      errors: {
+        file: result_file?.error?.issues?.at(0)?.message,
+      },
+    });
+  }
+
+  const fileKey = `messages/${crypto.randomUUID()}`;
+  const command = new PutObjectCommand({
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: fileKey,
+    ContentType: type,
+    ContentLength: size,
+  });
+
+  getSignedUrl(storage, command, {
+    expiresIn: 60 * 3,
+  })
+    .then((signedUrl) => res.json({ signedUrl, fileKey }))
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ errors: { root: 'Failed to generate upload URL' } });
+    });
+};
+
+exports.postDownloadFile = function (req, res) {
+  const { fileKey, fileName } = req.body;
+
+  const command = new GetObjectCommand({
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: fileKey,
+    ResponseContentDisposition: `attachment; filename="${fileName}"`,
+  });
+
+  getSignedUrl(storage, command, {
+    expiresIn: 60,
+  }).then((downloadURL) => res.json({ downloadURL }));
 };

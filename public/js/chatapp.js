@@ -5,9 +5,23 @@ import { Chat } from './Chat.js';
 
 // Contants.
 const App = new Chat();
+
 const emoji = new EmojiConvertor();
 emoji.replace_mode = 'unified';
 emoji.allow_native = true;
+
+const ALLOWED_FILE_TYPES = [
+  // Images
+  'image/jpeg',
+  'image/png',
+
+  // PDF
+  'application/pdf',
+
+  // Plain text
+  'text/plain',
+];
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 // Functions.
 const handleAddChatClick = async function () {
@@ -92,6 +106,49 @@ const handleMessageSend = async function (event) {
   App.elem_MessageTextInput.value = null;
 };
 
+const handleFileSend = async function ({ target }) {
+  const file = target.files[0];
+
+  if (!file) return;
+
+  if (file.name.length > 64) {
+    App.elem_MessageFileInput.value = null;
+
+    return showError('File Name', `Name is too long`);
+  }
+
+  if (!ALLOWED_FILE_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE) {
+    App.elem_MessageFileInput.value = null;
+
+    return showError('File', `You can only send images or PDFs of upto 2mb max size.`);
+  }
+
+  try {
+    const {
+      data: { signedUrl, fileKey },
+    } = await axios.post('/chat/file/signature', {
+      type: file.type,
+      size: file.size,
+    });
+
+    await axios.put(signedUrl, file, {
+      headers: {
+        'Content-Type': file.type,
+      },
+    });
+
+    await App.sendMessage(fileKey, true, {
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+    });
+
+    App.elem_MessageFileInput.value = null;
+  } catch (error) {
+    showError('', 'Something went wrong');
+  }
+};
+
 const handleMessageDelete = async function (event) {
   const target = event?.target?.closest('.message-box');
   const messageId = target.getAttribute('data-messageId');
@@ -130,6 +187,17 @@ const handleMessageKeydown = function (event) {
   }
 };
 
+const handleFileDownload = async function (event) {
+  const target = event?.target?.closest('.message-box');
+  const messageId = target.getAttribute('data-messageId');
+
+  if (!target || !App.canDownloadFile(messageId)) return;
+
+  event.preventDefault();
+
+  await App.downloadFile(messageId);
+};
+
 // Event Listeners.
 App.elem_BtnAddChat.addEventListener('click', handleAddChatClick);
 App.elem_ChatsList.addEventListener('click', handleChatChange);
@@ -142,6 +210,8 @@ App.elem_MobileBtnCallVideo.addEventListener('click', handleWillBeAddedShortly);
 App.elem_MobileBtnChatBlock.addEventListener('click', () => App.blockRoom());
 App.elem_MobileBtnChatUnblock.addEventListener('click', () => App.unblockRoom());
 App.elem_MessageForm.addEventListener('submit', handleMessageSend);
+App.elem_MessageList.addEventListener('click', handleFileDownload);
 App.elem_MessageList.addEventListener('contextmenu', handleMessageDelete);
 App.elem_MessageTextInput.addEventListener('input', handleMessageTextInput);
 App.elem_MessageTextInput.addEventListener('keydown', handleMessageKeydown);
+App.elem_MessageFileInput.addEventListener('change', handleFileSend);

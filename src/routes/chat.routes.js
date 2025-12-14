@@ -35,4 +35,10 @@ router.post('/message/send', controller.postSendMessage);
 // DELETE: Delete Message.
 router.delete('/message/:id', controller.deleteMessage);
 
+// POST: Get presigned file upload URLs.
+router.post('/file/signature', controller.postGetFileSignature);
+
+// POST: Download files.
+router.post('/file/download', controller.postDownloadFile);
+
 module.exports = router;

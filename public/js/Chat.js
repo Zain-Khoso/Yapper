@@ -194,12 +194,48 @@ export class Chat {
   }
 
   addMessage(message, at = 'beforeend') {
-    message.content = Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
+    message.content = message.isFile
+      ? message.content
+      : Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
 
     const elem_LastMessageChild = Array.from(this.elem_MessageList.children).at(
       at === 'beforeend' ? -1 : 0
     );
-    const messageBox = `
+
+    let fileIcon = null;
+
+    if (message.fileType) {
+      switch (message.fileType) {
+        case 'PNG':
+          fileIcon = 'photo';
+          break;
+        case 'JPEG':
+          fileIcon = 'photo';
+          break;
+        case 'PDF':
+          fileIcon = 'picture_as_pdf';
+          break;
+        default:
+          fileIcon = 'article';
+          break;
+      }
+    }
+
+    const messageBox = message.isFile
+      ? `
+      <div class="message-box" data-messageId="${message.id}"> 
+        <div class="file">
+          <span class="material-icons">${fileIcon}</span>
+          
+          <div class="details">
+            <span class="title">${message.fileName}</span>
+            <span class="subtitle">${message.fileType} &middot; ${message.fileSize}</span>
+          </div>
+        </div>
+        <span class="time-text">${message.sentAt}</span>
+      </div>
+      `
+      : `
       <div class="message-box" data-messageId="${message.id}"> 
         <p class="message-text">${message.content}</p>
         <span class="time-text">${message.sentAt}</span>
@@ -238,6 +274,12 @@ export class Chat {
 
   getActiveRoom() {
     return this.rooms.get(this.activeRoomId);
+  }
+
+  canDownloadFile(messageId) {
+    return this.getActiveRoom()
+      ?.messages?.flat()
+      ?.find((message) => message.id === messageId)?.isFile;
   }
 
   async setActiveRoom(roomId) {
@@ -283,7 +325,6 @@ export class Chat {
       } else this.showEmptyInterface();
     } catch (error) {
       if (error.errors) return showError('Server', error.errors.root);
-      console.log(error);
       this.showEmptyInterface();
     }
   }
@@ -331,9 +372,7 @@ export class Chat {
       this.elem_ChatsList
         .querySelector(`.chat[data-roomId="${activeRoom.id}"]`)
         .classList.remove('unread');
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async blockRoom() {
@@ -376,13 +415,21 @@ export class Chat {
     }
   }
 
-  async sendMessage(messageText) {
+  async sendMessage(
+    content,
+    isFile = false,
+    { fileName, fileSize, fileType } = { fileName: null, fileSize: null, fileType: null }
+  ) {
     const activeRoom = this.getActiveRoom();
 
     try {
       const { data: message } = await axios.post('/chat/message/send', {
         roomId: activeRoom.id,
-        content: messageText,
+        content,
+        isFile,
+        fileName,
+        fileSize,
+        fileType,
       });
 
       const newMessages = activeRoom?.messages ?? [];
@@ -401,7 +448,7 @@ export class Chat {
       this.rooms.set(this.activeRoomId, {
         ...activeRoom,
         lastSpoke: message.sentAt,
-        lastMessage: message.content,
+        lastMessage: message.isFile ? message.fileName : message.content,
         messages: newMessages,
       });
 
@@ -451,6 +498,30 @@ export class Chat {
 
       this.removeMessage(id);
       this.updateRoom(activeRoom.id);
+    } catch (response) {
+      showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async downloadFile(id) {
+    const activeRoom = this.getActiveRoom();
+    const message = activeRoom.messages.flat().find((message) => message.id === id);
+
+    try {
+      const {
+        data: { downloadURL },
+      } = await axios.post(`/chat/file/download`, {
+        fileKey: message.content,
+        fileName: message.fileName,
+      });
+
+      const elem_TempLink = document.createElement('a');
+      elem_TempLink.setAttribute('href', downloadURL);
+      elem_TempLink.classList.add('hidden');
+
+      document.body.appendChild(elem_TempLink);
+      elem_TempLink.click();
+      elem_TempLink.remove();
     } catch (response) {
       showError('Server', response?.data?.errors?.root ?? 'Something went wrong');
     }

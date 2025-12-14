@@ -17,6 +17,21 @@ const Message = sequelize.define('Message', {
     defaultValue: false,
   },
 
+  fileType: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+
+  fileName: {
+    type: DataTypes.STRING(64),
+    allowNull: true,
+  },
+
+  fileSize: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
   content: {
     type: DataTypes.TEXT,
     allowNull: false,
