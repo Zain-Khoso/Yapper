@@ -23,7 +23,7 @@ module.exports = function getMetadata({
 
   const pageURL = baseURL + url.path;
   const landingPage = baseURL + '/';
-  const imageURL = baseURL + '/images/brand/opengraph.png';
+  const imageURL = baseURL + '/images/brand/opengraph-light.png';
   const faviconLight = baseURL + '/images/brand/favicon-light.png';
   const faviconDark = baseURL + '/images/brand/favicon-dark.png';
 

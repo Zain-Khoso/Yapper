@@ -1,4 +1,4 @@
-![Yapper](./public/images/brand/opengraph.png)
+![Yapper](./public/images/brand/opengraph-dark.png)
 
 # Yapper 💬
 
