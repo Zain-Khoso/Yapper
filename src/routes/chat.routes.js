@@ -8,9 +8,6 @@ const router = Router();
 
 // Routes.
 
-// GET: Chat Page.
-router.get('/', controller.getChatPage);
-
 // GET: All Chatrooms of the current user.
 router.get('/room/all', controller.getChatrooms);
 

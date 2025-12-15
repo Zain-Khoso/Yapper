@@ -12,21 +12,6 @@ const router = Router();
 
 // Routes.
 
-// GET: Create Account Page.
-router.get('/create-account', protectFromAuthenticatedUsers, controller.getCreateAccountPage);
-
-// GET: Login Page.
-router.get('/login', protectFromAuthenticatedUsers, controller.getLoginPage);
-
-// GET: Change Email Page.
-router.get('/change-email', protectFromUnAuthenticatedUsers, controller.getChangeEmailPage);
-
-// GET: Forgot Password Page.
-router.get('/forgot-password', protectFromAuthenticatedUsers, controller.getForgotPasswordPage);
-
-// GET: Change Password Page.
-router.get('/change-password/:token', controller.getChangePasswordPage);
-
 // POST: Create Account.
 router.post('/account/create', protectFromAuthenticatedUsers, controller.postCreateAccount);
 

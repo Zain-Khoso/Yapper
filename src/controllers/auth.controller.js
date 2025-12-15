@@ -8,24 +8,11 @@ const { Op } = require('sequelize');
 const sendGrid = require('@sendgrid/mail');
 
 // Local Imports.
-const getMetadata = require('../utils/metadata');
 const User = require('../models/user.model');
 const { schema_email, schema_displayName, schema_password } = require('../utils/validations');
 
 // Configs.
 sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
-
-exports.getCreateAccountPage = function (req, res) {
-  const metadata = getMetadata({
-    title: 'Create Your Account',
-    description:
-      'Yapper is a lightweight hobby chat app built for learning and fun. Enjoy clean, fast, real-time conversations without distractions or complexity. Create Your Yapper Account',
-    keywords: ['yapper', 'account creation', 'user creation', 'signup', 'registration'],
-    url: { hostname: req.hostname, path: req.url },
-  });
-
-  res.render('create-account', { metadata });
-};
 
 exports.postCreateAccount = function (req, res) {
   let { email, displayName, password } = req.body;
@@ -79,25 +66,6 @@ exports.postCreateAccount = function (req, res) {
         errors,
       });
     });
-};
-
-exports.getLoginPage = function (req, res) {
-  const metadata = getMetadata({
-    title: 'Login',
-    description:
-      'Log in to Yapper — a simple hobby chat app built for learning and experimentation. Sign in to access your chats and continue your conversations.',
-    keywords: [
-      'yapper login',
-      'sign in',
-      'chat app login',
-      'yapper account',
-      'hobby chat app',
-      'simple messaging',
-    ],
-    url: { hostname: req.hostname, path: req.url },
-  });
-
-  res.render('login', { metadata });
 };
 
 exports.postLogin = function (req, res) {
@@ -167,25 +135,6 @@ exports.getAccountDelete = function (req, res) {
   });
 };
 
-exports.getForgotPasswordPage = function (req, res) {
-  const metadata = getMetadata({
-    title: 'Forgot Password',
-    description:
-      'Reset your Yapper password. Enter your account email or username to receive password reset instructions. Yapper is a simple hobby project—please avoid using sensitive or personal credentials.',
-    keywords: [
-      'forgot password',
-      'reset password',
-      'yapper password',
-      'account recovery',
-      'password reset',
-      'hobby chat app',
-    ],
-    url: { hostname: req.hostname, path: req.url },
-  });
-
-  res.render('forgot-password', { metadata });
-};
-
 exports.postActionToken = function (req, res) {
   let { email, sendEmail = false } = req.body;
 
@@ -240,37 +189,6 @@ exports.postActionToken = function (req, res) {
     });
 };
 
-exports.getChangePasswordPage = function (req, res, next) {
-  const { token } = req.params;
-
-  const metadata = getMetadata({
-    title: 'Change Password',
-    description:
-      'Update your Yapper account password. This is a simple hobby project, so avoid using sensitive or personal passwords. Change your password to keep your account accessible and up to date.',
-    keywords: [
-      'change password',
-      'update password',
-      'yapper settings',
-      'account settings',
-      'password update',
-      'hobby chat app',
-    ],
-    url: { hostname: req.hostname, path: req.url },
-  });
-
-  User.findOne({
-    where: {
-      [Op.and]: [{ actionToken: token }, { actionTokenExpires: { [Op.gt]: new Date(Date.now()) } }],
-    },
-  })
-    .then((user) => {
-      if (!user) return next(Error('Invalid Token'));
-
-      res.render('change-password', { metadata });
-    })
-    .catch((error) => next(Error(error)));
-};
-
 exports.postChangePassword = function (req, res, next) {
   const { token } = req.params;
   let { password } = req.body;
@@ -319,28 +237,6 @@ exports.postChangePassword = function (req, res, next) {
         },
       });
     });
-};
-
-exports.getChangeEmailPage = function (req, res) {
-  const metadata = getMetadata({
-    title: 'Change Email',
-    description:
-      'Update the email associated with your Yapper account. Yapper is a simple hobby chat app, so email changes may not be permanent if the database resets.',
-    keywords: [
-      'change email',
-      'update email',
-      'yapper settings',
-      'account settings',
-      'email update',
-      'hobby chat app',
-    ],
-    url: { hostname: req.hostname, path: req.url },
-  });
-
-  res.render('change-email', {
-    metadata,
-    user: req.session.user,
-  });
 };
 
 exports.postChangeEmail = function (req, res) {

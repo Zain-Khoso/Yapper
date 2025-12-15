@@ -11,12 +11,10 @@ const SequelizeSessionStore = require('connect-session-sequelize')(session.Store
 
 // Local Imports.
 const sequelize = require('./src/utils/database');
-const { getNotFoundPage, getServerErrorPage } = require('./src/controllers/static.controller');
-const staticRouter = require('./src/routes/static.routes');
+const { getNotFoundPage } = require('./src/controllers/page.controller');
+const pageRouter = require('./src/routes/page.routes');
 const authRouter = require('./src/routes/auth.routes');
 const chatRouter = require('./src/routes/chat.routes');
-const settingsRouter = require('./src/routes/settings.routes');
-const { protectFromUnAuthenticatedUsers } = require('./src/utils/middlewares');
 
 // Initializing Express.
 const app = express();
@@ -48,13 +46,11 @@ app.use(
 app.use(express.json());
 
 // Routes.
-app.use(staticRouter, authRouter, chatRouter);
-app.use('/chat', protectFromUnAuthenticatedUsers, chatRouter);
-app.use('/settings', settingsRouter);
+app.use(pageRouter);
+app.use('/api/v1/', authRouter, chatRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);
-app.use(getServerErrorPage);
 
 // Model Associations.
 require('./src/utils/associations');

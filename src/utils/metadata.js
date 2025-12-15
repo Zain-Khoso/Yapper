@@ -1,52 +1,64 @@
+// Constants.
+const DEFAULTS = {
+  siteName: 'Yapper',
+  description:
+    "Yapper is a simple hobby chat app built for learning, experimenting, and chatting with friends. It's lightweight, real-time, and not meant for sensitive or important communication. Use at your own risk.",
+  keywords: ['yapper', 'chat', 'messaging', 'hobby-project', 'real-time', 'simple', 'fast'],
+};
+
 module.exports = function getMetadata({
   title = '',
   absoluteTitle = '',
   description = '',
   keywords = [],
-  url = { hostname: 'localhost', path: '/' },
-}) {
-  // Title.
-  if (absoluteTitle !== '') title = absoluteTitle;
-  else if (title === '') title = 'Yapper';
-  else title = `${title} | Yapper`;
+  baseURL,
+  pagePath,
+} = {}) {
+  let finalTitle;
 
-  // Description.
-  if (!description)
-    description =
-      "Yapper is a simple hobby chat app built for learning, experimenting, and chatting with friends. It's lightweight, real-time, and not meant for sensitive or important communication. Use at your own risk.";
+  if (absoluteTitle) finalTitle = absoluteTitle;
+  else if (title) finalTitle = `${title} | ${DEFAULTS.siteName}`;
+  else finalTitle = DEFAULTS.siteName;
 
-  // Page URL.
-  let baseURL;
+  const finalDescription = description || DEFAULTS.description;
 
-  if (url.hostname === 'localhost') baseURL = `http://${url.hostname}:${process.env.PORT}`;
-  else baseURL = `https://${url.hostname}`;
+  const pageURL = baseURL + pagePath;
 
-  const pageURL = baseURL + url.path;
-  const landingPage = baseURL + '/';
-  const imageURL = baseURL + '/images/brand/opengraph-light.png';
-  const faviconLight = baseURL + '/images/brand/favicon-light.png';
-  const faviconDark = baseURL + '/images/brand/favicon-dark.png';
+  const assets = {
+    faviconLight: `${baseURL}/images/brand/favicon-light.png`,
+    faviconDark: `${baseURL}/images/brand/favicon-dark.png`,
+    ogImageLight: `${baseURL}/images/brand/opengraph-light.png`,
+    ogImageDark: `${baseURL}/images/brand/opengraph-dark.png`,
+  };
+
+  const finalKeywords = [...new Set([...DEFAULTS.keywords, ...keywords])].join(', ');
 
   return {
-    title,
-    faviconLight,
-    faviconDark,
-    description,
-    keywords: [
-      'yapper',
-      'chat',
-      'messaging',
-      'hobby-project',
-      'simple',
-      'fast',
-      ...keywords,
-    ].join(),
+    title: finalTitle,
+    description: finalDescription,
+    keywords: finalKeywords,
+
     author: 'https://zain-khoso.vercel.app',
     pageURL,
-    landingPage,
-    opengraph: {
-      siteName: 'Yapper',
-      imageURL,
+    landingPage: baseURL + '/',
+
+    faviconLight: assets.faviconLight,
+    faviconDark: assets.faviconDark,
+
+    openGraph: {
+      type: 'website',
+      siteName: DEFAULTS.siteName,
+      title: finalTitle,
+      description: finalDescription,
+      url: pageURL,
+      image: assets.ogImageLight,
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title: finalTitle,
+      description: finalDescription,
+      image: assets.ogImageLight,
     },
   };
 };
