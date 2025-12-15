@@ -1,5 +1,24 @@
 .chats-list {
   flex: 1;
+  overflow-y: auto;
+}
+
+.chats-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.chats-list::-webkit-scrollbar-track {
+  background: var(--color-background);
+  border-radius: 0.25rem;
+}
+
+.chats-list::-webkit-scrollbar-thumb {
+  background: var(--color-foreground-secondary);
+  border-radius: 0.25rem;
+}
+
+.chats-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
 }
 
 .chats-list .chat {
