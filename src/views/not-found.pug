@@ -1,21 +1,22 @@
 extends layouts/static
 
-include svgs/404-illustration
+include svgs/404
 
-block page-styles 
+block append styles 
   link(rel="stylesheet", href="/css/landing.css")
 
-block content 
-  main.hero 
-    section.copy 
-      h1 Oops! This page wandered off.
+block hero-content 
+  section.hero-content.container
+    article.hero-copy 
+      section.left 
+        h1 Oops! This page wandered off.
 
-      p We couldn't find what you were looking for. It might have been moved, deleted, or never existed in the first place.
+        p We couldn't find what you were looking for. It might have been moved, deleted, or never existed in the first place.
 
-      p Since Yapper is a hobby project, some links or features may still be a work in progress.
+        p Since Yapper is a hobby project, some links or features may still be a work in progress.
 
-      .btn-group.reverse
-        a.btn.primary(href="/") Go Back Home
-        a.btn.outline(href="https://zain-khoso.vercel.app", target="_blank") Founder 
-    
-    +404Illustration
+        .btn-group.reverse
+          a.btn.primary(href="/") Go to Home
+          a.btn.outline(href="https://github.com/Zain-Khoso/Yapper", target="_blank") Source Code 
+      
+      +404
