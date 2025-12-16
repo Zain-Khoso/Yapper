@@ -1,0 +1,31 @@
+.fill-foreground {
+  fill: var(--color-foreground);
+}
+
+.stroke-foreground {
+  stroke: var(--color-foreground);
+}
+
+.fill-foreground-secondary {
+  fill: var(--color-foreground-secondary);
+}
+
+.stroke-foreground-secondary {
+  stroke: var(--color-foreground-secondary);
+}
+
+.fill-background {
+  fill: var(--color-background);
+}
+
+.stroke-background {
+  stroke: var(--color-background);
+}
+
+.fill-background-secondary {
+  fill: var(--color-background-secondary);
+}
+
+.stroke-background-secondary {
+  stroke: var(--color-background-secondary);
+}

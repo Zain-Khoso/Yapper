@@ -1,0 +1,89 @@
+button {
+  cursor: pointer;
+}
+
+.btn {
+  display: block;
+
+  width: fit-content;
+  height: fit-content;
+  background-color: transparent;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  font-weight: 800;
+  text-align: center;
+  transition:
+    background-color 300ms ease-out,
+    border-color 300ms ease-out;
+}
+
+.btn.primary {
+  color: var(--color-background);
+  background-color: var(--color-foreground);
+  border-color: var(--color-foreground);
+}
+
+.btn.primary:hover,
+.btn.primary:focus-visible {
+  color: var(--color-foreground);
+  background-color: transparent;
+}
+
+.btn.outline,
+.btn.outline {
+  border-color: var(--color-foreground);
+  color: var(--color-foreground);
+}
+
+.btn.outline:hover,
+.btn.outline:focus-visible {
+  color: var(--color-background);
+  background-color: var(--color-foreground);
+}
+
+.btn.danger {
+  color: var(--color-background);
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn.danger:hover,
+.btn.danger:focus-visible {
+  color: var(--color-danger);
+  background-color: transparent;
+}
+
+.btn.success {
+  color: var(--color-background);
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.btn.success:hover,
+.btn.success:focus-visible {
+  color: var(--color-success);
+  background-color: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.6 !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+  pointer-events: none;
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-group .btn {
+  flex: 1;
+  min-width: fit-content;
+}
+
+.btn-group.reverse {
+  flex-direction: row-reverse;
+}

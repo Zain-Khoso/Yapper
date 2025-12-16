@@ -1,46 +1,229 @@
-.hero {
+.hero-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+
+  width: 100%;
+}
+
+.hero-content .hero-copy {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
 
   width: 100%;
-  max-width: 1280px;
-  margin-inline: auto;
 }
 
-.hero .copy {
+.hero-content .hero-copy .left {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.hero > .illustration {
+.hero-content .hero-copy .left h1 {
+  color: var(--color-foreground-secondary);
+}
+
+.hero-content .hero-copy .left h1 span:last-child {
+  color: var(--color-foreground);
+}
+
+.hero-content .hero-copy > .illustration {
   flex: 1;
   height: auto;
 }
 
+.hero-content .features-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  width: 100%;
+}
+
+.hero-content .features-section .features-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hero-content .features-section .features-list .feature-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  max-width: 280px;
+  background-color: var(--color-background-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: 0.8rem;
+}
+
+.page-contents {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  width: 100%;
+}
+
+.page-contents .section {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.page-contents .section .section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  width: 100%;
+}
+
+.page-contents .section .section-header h4 {
+  text-transform: uppercase;
+}
+
+.page-contents .section .carousel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  width: 100%;
+  padding-block: 8rem;
+}
+
+.page-contents .section .carousel .control {
+  display: grid;
+  place-items: center;
+
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+  border-radius: 50%;
+}
+
+.page-contents .section .carousel .control .material-icons {
+  color: inherit;
+  translate: 0 1px;
+}
+
+.page-contents .section .carousel .control:first-child .material-icons {
+  translate: -1px 1px;
+}
+
+.page-contents .section .carousel .slides {
+  flex: 1;
+  display: flex;
+  gap: 1.5rem;
+
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.page-contents .section .carousel .slides .slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  max-width: 480px;
+  min-width: 480px;
+  background-color: var(--color-background-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.page-contents .section .carousel .slides .slide .person {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-contents .section .carousel .slides .slide .image {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.page-contents .section .cards-list {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+
+  padding-block: 4rem;
+}
+
+.page-contents .section .cards-list .price-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  max-width: 420px;
+  background-color: var(--color-background-secondary);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+}
+
+.page-contents .section .cards-list .price-card .header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.page-contents .section .cards-list .price-card .header > span {
+  width: 100%;
+}
+
+.page-contents .section .cards-list .price-card .header div {
+  display: flex;
+  gap: 0.25rem;
+  align-items: end;
+}
+
+.page-contents .section .cards-list .price-card .perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.page-contents .section .cards-list .price-card .perks-list .perk::before {
+  content: '•';
+  color: var(--color-foreground);
+  font-size: 1.2em;
+  margin-right: 0.5rem;
+}
+
 @media screen and (max-width: 1024px) {
-  .hero {
+  .hero-content .hero-copy {
     flex-direction: column-reverse;
     justify-content: center;
     align-items: end;
   }
 
-  .hero > .illustration {
+  .hero-content .hero-copy > .illustration {
     width: auto;
     max-height: 380px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .hero > .illustration {
+  .hero-content .hero-copy > .illustration {
     max-height: 180px;
   }
 
-  .hero .copy .btn-group .btn:last-child {
+  .hero-content .hero-copy .left .btn-group .btn:last-child {
     display: none;
   }
 }

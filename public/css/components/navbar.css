@@ -1,0 +1,39 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+}
+
+.navbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar .logo .icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.navbar .links-list {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar .links-list .link-item .link {
+  font-weight: 300;
+  transition: font-weight 200ms ease-out;
+}
+
+.navbar .links-list .link-item .link:hover {
+  font-weight: 400;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar .btn-group {
+    display: none;
+  }
+}
