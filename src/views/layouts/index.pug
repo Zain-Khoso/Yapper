@@ -1,0 +1,22 @@
+include ../components/metadata.pug
+
+doctype html
+html(lang="en")
+  head
+    +metadata(metadata)
+    
+    //- Fonts and Icons.
+    link(rel="preconnect", href="https://fonts.googleapis.com")
+    link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap", rel="stylesheet")
+    link(href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
+    
+    //- Styles
+    block styles 
+      link(rel="stylesheet", href="/css/utils/index.css")
+
+    //- Scripts.
+    block scripts 
+      script(src="/js/user.js", defer) 
+  
+  block body  
