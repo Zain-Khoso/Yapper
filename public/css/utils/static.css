@@ -1,7 +1,7 @@
 body {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 8rem;
 
   width: 100dvw;
   height: fit-content;

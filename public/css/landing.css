@@ -1,4 +1,4 @@
-.hero-content {
+/* .hero-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -6,7 +6,7 @@
   gap: 3rem;
 
   width: 100%;
-}
+} */
 
 .hero-content .hero-copy {
   display: flex;
@@ -66,7 +66,7 @@
 .page-contents {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 4rem;
 
   width: 100%;
 }
@@ -78,7 +78,8 @@
   width: 100%;
 }
 
-.page-contents .section .section-header {
+.page-contents .section .section-header,
+.page-contents .creator-section .section-header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -86,7 +87,8 @@
   width: 100%;
 }
 
-.page-contents .section .section-header h4 {
+.page-contents .section .section-header h4,
+.page-contents .creator-section .section-header h4 {
   text-transform: uppercase;
 }
 
@@ -203,6 +205,68 @@
   color: var(--color-foreground);
   font-size: 1.2em;
   margin-right: 0.5rem;
+}
+
+.page-contents .creator-section {
+  display: flex;
+  align-items: center;
+}
+
+.page-contents .creator-section .copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+
+  height: 100%;
+}
+
+.page-contents .creator-section .copy p {
+  font-weight: 300;
+  color: var(--color-foreground);
+}
+
+.page-contents .creator-section .copy .actions {
+  display: flex;
+  gap: 4rem;
+}
+
+.page-contents .creator-section .copy .socials {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-contents .creator-section .copy .actions .btn {
+  flex: 1;
+}
+
+.page-contents .creator-section .picture {
+  max-width: 40%;
+}
+
+.page-contents .cta {
+  display: flex;
+  align-items: center;
+  gap: 6rem;
+
+  width: 100%;
+  background-color: var(--color-background-secondary);
+  padding: 3rem;
+  border-radius: 3rem;
+}
+
+.page-contents .cta .copy {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.page-contents .cta .illustration {
+  flex: 1;
 }
 
 @media screen and (max-width: 1024px) {

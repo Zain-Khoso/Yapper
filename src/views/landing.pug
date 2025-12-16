@@ -1,24 +1,241 @@
 extends layouts/static
 
-include svgs/hero-illustration
+include svgs/icon
+include svgs/hero
+include svgs/cta
+include svgs/fiverr
+include svgs/github
+include svgs/linkedin
+include svgs/upwork
 
-block page-styles 
+block append styles 
   link(rel="stylesheet", href="/css/landing.css")
+  link(rel="stylesheet", href="/css/components/footer.css")
+
+block hero-content 
+  section.hero-content.container 
+    article.hero-copy 
+      section.left 
+        h1 
+          span.inherit Conversations without delay. 
+          span.inherit Infrastructure without shortcuts.
+
+        p Yapper is a production-ready messaging system featuring real-time transport, modern cryptography for private communication, a Stripe-based paywall, and a reusable backend architecture that supports custom clients and external integrations.
+
+        .btn-group.reverse
+          a.btn.primary(href="/chat") Get Started
+          a.btn.outline(href="https://github.com/Zain-Khoso/Yapper", target="_blank") Source Code 
+      
+      +hero
+
+    article#features.features-section 
+      h3 Features 
+
+      ul.features-list 
+        li.feature-card 
+          h4 Stripe Paywall 
+          span Subscription-based access with Stripe billing, webhooks, and server-side enforcement.
+
+        li.feature-card 
+          h4 Headless Backend
+          span Use Yapper as a drop-in messaging API with your own frontend.
+
+        li.feature-card 
+          h4 Real-Time
+          span Instant messaging powered by Socket.io with live delivery and presence.
+
+        li.feature-card 
+          h4 End-to-End Encryption
+          span Messages secured using the X3DH key exchange—server never sees plaintext.
 
 block content 
-  main.hero 
-    section.copy 
-      h1 
-        span Chat smarter. 
-        br 
-        span Connect faster. 
-        br
-        span Build conversations that matter.
+  main.page-contents
+    section#testimonials.section.container 
+      header.section-header 
+        h4 Testimonials 
+        h2 What do people think of Yapper?
+      
+      main.carousel
+        button.control
+          span.material-icons chevron_left
 
-      p Yapper is your no-noise, no-distraction chat experience — built for teams, friends, and communities who want clarity, speed, and reliability. Lightweight, real-time, and engineered with Express and MySQL, Yapper keeps your conversations flowing without friction.
+        ul.slides 
+          li.slide 
+            .person
+              img.image(src="/images/brand/testimonial-1.png", alt="MERN Stack Developer's Testimonial")
+              
+              div
+                h4 Muhammad Imtiaz Hussain
+                span.small MERN Stack Developer 
+            
+            span As a MERN-stack developer, I really liked how Yapper separates concerns—auth, messaging, encryption, and billing are all modular and easy to reason about. It feels like production code, not a demo project.
 
-      .btn-group.reverse
-        a.btn.primary(href="/chat") Get Started For Free 
-        a.btn.outline(href="https://zain-khoso.vercel.app", target="_blank") Founder 
+          li.slide 
+            .person
+              img.image(src="/images/brand/testimonial-2.jpg", alt="Backend Engineer's Testimonial")
+              
+              div
+                h4 Hassaan Ahmed
+                span.small Backend Engineer
+            
+            span Socket.io is often easy to misuse, but Yapper handles real-time messaging, presence, and delivery cleanly. It's clear a lot of thought went into edge cases and state synchronization.
+
+          li.slide 
+            .person
+              img.image(src="/images/user-placeholder.png", alt="React.js Developer's Testimonial")
+              
+              div
+                h4 Muhammad Adeen
+                span.small React.js Developer 
+            
+            span I used Yapper's API to plug in a custom React frontend and didn't have to fight the backend at all. The endpoints are predictable, real-time events are well designed, and the docs make it easy to get started.
+
+        button.control
+          span.material-icons chevron_right
+
+    section#pricing.section.container 
+      header.section-header 
+        h4 Pricing 
+        h2 What other features does Yapper offer?
+      
+      ul.cards-list
+        li.price-card 
+          .header 
+            h2 Gold
+            
+            div 
+              h1 Free 
+              h3 /Forever
+            
+            span Perfect for trying Yapper or building small projects.
+
+          ul.perks-list 
+            li.perk Real-time messaging
+            li.perk End-to-end encrypted chats
+            li.perk Basic API access
+            li.perk Community support
+
+          .btn-group
+            a(href="/chat").btn.outline Get Started
+
+        li.price-card 
+          .header 
+            h2 Diamond
+            
+            div 
+              h1 $5 
+              h3 /month
+            
+            span For production use and serious applications.
+
+          ul.perks-list 
+            li.perk Everything in Gold
+            li.perk Priority real-time infrastructure
+            li.perk Full API access for custom clients
+            li.perk Stripe-powered subscription management
+
+          .btn-group
+            a(href="/chat").btn.primary Go Diamond
+
+    section#creator.creator-section.container
+      article.copy 
+        .section-header 
+          h4 Creator 
+          h2 Hi there, I'm Zain Ul Abdin 
+        
+        p Zain is a web developer with 2 years of professional experience building applications for startups and clients worldwide. While working on real-time products, he repeatedly ran into the same problem—chat systems that were hard to scale, insecure by default, or tightly coupled to the UI. That frustration led to Yapper, a developer-first messaging platform focused on real-time performance, end-to-end encryption, and a reusable backend that can power any frontend.
+
+        .actions
+          .socials 
+            a(href="https://linkedin.com/in/zain-khoso/", target="_blank") 
+              +linkedin('icon', 'fill-foreground', 'stroke-foreground')
+
+            a(href="https://github.com/Zain-Khoso", target="_blank") 
+              +github('icon', 'fill-foreground', 'stroke-foreground')
+            
+            a(href="https://www.fiverr.com/zainkhosodev", target="_blank") 
+              +fiverr('icon', 'fill-foreground', 'stroke-foreground')
+            
+            a(href="https://www.upwork.com/freelancers/~0149087552e102ee7e", target="_blank") 
+              +upwork('icon', 'fill-foreground', 'fill-background', 'stroke-foreground')
+            
+          a.btn.primary(href="https://zain-khoso.vercel.app", target="_blank") Learn More
+
+      img.picture(src="/images/creator.png", alt="Picture of the creator")
+
+    section.container
+      article.cta 
+        .copy 
+          h2 Get started with Yapper today.
+
+          span Plug in your frontend, start sending secure real-time messages, and see how fast development can be with a backend that just works.
+
+          .btn-group 
+            //- TODO: Publish some API docs on https://api-docs.io/ and add that link here.
+            a.btn.outline(href="https://github.com/Zain-Khoso/Yapper", target="_blank") View Docs 
+            a.btn.primary(href="/signup") Start Free 
+
+        +cta('illustration')
+
+  footer.footer 
+    section.section 
+      a.brand(href="/") 
+        +icon('icon')
+        h2 Yapper
+      
+      span Real-time, end-to-end encrypted messaging for modern web applications.
+
+      .socials 
+        a(href="https://linkedin.com/in/zain-khoso/", target="_blank") 
+          +linkedin('icon', 'fill-foreground', 'stroke-foreground')
+
+        a(href="https://github.com/Zain-Khoso", target="_blank") 
+          +github('icon', 'fill-foreground', 'stroke-foreground')
+        
+        a(href="https://www.fiverr.com/zainkhosodev", target="_blank") 
+          +fiverr('icon', 'fill-foreground', 'stroke-foreground')
+        
+        a(href="https://www.upwork.com/freelancers/~0149087552e102ee7e", target="_blank") 
+          +upwork('icon', 'fill-foreground', 'fill-background', 'stroke-foreground')
+        
+    section.section 
+      h4 Navigation 
+      
+      ul.nav-links 
+        li 
+          a.nav-link(href="/") Home 
+        li 
+          a.nav-link(href="/#features") Features 
+        li 
+          a.nav-link(href="/#testimonials") Testimonials 
+        li 
+          a.nav-link(href="/#pricing") Pricing 
+        li 
+          a.nav-link(href="/#creator") Creator 
     
-    +heroIllustration
+    section.section 
+      h4 Resources 
+      
+      ul.nav-links 
+        li 
+          //- TODO: Publish some API docs on https://api-docs.io/ and add that link here.
+          a.nav-link(href="https://github.com/Zain-Khoso/Yapper", target="_blank") API Docs 
+        li 
+          a.nav-link(href="https://github.com/Zain-Khoso/Yapper", target="_blank") Repository 
+        li 
+          a.nav-link(href="/terms-and-conditions") Terms and Conditions
+        li 
+          a.nav-link(href="/privacy-policy") Privacy Policy
+        
+    section.section 
+      h4 External Links 
+      
+      ul.nav-links 
+        li 
+          a.nav-link(href="https://linkedin.com/in/zain-khoso/", target="_blank") LinkedIn 
+        li 
+          a.nav-link(href="https://github.com/Zain-Khoso", target="_blank") Github
+        li 
+          a.nav-link(href="https://www.fiverr.com/zainkhosodev", target="_blank") Fiverr
+        li 
+          a.nav-link(href="https://www.upwork.com/freelancers/~0149087552e102ee7e", target="_blank") Upwork
