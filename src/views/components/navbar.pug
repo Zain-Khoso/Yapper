@@ -1,17 +1,30 @@
 include ../svgs/icon
 
-mixin navbar(noActions=false) 
-  nav.navbar 
+mixin navbar(actions=true) 
+  block append styles 
+    link(rel="stylesheet", href="/css/components/navbar.css")
+
+  nav.navbar.container 
     a.logo(href="/") 
       +icon('icon')
-      h1 Yapper
 
-    if !noActions
-      if !isAuthenticated
-        .btn-group.reverse
-          a.btn.primary(href="/login") Login
-          a.btn.outline(href="/create-account") Create Account
-      else 
-        a.btn.primary(href="/chat") Start Yapping
+      h2 Yapper
+
+    ul.links-list 
+      li.link-item 
+        a.link.font-alex(href="/#features") Features 
+      li.link-item 
+        a.link.font-alex(href="/#testimonials") Testimonials 
+      li.link-item 
+        a.link.font-alex(href="/#pricing") Pricing 
+      li.link-item 
+        a.link.font-alex(href="/#creator") Creator 
+
+    .btn-group.reverse
+      if actions
+        a.btn.primary.noauth-action(href="/login") Login
+        a.btn.outline.noauth-action(href="/create-account") Create Account
+        
+        a.btn.primary.hidden.auth-action(href="/chat") Start Yapping
   
   .separator.horizontal 
