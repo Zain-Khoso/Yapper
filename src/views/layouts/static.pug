@@ -1,15 +1,17 @@
-extends root
+extends index
 
 include ../components/navbar
 
-block styles 
-  link(rel="stylesheet", href="/css/static.css")
-  link(rel="stylesheet", href="/css/navbar.css")
-
-  block page-styles 
+block append styles 
+  link(rel="stylesheet", href="/css/utils/static.css")
+  link(rel="stylesheet", href="/css/components/svg.css")
+  link(rel="stylesheet", href="/css/components/button.css")
 
 block body 
   body
-    +navbar 
+    header.hero 
+      +navbar 
 
-    block content 
+      block hero-content 
+  
+  block content
