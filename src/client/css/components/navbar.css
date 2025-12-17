@@ -32,6 +32,12 @@
   font-weight: 400;
 }
 
+@media screen and (max-width: 1024px) {
+  .navbar .links-list {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .navbar .btn-group {
     display: none;

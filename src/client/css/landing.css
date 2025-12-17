@@ -39,19 +39,18 @@
 }
 
 .hero-content .features-section .features-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
 .hero-content .features-section .features-list .feature-card {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 
-  max-width: 280px;
+  width: 100%;
+  height: 100%;
   background-color: var(--color-background-secondary);
   padding: 1rem 1.5rem;
   border-radius: 0.8rem;
@@ -83,6 +82,7 @@
 
 .page-contents .section .section-header h4,
 .page-contents .creator-section .section-header h4 {
+  color: var(--color-foreground-secondary);
   text-transform: uppercase;
 }
 
@@ -252,7 +252,7 @@
   width: 100%;
   background-color: var(--color-background-secondary);
   padding: 3rem;
-  border-radius: 3rem;
+  border-radius: 1rem;
 }
 
 .page-contents .cta .copy {
@@ -267,6 +267,12 @@
 }
 
 @media screen and (max-width: 1024px) {
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
   .hero-content .hero-copy {
     flex-direction: column-reverse;
     justify-content: center;
@@ -275,16 +281,55 @@
 
   .hero-content .hero-copy > .illustration {
     width: auto;
-    max-height: 380px;
+    max-height: 245px;
+  }
+
+  .page-contents .creator-section .picture,
+  .page-contents .cta .illustration {
+    display: none;
   }
 }
 
 @media screen and (max-width: 768px) {
+  body {
+    gap: 4rem;
+  }
+
   .hero-content .hero-copy > .illustration {
     max-height: 180px;
   }
 
   .hero-content .hero-copy .left .btn-group .btn:last-child {
     display: none;
+  }
+
+  .page-contents .section .carousel {
+    padding-block: 4rem;
+  }
+
+  .page-contents .section .carousel .control {
+    display: none;
+  }
+
+  .page-contents .section .carousel .slides .slide {
+    max-width: 100%;
+    min-width: 100%;
+  }
+
+  .page-contents .section .cards-list {
+    flex-direction: column;
+  }
+
+  .page-contents .creator-section .copy .actions {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .page-contents .creator-section .copy .actions .btn {
+    width: 100%;
+  }
+
+  .page-contents .cta {
+    padding: 3rem 1.5rem;
   }
 }

@@ -21,7 +21,7 @@
   "repository": {
     "url": "https://github.com/Zain-Khoso/Yapper.git"
   },
-  "packageManager": "pnpm@10.25.0",
+  "packageManager": "pnpm@10.26.0",
   "browserslist": [
     "> 1%",
     "last 2 versions",
