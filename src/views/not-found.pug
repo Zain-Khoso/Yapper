@@ -1,6 +1,7 @@
 extends layouts/static
 
 include svgs/404
+include components/footer
 
 block hero-content 
   section.hero-content.container
@@ -17,3 +18,7 @@ block hero-content
           a.btn.outline(href="https://github.com/Zain-Khoso/Yapper", target="_blank") Source Code 
       
       +404
+
+block content 
+  main.page-contents
+    +footer

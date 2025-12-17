@@ -54,3 +54,10 @@
 .footer .section .nav-links .nav-link:hover {
   font-weight: 400;
 }
+
+@media screen and (max-width: 768px) {
+  .footer {
+    gap: 4rem;
+    padding-bottom: 4rem;
+  }
+}

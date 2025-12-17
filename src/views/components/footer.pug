@@ -1,0 +1,69 @@
+include ../svgs/icon
+include ../svgs/fiverr
+include ../svgs/github
+include ../svgs/linkedin
+include ../svgs/upwork
+
+mixin footer 
+  footer.footer 
+    section.section 
+      a.brand(href="/") 
+        +icon('icon')
+        h2 Yapper
+      
+      span Real-time, end-to-end encrypted messaging for modern web applications.
+
+      .socials 
+        a(href="https://linkedin.com/in/zain-khoso/", target="_blank") 
+          +linkedin('icon', 'fill-foreground', 'stroke-foreground')
+
+        a(href="https://github.com/Zain-Khoso", target="_blank") 
+          +github('icon', 'fill-foreground', 'stroke-foreground')
+        
+        a(href="https://www.fiverr.com/zainkhosodev", target="_blank") 
+          +fiverr('icon', 'fill-foreground', 'stroke-foreground')
+        
+        a(href="https://www.upwork.com/freelancers/~0149087552e102ee7e", target="_blank") 
+          +upwork('icon', 'fill-foreground', 'fill-background', 'stroke-foreground')
+        
+    section.section 
+      h4 Navigation 
+      
+      ul.nav-links 
+        li 
+          a.nav-link(href="/") Home 
+        li 
+          a.nav-link(href="/#features") Features 
+        li 
+          a.nav-link(href="/#testimonials") Testimonials 
+        li 
+          a.nav-link(href="/#pricing") Pricing 
+        li 
+          a.nav-link(href="/#creator") Creator 
+    
+    section.section 
+      h4 Resources 
+      
+      ul.nav-links 
+        li 
+          //- TODO: Publish some API docs on https://api-docs.io/ and add that link here.
+          a.nav-link(href="https://github.com/Zain-Khoso/Yapper", target="_blank") API Docs 
+        li 
+          a.nav-link(href="https://github.com/Zain-Khoso/Yapper", target="_blank") Repository 
+        li 
+          a.nav-link(href="/terms-and-conditions") Terms and Conditions
+        li 
+          a.nav-link(href="/privacy-policy") Privacy Policy
+        
+    section.section 
+      h4 External Links 
+      
+      ul.nav-links 
+        li 
+          a.nav-link(href="https://linkedin.com/in/zain-khoso/", target="_blank") LinkedIn 
+        li 
+          a.nav-link(href="https://github.com/Zain-Khoso", target="_blank") Github
+        li 
+          a.nav-link(href="https://www.fiverr.com/zainkhosodev", target="_blank") Fiverr
+        li 
+          a.nav-link(href="https://www.upwork.com/freelancers/~0149087552e102ee7e", target="_blank") Upwork
