@@ -129,5 +129,5 @@ exports.getNotFoundPage = function (req, res) {
   });
 
   // TODO: Check req.method to send JSON responses for API reqs.
-  res.status(404).render('not-found', { metadata });
+  res.status(404).render('not-found', { metadata, bundleName: 'landing' });
 };
