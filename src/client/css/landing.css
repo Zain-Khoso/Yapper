@@ -121,7 +121,10 @@
   gap: 1.5rem;
 
   max-width: 100%;
-  overflow: hidden;
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
 
 .page-contents .section .carousel .slides .slide {
