@@ -21,7 +21,7 @@ exports.getLandingPage = function (req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('landing', { metadata });
+  res.render('landing', { metadata, bundleName: 'landing' });
 };
 
 exports.getSignUpPage = function (req, res) {

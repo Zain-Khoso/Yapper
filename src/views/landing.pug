@@ -8,10 +8,6 @@ include svgs/github
 include svgs/linkedin
 include svgs/upwork
 
-block append styles 
-  link(rel="stylesheet", href="/css/landing.css")
-  link(rel="stylesheet", href="/css/components/footer.css")
-
 block hero-content 
   section.hero-content.container 
     article.hero-copy 
@@ -62,7 +58,7 @@ block content
         ul.slides 
           li.slide 
             .person
-              img.image(src="/images/brand/testimonial-1.png", alt="MERN Stack Developer's Testimonial")
+              img.image(src="/assets/brand/testimonial-1.png", alt="MERN Stack Developer's Testimonial")
               
               div
                 h4 Muhammad Imtiaz Hussain
@@ -72,7 +68,7 @@ block content
 
           li.slide 
             .person
-              img.image(src="/images/brand/testimonial-2.jpg", alt="Backend Engineer's Testimonial")
+              img.image(src="/assets/brand/testimonial-2.jpg", alt="Backend Engineer's Testimonial")
               
               div
                 h4 Hassaan Ahmed
@@ -82,7 +78,7 @@ block content
 
           li.slide 
             .person
-              img.image(src="/images/user-placeholder.png", alt="React.js Developer's Testimonial")
+              img.image(src="/assets/user-placeholder.png", alt="React.js Developer's Testimonial")
               
               div
                 h4 Muhammad Adeen
@@ -161,7 +157,7 @@ block content
             
           a.btn.primary(href="https://zain-khoso.vercel.app", target="_blank") Learn More
 
-      img.picture(src="/images/creator.png", alt="Picture of the creator")
+      img.picture(src="/assets/creator.png", alt="Picture of the creator")
 
     section.container
       article.cta 

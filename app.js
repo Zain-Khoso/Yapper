@@ -10,55 +10,70 @@ const express = require('express');
 // const SequelizeSessionStore = require('connect-session-sequelize')(session.Store);
 
 // Local Imports.
+const { viteAssets } = require('./src/utils/middlewares');
 // const sequelize = require('./src/utils/database');
 const { getNotFoundPage } = require('./src/controllers/page.controller');
 const pageRouter = require('./src/routes/page.routes');
 // const authRouter = require('./src/routes/auth.routes');
 // const chatRouter = require('./src/routes/chat.routes');
 
-// Initializing Express.
-const app = express();
+(async function () {
+  // Initializing Express.
+  const app = express();
+  app.locals.isProd = app.get('env') === 'production';
 
-// Integrating Template Engine (Pug).
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'src', 'views'));
-// app.set('trust proxy', app.get('env') === 'production' ? 1 : 0);
+  // Integrating Template Engine (Pug).
+  app.set('view engine', 'pug');
+  app.set('views', path.join(__dirname, 'src', 'views'));
+  // app.set('trust proxy', app.get('env') === 'production' ? 1 : 0);
 
-// Exposing the Public Directory
-app.use(express.static(path.join(__dirname, 'public')));
-// app.use(
-//   session({
-//     name: 'yapper.session',
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     store: new SequelizeSessionStore({
-//       db: sequelize,
-//     }),
-//     cookie: {
-//       secure: app.get('env') === 'production',
-//       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 Days.
-//     },
-//   })
-// );
+  if (!app.locals.isProd) {
+    const { createServer: createViteServer } = require('vite');
+    const vite = await createViteServer({
+      appType: 'custom',
+      server: { middlewareMode: true },
+    });
 
-// Integrating Middlewares.
-app.use(express.json());
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.join(__dirname, 'dist')));
+  }
 
-// Routes.
-app.use(pageRouter);
-// app.use('/api/v1/', authRouter, chatRouter);
+  // app.use(
+  //   session({
+  //     name: 'yapper.session',
+  //     secret: process.env.SESSION_SECRET,
+  //     resave: false,
+  //     saveUninitialized: false,
+  //     store: new SequelizeSessionStore({
+  //       db: sequelize,
+  //     }),
+  //     cookie: {
+  //       secure: app.get('env') === 'production',
+  //       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 Days.
+  //     },
+  //   })
+  // );
 
-// Error Middlewares.
-app.use(getNotFoundPage);
+  // Integrating Middlewares.
+  app.use(express.json());
+  app.use(viteAssets());
 
-// Model Associations.
-// require('./src/utils/associations');
+  // Routes.
+  app.use(pageRouter);
+  // app.use('/api/v1/', authRouter, chatRouter);
 
-// Running the server.
-app.listen(process.env.PORT);
+  // Error Middlewares.
+  app.use(getNotFoundPage);
 
-// sequelize
-//   .sync({ force: false })
-//   .then(() => app.listen(process.env.PORT))
-//   .catch((error) => console.log(error));
+  // Model Associations.
+  // require('./src/utils/associations');
+
+  // Running the server.
+  app.listen(process.env.PORT);
+
+  // sequelize
+  //   .sync({ force: false })
+  //   .then(() => app.listen(process.env.PORT))
+  //   .catch((error) => console.log(error));
+})();

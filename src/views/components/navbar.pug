@@ -1,9 +1,6 @@
 include ../svgs/icon
 
 mixin navbar(actions=true) 
-  block append styles 
-    link(rel="stylesheet", href="/css/components/navbar.css")
-
   nav.navbar.container 
     a.logo(href="/") 
       +icon('icon')

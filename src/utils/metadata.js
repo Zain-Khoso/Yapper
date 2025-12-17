@@ -25,10 +25,10 @@ module.exports = function getMetadata({
   const pageURL = baseURL + pagePath;
 
   const assets = {
-    faviconLight: `${baseURL}/images/brand/favicon-light.png`,
-    faviconDark: `${baseURL}/images/brand/favicon-dark.png`,
-    ogImageLight: `${baseURL}/images/brand/opengraph-light.png`,
-    ogImageDark: `${baseURL}/images/brand/opengraph-dark.png`,
+    faviconLight: `${baseURL}/assets/brand/favicon-light.png`,
+    faviconDark: `${baseURL}/assets/brand/favicon-dark.png`,
+    ogImageLight: `${baseURL}/assets/brand/opengraph-light.png`,
+    ogImageDark: `${baseURL}/assets/brand/opengraph-dark.png`,
   };
 
   const finalKeywords = [...new Set([...DEFAULTS.keywords, ...keywords])].join(', ');

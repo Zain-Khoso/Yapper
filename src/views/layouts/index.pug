@@ -10,13 +10,16 @@ html(lang="en")
     link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap", rel="stylesheet")
     link(href="https://fonts.googleapis.com/icon?family=Material+Icons", rel="stylesheet")
-    
-    //- Styles
-    block styles 
-      link(rel="stylesheet", href="/css/utils/index.css")
 
-    //- Scripts.
-    block scripts 
-      script(src="/js/user.js", defer) 
+    - const assets = getAssets(bundleName)
+    
+    if !isProd
+      script(type="module", src="/@vite/client") 
+
+    //- Injecting CSS.
+    each cssFile in assets.css 
+      link(rel="stylesheet", href=cssFile)
+    
+    script(type="module", src=assets.js) 
   
   block body  
