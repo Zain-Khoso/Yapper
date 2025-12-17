@@ -5,19 +5,19 @@ const fs = require('fs-extra');
 
 // Bundling the entrire codebase. Step-by-Step.
 (async function () {
-  console.log('\n\n1. Cleaning dist...');
+  console.log('\n1. Cleaning dist...');
 
   await fs.emptyDir('dist');
 
-  console.log('\n2. Bundling Frontend (Vite)...');
+  console.log('\n2. Bundling Frontend (Vite)...\n');
 
   execSync('pnpm dlx vite build', { stdio: 'inherit' });
 
-  console.log('3. Moving Views...');
+  console.log('\n3. Moving Views...');
 
   await fs.copy('src/views', 'dist/src/views');
 
-  console.log('4. Bundling Backend (esbuild)...');
+  console.log('\n4. Bundling Backend (esbuild)...');
 
   await esbuild.build({
     entryPoints: ['app.js'],
@@ -31,5 +31,5 @@ const fs = require('fs-extra');
     sourcemap: true,
   });
 
-  console.log('✅ Build complete in /dist');
+  console.log('\n✅ Build complete.');
 })();
