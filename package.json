@@ -4,9 +4,11 @@
   "description": "A real-time chat application",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "seed": "node src/utils/db-seeds.js",
-    "dev": "nodemon app.js"
+    "dev": "cross-env NODE_ENV=development nodemon app.js",
+    "build": "node build.js",
+    "preview": "cross-env NODE_ENV=production node dist/app.js",
+    "start": "node dist/app.js",
+    "seed": "node src/utils/db-seeds.js"
   },
   "keywords": [
     "chat",
@@ -43,6 +45,9 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.23",
+    "cross-env": "^10.1.0",
+    "esbuild": "^0.27.2",
+    "fs-extra": "^11.3.2",
     "nodemon": "^3.1.11",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",

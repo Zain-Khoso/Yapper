@@ -34,14 +34,14 @@ exports.viteAssets = function () {
   let manifest = {};
 
   if (isProd) {
-    const manifestPath = path.resolve(__dirname, '../', '../', 'dist', '.vite', 'manifest.json');
+    const manifestPath = path.resolve(__dirname, 'public', '.vite', 'manifest.json');
 
     if (fs.existsSync(manifestPath)) manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
   }
 
   return function (_, res, next) {
     res.locals.getAssets = function (entryName) {
-      const entryPath = `client/pages/${entryName}.js`;
+      const entryPath = `src/client/pages/${entryName}.js`;
 
       if (!isProd) {
         return {
