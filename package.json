@@ -20,6 +20,11 @@
     "url": "https://github.com/Zain-Khoso/Yapper.git"
   },
   "packageManager": "pnpm@10.25.0",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
   "dependencies": {
     "@aws-sdk/client-s3": "^3.948.0",
     "@aws-sdk/s3-request-presigner": "^3.948.0",
@@ -37,7 +42,9 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.23",
     "nodemon": "^3.1.11",
+    "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "vite": "^7.3.0"
   }
