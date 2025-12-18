@@ -1,3 +1,5 @@
+// 'use strict';
+
 // Page Styles.
 import '../css/utils/index.css';
 import '../css/utils/static.css';
@@ -8,6 +10,7 @@ import '../css/components/footer.css';
 import '../css/landing.css';
 
 // Page Scripts.
+import '../js/theme';
 import '../js/user';
 
 const carousel = document.querySelector('.carousel');

@@ -6,22 +6,22 @@ mixin navbar(actions=true)
       +icon('icon')
 
       h2 Yapper
+    
+    if actions
+      ul.links-list 
+        li.link-item 
+          a.link.font-alex(href="/#features") Features 
+        li.link-item 
+          a.link.font-alex(href="/#testimonials") Testimonials 
+        li.link-item 
+          a.link.font-alex(href="/#pricing") Pricing 
+        li.link-item 
+          a.link.font-alex(href="/#creator") Creator 
 
-    ul.links-list 
-      li.link-item 
-        a.link.font-alex(href="/#features") Features 
-      li.link-item 
-        a.link.font-alex(href="/#testimonials") Testimonials 
-      li.link-item 
-        a.link.font-alex(href="/#pricing") Pricing 
-      li.link-item 
-        a.link.font-alex(href="/#creator") Creator 
-
-    .btn-group.reverse
-      if actions
+      .btn-group.reverse
         a.btn.primary.noauth-action(href="/login") Login
         a.btn.outline.noauth-action(href="/signup") Sign Up
         
         a.btn.primary.hidden.auth-action(href="/chat") Continue
-  
+    
   .separator.horizontal 

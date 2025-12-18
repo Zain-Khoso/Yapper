@@ -40,7 +40,7 @@ exports.getSignUpPage = function (req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('signup', { metadata });
+  res.render('signup', { metadata, bundleName: 'signup' });
 };
 
 exports.getLoginPage = function (req, res) {

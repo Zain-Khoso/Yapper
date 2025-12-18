@@ -30,6 +30,14 @@ button {
   background-color: transparent;
 }
 
+.loading .btn.primary.btn,
+.btn.primary.btn:disabled {
+  color: var(--color-background) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-background-secondary) !important;
+  cursor: not-allowed !important;
+}
+
 .btn.outline,
 .btn.outline {
   border-color: var(--color-foreground);
@@ -40,6 +48,14 @@ button {
 .btn.outline:focus-visible {
   color: var(--color-background);
   background-color: var(--color-foreground);
+}
+
+.loading .btn.outline.btn,
+.btn.outline.btn:disabled {
+  color: var(--color-background-secondary) !important;
+  background-color: transparent !important;
+  border-color: var(--color-background-secondary) !important;
+  cursor: not-allowed !important;
 }
 
 .btn.danger {
@@ -54,6 +70,14 @@ button {
   background-color: transparent;
 }
 
+.loading .btn.danger.btn,
+.btn.danger.btn:disabled {
+  color: var(--color-background) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-background-secondary) !important;
+  cursor: not-allowed !important;
+}
+
 .btn.success {
   color: var(--color-background);
   background-color: var(--color-success);
@@ -66,11 +90,12 @@ button {
   background-color: transparent;
 }
 
-.btn:disabled {
-  opacity: 0.6 !important;
-  outline-color: transparent !important;
-  outline-offset: 0 !important;
-  pointer-events: none;
+.loading .btn.success.btn,
+.btn.success.btn:disabled {
+  color: var(--color-background) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-background-secondary) !important;
+  cursor: not-allowed !important;
 }
 
 .btn-group {

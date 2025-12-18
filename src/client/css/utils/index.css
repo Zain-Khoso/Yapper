@@ -188,6 +188,10 @@ span {
   letter-spacing: 0.75px;
 }
 
+.material-icons {
+  user-select: none;
+}
+
 @media screen and (max-width: 768px) {
   body {
     padding: 1rem;

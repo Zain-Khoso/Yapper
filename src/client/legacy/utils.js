@@ -6,17 +6,6 @@ const elem_Dropdowns = document.querySelectorAll('.dropdown');
 // Variables.
 let dropdownTimeout = null;
 
-const getTheme = function () {
-  let theme = localStorage.getItem('theme');
-
-  if (theme) return theme;
-
-  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (isDarkMode) return 'dark';
-  else return 'light';
-};
-
 // Function to use Swal for errors.
 const showError = function (errorName, errorMessage) {
   return Swal.fire({

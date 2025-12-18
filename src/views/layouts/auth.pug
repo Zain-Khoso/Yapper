@@ -2,14 +2,8 @@ extends index
 
 include ../components/navbar
 
-block styles 
-  link(rel="stylesheet", href="/css/auth.css")
-  link(rel="stylesheet", href="/css/navbar.css")
-
-  block page-styles 
-
 block body 
   body
-    +navbar(true)
+    +navbar(false)
 
     block content 

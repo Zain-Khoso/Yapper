@@ -50,13 +50,30 @@ exports.viteAssets = function () {
         };
       }
 
-      const chunk = manifest[entryPath];
+      // Production Mode
+      const rootChunk = manifest[entryPath];
+      if (!rootChunk) return { js: '', css: [] };
 
-      if (!chunk) return { js: '', css: [] };
+      const cssSet = new Set();
+
+      // Recursive helper to find CSS in the current chunk and all its imports
+      const collectAssets = (chunk) => {
+        if (!chunk) return;
+
+        if (chunk.css) chunk.css.forEach((cssFile) => cssSet.add(`/${cssFile}`));
+
+        if (chunk.imports)
+          chunk.imports.forEach((importKey) => {
+            collectAssets(manifest[importKey]);
+          });
+      };
+
+      // Start collection from the entry point
+      collectAssets(rootChunk);
 
       return {
-        js: `/${chunk.file}`,
-        css: chunk.css ? chunk.css.map((c) => `/${c}`) : [],
+        js: `/${rootChunk.file}`,
+        css: Array.from(cssSet),
       };
     };
 

@@ -1,65 +1,80 @@
 extends layouts/auth
 
 include components/entry
-include svgs/checkbox
-include svgs/checkedbox
-
-block scripts 
-  script(src="https://unpkg.com/validator@latest/validator.min.js")
-
-  script(type="module", src="/js/create-account.js", defer) 
 
 block content 
-  main.page 
+  main#signup-steps.page
+    ul.line-steps 
+
     header.heading
-      h2 Create your Yapper account
-      p Join the simplest chat experience built for fun, learning, and quick conversations.
+      h2 Enter your email
+      p We'll use your email to create your account and send a one-time verification code.
     
-    form#form
-      section.inputs-group 
-        +entry("email", "Email", "abc@xyz.com")
-
-        +entry("displayName", "Display Name", "Abc Xyz")
-
-        +entry("password", "Password", "********", "password", "password")
-
-        +entry("confirmPassword", "Confirm Password", "********", "password", "password")
-
-        
-        label.checkbox
-          .checkbox-ui
-            input(type="checkbox", id="terms", class='checkbox-input')
-
-            +checkbox('checkbox-empty-icon')
-
-            +checkedBox('checkbox-filled-icon')
-            
-            label.label(for="terms") 
-              span I agree to the 
-              a.highlight(href="/terms-and-conditions", target="_blank") Terms and Conditions
-              span  of Yapper.
-          label.error-text(for="terms")
-
-        label.checkbox
-          .checkbox-ui
-            input(type="checkbox", id="policies", class='checkbox-input')
-
-            +checkbox('checkbox-empty-icon')
-
-            +checkedBox('checkbox-filled-icon')
-
-            label.label(for="policies") 
-              span I agree to the 
-              a.highlight(href="/privacy-policy", target="_blank") Privacy Policy
-              span  of Yapper.
-          
-          label.error-text(for="policies")
-
-      .btn-group.reverse
-        button#submit.btn.primary Create Account 
-        a.btn.outline(href="/") Go Back 
+    form.form
+      +entry("email", "Email", "johndoe@example.com")
       
       p 
-        span Already have an account?
-        a.highlight(href="/login")  Login
+        span Already have an account? 
+        a.bold(href="/login") Login 
+
+      .btn-group
+        button.btn.primary Continue 
+    
+    form.form.hidden
+      +entry("otp", "Verification code", "")
       
+      p 
+        span Didn't get the code? 
+        button.bold(type="button") Resend
+
+      .btn-group.reverse
+        button.btn.primary Continue 
+        button.btn.outline.back(type="button") Back 
+    
+    form.form.hidden
+      .picture-input 
+        input#file-pfp(type="file", accept="image/*")
+
+        label.placeholder(for="file-pfp") 
+          span.material-icons person
+
+        img.preview.hidden
+
+        label.btn.outline(for="file-pfp") Upload Picture
+
+      +entry("displayName", "Display name", "John Doe")
+
+      +entry("password", "Password", "********", 'password')
+
+      +entry("confirmPassword", "Confirm Password", "********", 'password')
+
+      .entry
+        input#checkbox-tac(type="checkbox")
+
+        label.checkbox(for="checkbox-tac") 
+          span.material-icons.unchecked check_box_outline_blank
+          span.material-icons.checked check_box
+          
+          p 
+            span.inherit I accept these 
+            a(href="/assets/terms-and-conditions.pdf", download="Yapper - Terms and Conditions.pdf") Terms and Condition 
+            span.inherit of Yapper.
+        
+        label.error-text(for="#checkbox-tac")
+
+      .entry
+        input#checkbox-pp(type="checkbox")
+
+        label.checkbox(for="checkbox-pp") 
+          span.material-icons.unchecked check_box_outline_blank
+          span.material-icons.checked check_box
+          
+          p 
+            span.inherit I accept this 
+            a(href="/assets/privacy-policy.pdf", download="Yapper - Privacy Policy.pdf") Privacy Policy 
+            span.inherit of Yapper.
+        
+        label.error-text(for="#checkbox-pp")
+
+      .btn-group
+        button.btn.primary Create Account 

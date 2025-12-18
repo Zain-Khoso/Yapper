@@ -1,0 +1,256 @@
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  width: 100%;
+  cursor: text;
+}
+
+.entry .label {
+  font-weight: 600;
+  color: var(--color-foreground-secondary);
+  cursor: inherit;
+}
+
+.entry:focus-within .label {
+  color: var(--color-foreground);
+}
+
+.entry.error .label {
+  color: var(--color-danger);
+}
+
+.entry .input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--color-foreground-secondary);
+  border-radius: 0.5rem;
+  cursor: inherit;
+}
+
+.entry .input-wrapper .input {
+  flex: 1;
+
+  color: var(--color-foreground);
+}
+
+.entry .input-wrapper .input::placeholder {
+  color: var(--color-foreground-secondary);
+  user-select: none;
+}
+
+.entry .input-wrapper:has(.input:focus) {
+  border-color: var(--color-foreground);
+}
+
+.entry.error .input-wrapper {
+  border-color: var(--color-danger);
+}
+
+.entry .eye-btn {
+  display: grid;
+  place-items: center;
+
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.entry .eye-btn .material-icons {
+  color: var(--color-foreground-secondary);
+}
+
+.entry .eye-btn:focus .material-icons {
+  color: var(--color-foreground);
+}
+
+.entry .input[type='password'] + .eye-btn .eye-close {
+  display: none;
+}
+
+.entry .input[type='password'] + .eye-btn .eye-open {
+  display: block;
+}
+
+.entry .input[type='text'] + .eye-btn .eye-close {
+  display: block;
+}
+
+.entry .input[type='text'] + .eye-btn .eye-open {
+  display: none;
+}
+
+.entry .error-text {
+  display: none;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-danger);
+}
+
+.entry.error .error-text {
+  display: block;
+}
+
+.entry .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  width: fit-content;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.entry input[type='checkbox'] {
+  position: fixed;
+  left: -9999px;
+}
+
+.entry .checkbox .material-icons {
+  font-size: large;
+}
+
+.entry .checkbox .material-icons.checked {
+  color: var(--color-foreground);
+}
+
+.entry .checkbox .material-icons.unchecked {
+  color: var(--color-foreground-secondary);
+}
+
+.entry input[type='checkbox']:focus + .checkbox .material-icons.unchecked {
+  color: var(--color-foreground);
+}
+
+.entry input[type='checkbox']:checked + .checkbox .checked {
+  display: block;
+}
+
+.entry input[type='checkbox']:checked + .checkbox .unchecked {
+  display: none;
+}
+
+.entry input[type='checkbox']:not(:checked) + .checkbox .checked {
+  display: none;
+}
+
+.entry input[type='checkbox']:not(:checked) + .checkbox .unchecked {
+  display: block;
+}
+
+.entry .checkbox p a:hover,
+.entry .checkbox p a:focus {
+  font-weight: 600;
+}
+
+.entry.error .checkbox .material-icons {
+  color: var(--color-danger);
+}
+
+.picture-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: flex-start;
+  gap: 16px;
+
+  cursor: pointer;
+}
+
+.loading .picture-input,
+.picture-input:has(input:disabled) {
+  cursor: not-allowed !important;
+}
+
+.picture-input input[type='file'] {
+  position: fixed;
+  left: -9999px;
+}
+
+.picture-input .placeholder {
+  display: grid;
+  place-items: center;
+
+  width: 8rem;
+  height: 8rem;
+  background-color: var(--color-foreground-secondary);
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.picture-input:focus-within .placeholder {
+  background-color: var(--color-foreground);
+}
+
+.loading .picture-input .placeholder,
+.picture-input:has(input:disabled) .placeholder {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.picture-input .placeholder .material-icons {
+  color: var(--color-background);
+  font-size: 6rem;
+}
+
+.picture-input .preview {
+  display: block;
+
+  width: 8rem;
+  height: 8rem;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.loading .picture-input .preview,
+.picture-input:has(input:disabled) .preview {
+  opacity: 0.8 !important;
+}
+
+.picture-input .btn {
+  cursor: pointer;
+}
+
+.picture-input.error .btn {
+  color: var(--color-danger);
+  background-color: transparent;
+  border-color: var(--color-danger);
+  cursor: pointer;
+}
+
+.picture-input:has(input:disabled) .btn {
+  color: var(--color-background-secondary) !important;
+  background-color: transparent !important;
+  border-color: var(--color-background-secondary) !important;
+  cursor: not-allowed !important;
+}
+
+/* Form Loading State Styles */
+
+.loading .entry {
+  cursor: not-allowed;
+}
+
+.loading .entry .label {
+  color: var(--color-background-secondary);
+}
+
+.loading .entry .input-wrapper {
+  border-color: var(--color-background-secondary);
+}
+
+.loading .entry .input-wrapper .input {
+  cursor: not-allowed;
+}
+
+.loading .entry .input-wrapper .input::placeholder {
+  color: var(--color-background-secondary);
+}
