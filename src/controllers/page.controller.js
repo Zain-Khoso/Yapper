@@ -1,7 +1,7 @@
 // Local Imports.
-const getMetadata = require('../utils/metadata');
+import getMetadata from '../utils/metadata.js';
 
-exports.getLandingPage = function (req, res) {
+export function getLandingPage(req, res) {
   const metadata = getMetadata({
     absoluteTitle: 'Yapper — Simple Real-Time Chat for Learning & Fun',
     description:
@@ -22,9 +22,9 @@ exports.getLandingPage = function (req, res) {
   });
 
   res.render('landing', { metadata, bundleName: 'landing' });
-};
+}
 
-exports.getSignUpPage = function (req, res) {
+export function getSignUpPage(req, res) {
   const metadata = getMetadata({
     title: 'Sign Up',
     description:
@@ -41,9 +41,9 @@ exports.getSignUpPage = function (req, res) {
   });
 
   res.render('signup', { metadata, bundleName: 'signup' });
-};
+}
 
-exports.getLoginPage = function (req, res) {
+export function getLoginPage(req, res) {
   const metadata = getMetadata({
     title: 'Log In',
     description:
@@ -54,9 +54,9 @@ exports.getLoginPage = function (req, res) {
   });
 
   res.render('login', { metadata });
-};
+}
 
-exports.getChangeEmailPage = function (req, res) {
+export function getChangeEmailPage(req, res) {
   const metadata = getMetadata({
     title: 'Change Email',
     description:
@@ -67,9 +67,9 @@ exports.getChangeEmailPage = function (req, res) {
   });
 
   res.render('change-email', { metadata, user: {} }); // TODO: remove this user attribute.
-};
+}
 
-exports.getChangePasswordPage = function (req, res) {
+export function getChangePasswordPage(req, res) {
   const metadata = getMetadata({
     title: 'Change Password',
     description:
@@ -86,9 +86,9 @@ exports.getChangePasswordPage = function (req, res) {
   });
 
   res.render('change-password', { metadata });
-};
+}
 
-exports.getSettingsPage = function (req, res) {
+export function getSettingsPage(req, res) {
   const metadata = getMetadata({
     title: 'Settings',
     description:
@@ -99,9 +99,9 @@ exports.getSettingsPage = function (req, res) {
   });
 
   res.render('settings', { metadata, user: {} }); // TODO: remove this user attribute.
-};
+}
 
-exports.getChatPage = function (req, res) {
+export function getChatPage(req, res) {
   const metadata = getMetadata({
     title: 'Chat',
     description:
@@ -112,13 +112,13 @@ exports.getChatPage = function (req, res) {
   });
 
   res.render('chat', { metadata });
-};
+}
 
-exports.getCallsPage = function (_, res) {
+export function getCallsPage(_, res) {
   res.redirect('/chat');
-};
+}
 
-exports.getNotFoundPage = function (req, res) {
+export function getNotFoundPage(req, res) {
   const metadata = getMetadata({
     title: 'Page Not Found',
     description:
@@ -130,4 +130,4 @@ exports.getNotFoundPage = function (req, res) {
 
   // TODO: Check req.method to send JSON responses for API reqs.
   res.status(404).render('not-found', { metadata, bundleName: 'landing' });
-};
+}

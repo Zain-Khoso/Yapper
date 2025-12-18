@@ -1,35 +1,44 @@
 // Lib Imports.
-const { Router } = require('express');
+import { Router } from 'express';
 
 // Local Imports.
-const controller = require('../controllers/page.controller');
+import {
+  getLandingPage,
+  getSignUpPage,
+  getLoginPage,
+  getChangeEmailPage,
+  getChangePasswordPage,
+  getSettingsPage,
+  getChatPage,
+  getCallsPage,
+} from '../controllers/page.controller.js';
 
 const router = Router();
 
 // Routes.
 
 // GET: Landing Page.
-router.get('/', controller.getLandingPage);
+router.get('/', getLandingPage);
 
 // GET: Signup Page.
-router.get('/signup', controller.getSignUpPage);
+router.get('/signup', getSignUpPage);
 
 // GET: Login Page.
-router.get('/login', controller.getLoginPage);
+router.get('/login', getLoginPage);
 
 // GET: Change Email Page.
-router.get('/change-email', controller.getChangeEmailPage);
+router.get('/change-email', getChangeEmailPage);
 
 // GET: Change Password Page.
-router.get('/change-password', controller.getChangePasswordPage);
+router.get('/change-password', getChangePasswordPage);
 
 // GET: Settings Page.
-router.get('/settings', controller.getSettingsPage);
+router.get('/settings', getSettingsPage);
 
 // GET: Chatapp Page.
-router.get('/chat', controller.getChatPage);
+router.get('/chat', getChatPage);
 
 // GET: Calls Page.
-router.get('/calls', controller.getCallsPage);
+router.get('/calls', getCallsPage);
 
-module.exports = router;
+export default router;

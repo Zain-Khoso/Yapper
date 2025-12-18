@@ -1,79 +1,53 @@
-// Loading Environment Variables.
-require('dotenv').config({ quiet: true });
-
 // Node Imports.
-const path = require('path');
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 // Lib Imports.
-const express = require('express');
-// const session = require('express-session');
-// const SequelizeSessionStore = require('connect-session-sequelize')(session.Store);
+import { configDotenv } from 'dotenv';
+import express from 'express';
 
-// Local Imports.
-const { viteAssets } = require('./src/utils/middlewares');
-// const sequelize = require('./src/utils/database');
-const { getNotFoundPage } = require('./src/controllers/page.controller');
-const pageRouter = require('./src/routes/page.routes');
-// const authRouter = require('./src/routes/auth.routes');
-// const chatRouter = require('./src/routes/chat.routes');
+// Loading Environment Variables.
+configDotenv({ quiet: true });
 
-(async function () {
-  // Initializing Express.
-  const app = express();
-  app.locals.isProd = app.get('env') === 'production';
+// Middleware Imports.
+import { viteAssets } from './src/utils/middlewares.js';
 
-  // Integrating Template Engine (Pug).
-  app.set('view engine', 'pug');
-  app.set('views', path.join(__dirname, 'src', 'views'));
-  // app.set('trust proxy', app.get('env') === 'production' ? 1 : 0);
+// Routes & Controllers.
+import pageRouter from './src/routes/page.routes.js';
+import { getNotFoundPage } from './src/controllers/page.controller.js';
 
-  if (!app.locals.isProd) {
-    const { createServer: createViteServer } = require('vite');
-    const vite = await createViteServer({
-      appType: 'custom',
-      server: { middlewareMode: true },
-    });
+// Initializing Express.
+const app = express();
 
-    app.use(vite.middlewares);
-  } else {
-    app.use(express.static(path.join(__dirname, 'public')));
-  }
+// Integrating Template Engine (Pug).
+app.set('view engine', 'pug');
+app.set('views', path.join(import.meta.dirname, 'src', 'views'));
 
-  // app.use(
-  //   session({
-  //     name: 'yapper.session',
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //     store: new SequelizeSessionStore({
-  //       db: sequelize,
-  //     }),
-  //     cookie: {
-  //       secure: app.get('env') === 'production',
-  //       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 Days.
-  //     },
-  //   })
-  // );
+// Setting Local Values. ( For templates mostly )
+app.locals.isProd = app.get('env') === 'production';
 
-  // Integrating Middlewares.
-  app.use(express.json());
-  app.use(viteAssets());
+// If the app is in PRODUCTION then serve the public dir statically.
+if (app.locals.isProd) app.use(express.static(path.join(import.meta.dirname, 'public')));
+// If not, handle the static assets logic over to Vite.
+else {
+  const { createServer: createViteServer } = await import('vite');
+  const vite = await createViteServer({
+    appType: 'custom',
+    server: { middlewareMode: true },
+  });
 
-  // Routes.
-  app.use(pageRouter);
-  // app.use('/api/v1/', authRouter, chatRouter);
+  app.use(vite.middlewares);
+}
 
-  // Error Middlewares.
-  app.use(getNotFoundPage);
+// Integrating Middlewares.
+app.use(express.json());
+app.use(viteAssets());
 
-  // Model Associations.
-  // require('./src/utils/associations');
+// Routes.
+app.use(pageRouter);
 
-  // Running the server.
-  app.listen(process.env.PORT);
+// Error Middlewares.
+app.use(getNotFoundPage);
 
-  // sequelize
-  //   .sync({ force: false })
-  //   .then(() => app.listen(process.env.PORT))
-  //   .catch((error) => console.log(error));
-})();
+// Running the server.
+app.listen(process.env.PORT);

@@ -1,9 +1,9 @@
 // Node Imports.
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Middleware for protecting routes from already signed in users.
-exports.protectFromAuthenticatedUsers = function (req, res, next) {
+export function protectFromAuthenticatedUsers(req, res, next) {
   const isAuthenticated = req?.session?.isAuthenticated;
 
   if (req.method === 'GET') {
@@ -13,10 +13,10 @@ exports.protectFromAuthenticatedUsers = function (req, res, next) {
     if (!isAuthenticated) next();
     else res.status(401).json({ errors: { root: 'Invalid Request.' } });
   }
-};
+}
 
 // Middleware for protecting routes from non-signed in users.
-exports.protectFromUnAuthenticatedUsers = function (req, res, next) {
+export function protectFromUnAuthenticatedUsers(req, res, next) {
   const isAuthenticated = req?.session?.isAuthenticated;
 
   if (req.method === 'GET') {
@@ -26,15 +26,15 @@ exports.protectFromUnAuthenticatedUsers = function (req, res, next) {
     if (isAuthenticated) next();
     else res.status(401).json({ errors: { root: 'Invalid Request.' } });
   }
-};
+}
 
 // Middleware for getting assets' paths accordingly to the environment.
-exports.viteAssets = function () {
+export function viteAssets() {
   const isProd = process.env.NODE_ENV === 'production';
   let manifest = {};
 
   if (isProd) {
-    const manifestPath = path.resolve(__dirname, 'public', '.vite', 'manifest.json');
+    const manifestPath = path.resolve(import.meta.dirname, 'public', '.vite', 'manifest.json');
 
     if (fs.existsSync(manifestPath)) manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
   }
@@ -79,4 +79,4 @@ exports.viteAssets = function () {
 
     next();
   };
-};
+}

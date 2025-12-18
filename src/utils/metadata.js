@@ -6,7 +6,7 @@ const DEFAULTS = {
   keywords: ['yapper', 'chat', 'messaging', 'hobby-project', 'real-time', 'simple', 'fast'],
 };
 
-module.exports = function getMetadata({
+export default function getMetadata({
   title = '',
   absoluteTitle = '',
   description = '',
@@ -61,4 +61,4 @@ module.exports = function getMetadata({
       image: assets.ogImageLight,
     },
   };
-};
+}

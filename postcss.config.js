@@ -1,5 +1,5 @@
 // Postcss Configuration.
-module.exports = {
+export default {
   plugins: {
     autoprefixer: {},
   },
