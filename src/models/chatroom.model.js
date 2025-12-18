@@ -1,26 +1,16 @@
 // Lib Imports.
-const { DataTypes } = require('sequelize');
+import { DataTypes } from 'sequelize';
 
 // Local Imports.
-const sequelize = require('../utils/database');
+import sequelize from '../utils/database.js';
 
 // This model is used to store the information related specifically to a chatroom.
-const Chatroom = sequelize.define('Chatroom', {
+const Chatroom = sequelize.define('chatroom', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,
     defaultValue: DataTypes.UUIDV4(),
-  },
-
-  name: {
-    type: DataTypes.STRING(16),
-    defaultValue: '',
-  },
-
-  isGroup: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
   },
 
   lastMessageAt: {
@@ -29,4 +19,4 @@ const Chatroom = sequelize.define('Chatroom', {
   },
 });
 
-module.exports = Chatroom;
+export default Chatroom;

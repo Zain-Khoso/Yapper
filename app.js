@@ -46,6 +46,9 @@ app.use(pageRouter);
 // Error Middlewares.
 app.use(getNotFoundPage);
 
+// Defining Model Associations.
+import './src/utils/associations.js';
+
 // Connecting to Database.
 await sequelize.sync({ force: false });
 

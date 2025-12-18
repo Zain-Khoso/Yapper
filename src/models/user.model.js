@@ -1,21 +1,28 @@
 // Lib Imports.
-const { DataTypes } = require('sequelize');
+import { DataTypes } from 'sequelize';
 
 // Local Imports.
-const sequelize = require('../utils/database');
+import sequelize from '../utils/database.js';
 
 // This model is used to store the information related specifically to a user.
-const User = sequelize.define('User', {
+const User = sequelize.define('user', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,
     defaultValue: DataTypes.UUIDV4(),
   },
+
   email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
+  },
+
+  picture: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: false,
   },
 
   displayName: {
@@ -30,17 +37,15 @@ const User = sequelize.define('User', {
     unique: false,
   },
 
-  actionToken: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
+  isOnline: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
 
-  actionTokenExpires: {
+  lastSeen: {
     type: DataTypes.DATE,
-    allowNull: true,
-    unique: true,
+    defaultValue: () => new Date(),
   },
 });
 
-module.exports = User;
+export default User;

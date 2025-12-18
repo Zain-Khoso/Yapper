@@ -1,36 +1,36 @@
 // Local Imports.
-const User = require('../models/user.model');
-const Chatroom = require('../models/chatroom.model');
-const ChatroomMember = require('../models/chatroomMember.model');
-const Message = require('../models/message.model');
+import User from '../models/user.model.js';
+import Chatroom from '../models/chatroom.model.js';
+import ChatroomMember from '../models/chatroomMember.model.js';
+import Message from '../models/message.model.js';
 
 // Model Associations.
-User.belongsToMany(Chatroom, { through: ChatroomMember });
-Chatroom.belongsToMany(User, { through: ChatroomMember });
+User.belongsToMany(Chatroom, { through: ChatroomMember, as: 'member', foreignKey: 'memberId' });
+Chatroom.belongsToMany(User, { through: ChatroomMember, as: 'room', foreignKey: 'roomId' });
 
-Chatroom.hasMany(Message, {
-  foreignKey: 'roomId',
+User.hasMany(ChatroomMember, {
+  onUpdate: 'CASCADE',
+  onDelete: 'SET NULL',
+});
+ChatroomMember.belongsTo(User, {
+  onUpdate: 'CASCADE',
+  onDelete: 'SET NULL',
+});
+
+Chatroom.hasMany(ChatroomMember, {
+  onUpdate: 'CASCADE',
   onDelete: 'CASCADE',
 });
-Message.belongsTo(Chatroom, {
-  foreignKey: 'roomId',
+ChatroomMember.belongsTo(Chatroom, {
+  onUpdate: 'CASCADE',
   onDelete: 'CASCADE',
 });
 
-User.hasMany(Message, {
-  foreignKey: 'senderId',
-  onDelete: 'SET NULL',
-});
-Message.belongsTo(User, {
-  foreignKey: 'senderId',
-  onDelete: 'SET NULL',
-});
+Chatroom.hasMany(Message, { foreignKey: 'roomId', onDelete: 'CASCADE' });
+Message.belongsTo(Chatroom, { foreignKey: 'roomId', onDelete: 'CASCADE' });
 
-ChatroomMember.hasMany(Message, {
-  foreignKey: 'chatroomMemberId',
-  onDelete: 'SET NULL',
-});
-Message.belongsTo(ChatroomMember, {
-  foreignKey: 'chatroomMemberId',
-  onDelete: 'SET NULL',
-});
+User.hasMany(Message, { onDelete: 'SET NULL' });
+Message.belongsTo(User, { onDelete: 'SET NULL' });
+
+ChatroomMember.hasMany(Message, { foreignKey: 'senderId', onDelete: 'SET NULL' });
+Message.belongsTo(ChatroomMember, { foreignKey: 'senderId', onDelete: 'SET NULL' });

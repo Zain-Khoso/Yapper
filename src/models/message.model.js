@@ -1,11 +1,11 @@
 // Lib Imports.
-const { DataTypes } = require('sequelize');
+import { DataTypes } from 'sequelize';
 
 // Local Imports.
-const sequelize = require('../utils/database');
+import sequelize from '../utils/database.js';
 
 // This model is used to store the information related to a specific message.
-const Message = sequelize.define('Message', {
+const Message = sequelize.define('message', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -23,7 +23,7 @@ const Message = sequelize.define('Message', {
   },
 
   fileName: {
-    type: DataTypes.STRING(64),
+    type: DataTypes.STRING(32),
     allowNull: true,
   },
 
@@ -38,4 +38,4 @@ const Message = sequelize.define('Message', {
   },
 });
 
-module.exports = Message;
+export default Message;

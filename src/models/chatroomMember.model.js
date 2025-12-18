@@ -1,33 +1,15 @@
 // Lib Imports.
-const { DataTypes } = require('sequelize');
+import { DataTypes } from 'sequelize';
 
 // Local Imports.
-const sequelize = require('../utils/database');
-const Chatroom = require('./chatroom.model');
-const User = require('./user.model');
+import sequelize from '../utils/database.js';
 
 // This model is used to store the information related to a user inside a specifically chatroom.
-const ChatroomMember = sequelize.define('ChatroomMember', {
+const ChatroomMember = sequelize.define('chatroomMember', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4(),
-  },
-
-  UserId: {
-    type: DataTypes.STRING,
-    references: {
-      model: User,
-      key: 'id',
-    },
-  },
-
-  ChatroomId: {
-    type: DataTypes.STRING,
-    references: {
-      model: Chatroom,
-      key: 'id',
-    },
   },
 
   isBlocked: {
@@ -41,4 +23,4 @@ const ChatroomMember = sequelize.define('ChatroomMember', {
   },
 });
 
-module.exports = ChatroomMember;
+export default ChatroomMember;
