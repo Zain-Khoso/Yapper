@@ -1,20 +1,31 @@
-// Node Imports.
-const { randomBytes } = require('crypto');
-
-// Lib Imports.
-const validator = require('validator');
-const bcrypt = require('bcrypt');
-const { Op } = require('sequelize');
-const sendGrid = require('@sendgrid/mail');
-
 // Local Imports.
-const User = require('../models/user.model');
-const { schema_email, schema_displayName, schema_password } = require('../utils/validations');
+import { schema_Email, getZodError } from '../utils/validations.js';
+import User from '../models/user.model.js';
 
-// Configs.
-sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
+export async function postEmailUnique(req, res) {
+  // Extracting Body Data.
+  const { email } = req.body;
 
-exports.postCreateAccount = function (req, res) {
+  // Validating Body Data.
+  const result = schema_Email.safeParse(email);
+
+  if (!result.success) {
+    return res.status(409).json({
+      errors: { email: getZodError(result) },
+      data: {},
+    });
+  }
+
+  const user = await User.findOne({ where: { email } });
+
+  if (user) {
+    return res.status(409).json({ errors: { email: 'Email is already in use' }, data: {} });
+  }
+
+  return res.status(200).json({ errors: {}, data: { email } });
+}
+
+export function postCreateAccount(req, res) {
   let { email, displayName, password } = req.body;
 
   // Sanitizing body data.
@@ -66,9 +77,9 @@ exports.postCreateAccount = function (req, res) {
         errors,
       });
     });
-};
+}
 
-exports.postLogin = function (req, res) {
+export function postLogin(req, res) {
   let { email, password } = req.body;
 
   // Sanitizing body data.
@@ -111,9 +122,9 @@ exports.postLogin = function (req, res) {
         errors,
       });
     });
-};
+}
 
-exports.getLogout = function (req, res) {
+export function getLogout(req, res) {
   req.session.destroy((error) => {
     if (error) {
       res.status(500).json({ errors: { root: 'Something went wrong' } });
@@ -121,9 +132,9 @@ exports.getLogout = function (req, res) {
       res.status(200).json({ errors: {} });
     }
   });
-};
+}
 
-exports.getAccountDelete = function (req, res) {
+export function getAccountDelete(req, res) {
   User.destroy({ where: { email: req.session.user.email } }).then((user) => {
     req.session.destroy((error) => {
       if (error) {
@@ -133,63 +144,9 @@ exports.getAccountDelete = function (req, res) {
       }
     });
   });
-};
+}
 
-exports.postActionToken = function (req, res) {
-  let { email, sendEmail = false } = req.body;
-
-  // Sanitizing body data.
-  email = validator.trim(email);
-  email = validator.normalizeEmail(email, {
-    gmail_remove_dots: false,
-    gmail_remove_subaddress: false,
-    outlookdotcom_remove_subaddress: false,
-    yahoo_remove_subaddress: false,
-    icloud_remove_subaddress: false,
-  });
-
-  const actionToken = randomBytes(16).toString('hex');
-  const actionTokenExpires = new Date(Date.now() + 1000 * 60 * 5);
-  const isProd = req.app.get('env') === 'production';
-
-  const redirectTo = `${isProd ? 'https' : 'http'}://${req.hostname}${isProd ? '' : ':' + process.env.PORT}/change-password/${actionToken}`;
-
-  User.update({ actionToken, actionTokenExpires }, { where: { email } })
-    .then((response) => {
-      if (response.at(0) <= 0) return Promise.reject({ email: 'Invalid email.' });
-
-      if (sendEmail) {
-        res.status(202).json();
-
-        return sendGrid.send({
-          to: email,
-          from: process.env.YAPPER_EMAIL,
-          subject: 'Yapper Account Password Reset',
-          text: `To reset your password on Yapper. Follow this link: ${redirectTo}`,
-          html: `
-            <p>
-              To reset your password on Yapper. Follow this link: <a href="${redirectTo}">${redirectTo}</a>
-            </p>
-          `,
-        });
-      } else res.status(202).json({ redirectTo });
-    })
-    .catch((errors) => {
-      if (!Object.keys(errors).includes('email')) {
-        return res.status(500).json({
-          errors: {
-            root: 'Something went wrong.',
-          },
-        });
-      }
-
-      res.status(409).json({
-        errors,
-      });
-    });
-};
-
-exports.postChangePassword = function (req, res, next) {
+export function postChangePassword(req, res, next) {
   const { token } = req.params;
   let { password } = req.body;
 
@@ -237,9 +194,9 @@ exports.postChangePassword = function (req, res, next) {
         },
       });
     });
-};
+}
 
-exports.postChangeEmail = function (req, res) {
+export function postChangeEmail(req, res) {
   let { newEmail } = req.body;
 
   // Sanitizing body data.
@@ -287,9 +244,9 @@ exports.postChangeEmail = function (req, res) {
         errors,
       });
     });
-};
+}
 
-exports.postChangeDisplayName = function (req, res) {
+export function postChangeDisplayName(req, res) {
   let { displayName } = req.body;
 
   // Sanitizing body data.
@@ -321,4 +278,4 @@ exports.postChangeDisplayName = function (req, res) {
         },
       });
     });
-};
+}

@@ -1,43 +1,44 @@
 // Lib Imports.
-const { Router } = require('express');
+import { Router } from 'express';
 
 // Local Imports.
-const controller = require('../controllers/auth.controller');
-const {
-  protectFromAuthenticatedUsers,
-  protectFromUnAuthenticatedUsers,
-} = require('../utils/middlewares');
+import { postEmailUnique } from '../controllers/auth.controller.js';
 
 const router = Router();
 
-// Routes.
+// Auth Routes.
 
-// POST: Create Account.
-router.post('/account/create', protectFromAuthenticatedUsers, controller.postCreateAccount);
+// POST: Email Uniqueness Check.
+router.post('/email/unique', postEmailUnique);
 
-// POST: Login.
-router.post('/account/login', protectFromAuthenticatedUsers, controller.postLogin);
+export default router;
 
-// GET: Logout.
-router.get('/account/logout', protectFromUnAuthenticatedUsers, controller.getLogout);
+// // POST: Create Account.
+// router.post('/account/create', protectFromAuthenticatedUsers, controller.postCreateAccount);
 
-// GET: Account Delete.
-router.get('/account/delete', protectFromUnAuthenticatedUsers, controller.getAccountDelete);
+// // POST: Login.
+// router.post('/account/login', protectFromAuthenticatedUsers, controller.postLogin);
 
-// POST: Change Password Token.
-router.post('/change-password-token', controller.postActionToken);
+// // GET: Logout.
+// router.get('/account/logout', protectFromUnAuthenticatedUsers, controller.getLogout);
 
-// POST: Change Password.
-router.post('/change-password/:token', controller.postChangePassword);
+// // GET: Account Delete.
+// router.get('/account/delete', protectFromUnAuthenticatedUsers, controller.getAccountDelete);
 
-// POST: Change Email.
-router.post('/change-email', protectFromUnAuthenticatedUsers, controller.postChangeEmail);
+// // POST: Change Password Token.
+// router.post('/change-password-token', controller.postActionToken);
 
-// POST: Change Display Name.
-router.post(
-  '/change-displayName',
-  protectFromUnAuthenticatedUsers,
-  controller.postChangeDisplayName
-);
+// // POST: Change Password.
+// router.post('/change-password/:token', controller.postChangePassword);
 
-module.exports = router;
+// // POST: Change Email.
+// router.post('/change-email', protectFromUnAuthenticatedUsers, controller.postChangeEmail);
+
+// // POST: Change Display Name.
+// router.post(
+//   '/change-displayName',
+//   protectFromUnAuthenticatedUsers,
+//   controller.postChangeDisplayName
+// );
+
+// module.exports = router;
