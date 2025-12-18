@@ -1,17 +1,15 @@
+// Loading Environment Variables.
+import 'dotenv/config';
+
 // Node Imports.
 import path from 'path';
 
 // Lib Imports.
-import { configDotenv } from 'dotenv';
 import express from 'express';
 
-// Loading Environment Variables.
-configDotenv({ quiet: true });
-
-// Middleware Imports.
+// Local Imports.
 import { viteAssets } from './src/utils/middlewares.js';
-
-// Routes & Controllers.
+import sequelize from './src/utils/database.js';
 import pageRouter from './src/routes/page.routes.js';
 import { getNotFoundPage } from './src/controllers/page.controller.js';
 
@@ -47,6 +45,9 @@ app.use(pageRouter);
 
 // Error Middlewares.
 app.use(getNotFoundPage);
+
+// Connecting to Database.
+await sequelize.sync({ force: false });
 
 // Running the server.
 app.listen(process.env.PORT);
