@@ -1,9 +1,17 @@
 // Lib Imports.
 import { Op } from 'sequelize';
+import bcrypt from 'bcrypt';
 
 // Util Imports.
 import sequelize from '../utils/database.js';
-import { schema_Email, schema_OTP, getZodError } from '../utils/validations.js';
+import {
+  schema_Email,
+  schema_OTP,
+  schema_DisplayName,
+  schema_Password,
+  schema_URL,
+  getZodError,
+} from '../utils/validations.js';
 import { generateOTP } from '../utils/otp.js';
 
 // Models.
@@ -118,4 +126,67 @@ async function verifyTempUser(req, res, next) {
   }
 }
 
-export { registerTempUser, verifyTempUser };
+async function createUser(req, res, next) {
+  // Extracting Body Data.
+  const { email, picture, displayName, password } = req.body;
+
+  // Creating a db Transaction.
+  const t = await sequelize.transaction();
+
+  try {
+    // Validating Body Data.
+    const result_email = schema_Email.safeParse(email);
+    const result_picture = schema_URL.safeParse(picture);
+    const result_displayName = schema_DisplayName.safeParse(displayName);
+    const result_password = schema_Password.safeParse(password);
+
+    if (
+      !result_email.success ||
+      !result_picture.success ||
+      !result_displayName.success ||
+      !result_password.success
+    ) {
+      t.rollback();
+
+      return res.status(409).json({
+        data: {},
+        errors: {
+          email: getZodError(result_email),
+          picture: getZodError(result_picture),
+          displayName: getZodError(result_displayName),
+          password: getZodError(result_password),
+        },
+      });
+    }
+
+    const registration = await Registration.findOne({
+      where: { email, isVerified: true },
+      transaction: t,
+    });
+    if (!registration) {
+      t.rollback();
+      return res.status(409).json({ data: {}, errors: { root: 'Invalid Request' } });
+    }
+
+    const salt = await bcrypt.genSalt(parseInt(process.env.PASSWORD_SALT));
+    const password_hash = await bcrypt.hash(password, salt);
+
+    await Promise.all([
+      User.create(
+        { email, picture: null, displayName, password: password_hash },
+        { transaction: t }
+      ),
+      registration.destroy({ transaction: t }),
+    ]);
+
+    res.status(201).json({});
+
+    t.commit();
+  } catch (error) {
+    t.rollback();
+
+    next(error);
+  }
+}
+
+export { registerTempUser, verifyTempUser, createUser };

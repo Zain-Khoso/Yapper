@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // Local Imports.
-import { registerTempUser, verifyTempUser } from '../controllers/account.controller.js';
+import { registerTempUser, verifyTempUser, createUser } from '../controllers/account.controller.js';
 
 // User Account Related Routes.
 const router = Router();
@@ -12,5 +12,8 @@ router.put('/register', registerTempUser);
 
 // PATCH : Verifies the Temporary User Entry in the db.
 router.patch('/register/verify', verifyTempUser);
+
+// POST : Creates the Permament User Entry in the db.
+router.post('/create', createUser);
 
 export default router;

@@ -20,6 +20,15 @@ const schema_PictureFile = z
   .optional()
   .or(z.literal(null));
 
+const schema_PictureObject = z
+  .object({
+    name: z.string().max(32, 'File name is too big.'),
+    type: z.string().refine((val) => ALLOWED_PICTURE_FILE_TYPES.includes(val)),
+    size: z.number().max(MAX_FILE_SIZE),
+  })
+  .optional()
+  .or(z.literal(null));
+
 const schema_DisplayName = z
   .string()
   .trim()
@@ -48,6 +57,8 @@ const schema_ConfirmPassword = z
 
 const schema_Checkbox = z.boolean('You must our these Terms and Conditions');
 
+const schema_URL = z.url('Invalid URL').optional().or(z.literal(null));
+
 // Function to get the first error message of any given schema.
 function getZodError(result) {
   if (result.success) return '';
@@ -61,9 +72,11 @@ export {
   schema_Email,
   schema_OTP,
   schema_PictureFile,
+  schema_PictureObject,
   schema_DisplayName,
   schema_Password,
   schema_ConfirmPassword,
   schema_Checkbox,
+  schema_URL,
   getZodError,
 };
