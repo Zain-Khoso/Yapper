@@ -64,6 +64,12 @@ const User = sequelize.define('user', {
     allowNull: true,
     unique: false,
   },
+
+  refreshToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: false,
+  },
 });
 
 export default User;
