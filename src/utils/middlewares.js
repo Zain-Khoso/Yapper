@@ -2,34 +2,14 @@
 import fs from 'fs';
 import path from 'path';
 
-// Middleware for protecting routes from already signed in users.
-export function protectFromAuthenticatedUsers(req, res, next) {
-  const isAuthenticated = req?.session?.isAuthenticated;
+// Lib Imports.
+import jwt from 'jsonwebtoken';
 
-  if (req.method === 'GET') {
-    if (!isAuthenticated) next();
-    else res.redirect('/chat');
-  } else {
-    if (!isAuthenticated) next();
-    else res.status(401).json({ errors: { root: 'Invalid Request.' } });
-  }
-}
-
-// Middleware for protecting routes from non-signed in users.
-export function protectFromUnAuthenticatedUsers(req, res, next) {
-  const isAuthenticated = req?.session?.isAuthenticated;
-
-  if (req.method === 'GET') {
-    if (isAuthenticated) next();
-    else res.redirect('/login');
-  } else {
-    if (isAuthenticated) next();
-    else res.status(401).json({ errors: { root: 'Invalid Request.' } });
-  }
-}
+// Local Imports.
+import User from '../models/user.model.js';
 
 // Middleware for getting assets' paths accordingly to the environment.
-export function viteAssets() {
+function viteAssets() {
   const isProd = process.env.NODE_ENV === 'production';
   let manifest = {};
 
@@ -82,7 +62,7 @@ export function viteAssets() {
 }
 
 // Middleware for sending responses in a set pattern.
-export function handleResponse(req, res) {
+function handleResponse(req, res) {
   try {
     const data = req?.response?.data ?? {};
     const errors = req?.response?.errors ?? {};
@@ -93,3 +73,41 @@ export function handleResponse(req, res) {
     next(error);
   }
 }
+
+// Middleware for protecting routes from non-signed in users.
+async function allowAuthenticatedUserOnly(req, res, next) {
+  try {
+    const authHeader = req.header('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: { root: 'Invalid Request' }, data: {} });
+    }
+
+    let userId = null;
+    const token = authHeader.split(' ').at(-1);
+
+    try {
+      const tokenData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      userId = tokenData.userId;
+    } catch (error) {
+      return res.status(403).json({ success: false, errors: { root: 'Invalid Token.' }, data: {} });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.clearCookie('yapper.refreshToken', {
+        httpOnly: true,
+        secure: req.app.locals.isProd,
+        sameSite: 'Strict',
+      });
+
+      return res.status(403).json({ success: false, errors: { root: 'Invalid Token.' }, data: {} });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { viteAssets, handleResponse, allowAuthenticatedUserOnly };
