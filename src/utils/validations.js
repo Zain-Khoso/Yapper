@@ -50,6 +50,8 @@ const schema_Checkbox = z.boolean('You must our these Terms and Conditions');
 
 // Function to get the first error message of any given schema.
 function getZodError(result) {
+  if (result.success) return '';
+
   const { errors } = z.treeifyError(result.error);
 
   return errors.at(0);
