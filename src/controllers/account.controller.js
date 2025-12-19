@@ -18,7 +18,7 @@ import { generateOTP } from '../utils/otp.js';
 import Registration from '../models/registration.model.js';
 import User from '../models/user.model.js';
 
-async function registerTempUser(req, res, next) {
+async function registerTempUser(req, _, next) {
   // Extracting Body Data.
   const { email } = req.body;
 
@@ -31,17 +31,18 @@ async function registerTempUser(req, res, next) {
 
     if (!result.success) {
       t.rollback();
-      return res.status(409).json({
-        data: {},
-        errors: { email: getZodError(result) },
-      });
+
+      req.response = { errors: { email: getZodError(result) } };
+      return next();
     }
 
     // Check if email is taken by a user.
     const email_Exists = await User.findOne({ where: { email }, transaction: t });
     if (email_Exists) {
       t.rollback();
-      return res.status(200).json({ data: {}, errors: { email: 'Email is taken.' } });
+
+      req.response = { errors: { email: 'Email is already in use.' } };
+      return next();
     }
 
     const otp = generateOTP();
@@ -59,9 +60,10 @@ async function registerTempUser(req, res, next) {
     // TODO: Send the actual email.
     console.log('\n', 'OTP: ' + registration.otp, '\n');
 
-    res.status(201).json({});
-
     t.commit();
+
+    req.response = {};
+    next();
   } catch (error) {
     t.rollback();
 
@@ -69,7 +71,7 @@ async function registerTempUser(req, res, next) {
   }
 }
 
-async function verifyTempUser(req, res, next) {
+async function verifyTempUser(req, _, next) {
   // Extracting Body Data.
   const { email, otp } = req.body;
 
@@ -83,13 +85,14 @@ async function verifyTempUser(req, res, next) {
 
     if (!result_email.success || !result_otp.success) {
       t.rollback();
-      return res.status(409).json({
-        data: {},
+
+      req.response = {
         errors: {
           email: getZodError(result_email),
           otp: getZodError(result_otp),
         },
-      });
+      };
+      return next();
     }
 
     const registration = await Registration.findOne({
@@ -101,13 +104,17 @@ async function verifyTempUser(req, res, next) {
     });
     if (!registration) {
       t.rollback();
-      return res.status(409).json({ data: {}, errors: { otp: 'Invalid OTP' } });
+
+      req.response = { errors: { otp: 'Invalid OTP' } };
+      return next();
     }
 
     // Comparing the OTP in db and the user provided OTP.
     if (registration.otp !== otp) {
       t.rollback();
-      return res.status(409).json({ data: {}, errors: { otp: 'Invalid OTP' } });
+
+      req.response = { errors: { otp: 'Invalid OTP' } };
+      return next();
     }
 
     // Marking the registration as valid.
@@ -116,9 +123,10 @@ async function verifyTempUser(req, res, next) {
       { transaction: t }
     );
 
-    res.status(201).json({});
-
     t.commit();
+
+    req.response = {};
+    return next();
   } catch (error) {
     t.rollback();
 
@@ -148,15 +156,15 @@ async function createUser(req, res, next) {
     ) {
       t.rollback();
 
-      return res.status(409).json({
-        data: {},
+      req.response = {
         errors: {
           email: getZodError(result_email),
           picture: getZodError(result_picture),
           displayName: getZodError(result_displayName),
           password: getZodError(result_password),
         },
-      });
+      };
+      return next();
     }
 
     const registration = await Registration.findOne({
@@ -165,7 +173,10 @@ async function createUser(req, res, next) {
     });
     if (!registration) {
       t.rollback();
-      return res.status(409).json({ data: {}, errors: { root: 'Invalid Request' } });
+
+      req.response = { errors: { root: 'Invalid Request' } };
+
+      return next();
     }
 
     const salt = await bcrypt.genSalt(parseInt(process.env.PASSWORD_SALT));
@@ -179,9 +190,10 @@ async function createUser(req, res, next) {
       registration.destroy({ transaction: t }),
     ]);
 
-    res.status(201).json({});
-
     t.commit();
+
+    req.response = {};
+    return next();
   } catch (error) {
     t.rollback();
 

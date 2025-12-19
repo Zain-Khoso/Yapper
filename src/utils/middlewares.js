@@ -80,3 +80,16 @@ export function viteAssets() {
     next();
   };
 }
+
+// Middleware for sending responses in a set pattern.
+export function handleResponse(req, res) {
+  try {
+    const data = req?.response?.data ?? {};
+    const errors = req?.response?.errors ?? {};
+    let success = Object.keys(errors).length === 0;
+
+    res.status(success ? 200 : 400).json({ success, errors, data });
+  } catch (error) {
+    next(error);
+  }
+}

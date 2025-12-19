@@ -8,7 +8,7 @@ import path from 'path';
 import express from 'express';
 
 // Local Imports.
-import { viteAssets } from './src/utils/middlewares.js';
+import { handleResponse, viteAssets } from './src/utils/middlewares.js';
 import sequelize from './src/utils/database.js';
 import pageRouter from './src/routes/page.routes.js';
 import apiRouter from './src/routes/api.routes.js';
@@ -45,6 +45,9 @@ app.use(viteAssets());
 // Routes.
 app.use(pageRouter);
 app.use('/api/v1/', apiRouter);
+
+// Response middleware.
+app.use(handleResponse);
 
 // Error Middlewares.
 app.use(getNotFoundPage);
