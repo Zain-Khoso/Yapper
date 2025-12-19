@@ -134,7 +134,7 @@ async function verifyTempUser(req, _, next) {
   }
 }
 
-async function createUser(req, res, next) {
+async function createUser(req, _, next) {
   // Extracting Body Data.
   const { email, picture, displayName, password } = req.body;
 
