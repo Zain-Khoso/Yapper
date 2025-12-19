@@ -21,15 +21,14 @@ const Registration = sequelize.define('registration', {
 
   otp: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: false,
   },
 
   otpExpires: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
     unique: false,
-    defaultValue: () => new Date(Date.now() + 1_000 * 60 * 5), // 5 minutes.
   },
 
   isVerified: {
