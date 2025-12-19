@@ -2,13 +2,12 @@
 import { Router } from 'express';
 
 // Local Imports.
-import authRouter from './auth.routes.js';
-
-const router = Router();
+import accountRouter from './account.routes.js';
 
 // API Routes.
+const router = Router();
 
-// Authentication Routes.
-router.use('/account', authRouter);
+// User Account Routes.
+router.use('/account', accountRouter);
 
 export default router;
