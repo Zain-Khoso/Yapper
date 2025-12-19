@@ -46,6 +46,24 @@ const User = sequelize.define('user', {
     type: DataTypes.DATE,
     defaultValue: () => new Date(),
   },
+
+  otp: {
+    type: DataTypes.STRING(6),
+    allowNull: true,
+    unique: false,
+  },
+
+  otpExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    unique: false,
+  },
+
+  otpAction: {
+    type: DataTypes.ENUM('email-change', 'password-change', 'account-delete'),
+    allowNull: true,
+    unique: false,
+  },
 });
 
 export default User;
