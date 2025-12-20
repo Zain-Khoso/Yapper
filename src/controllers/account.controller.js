@@ -1,6 +1,7 @@
 // Lib Imports.
 import { Op } from 'sequelize';
 import bcrypt from 'bcrypt';
+import z from 'zod';
 
 // Util Imports.
 import sequelize from '../utils/database.js';
@@ -197,8 +198,41 @@ async function createUser(req, res, next) {
   }
 }
 
-async function getCurrentUser(req, res, next) {
+async function getUser(req, res) {
   res.status(200).json(serializeResponse(serializeUser(req.user)));
 }
 
-export { registerTempUser, verifyTempUser, createUser, getCurrentUser };
+async function updateUser(req, res) {
+  // Extracting Body Data.
+  const { picture, displayName } = req.body;
+
+  // Validating Body Data.
+  const result_picture = schema_URL.safeParse(picture);
+  const result_displayName = schema_DisplayName
+    .optional()
+    .or(z.literal(null))
+    .safeParse(displayName);
+
+  if (!result_picture.success || !result_displayName.success) {
+    return res.status(409).json(
+      serializeResponse(
+        {},
+        {
+          picture: getZodError(result_picture),
+          displayName: getZodError(result_displayName),
+        }
+      )
+    );
+  }
+
+  // Updating current User's data.
+  const updatedUser = {};
+  if (picture || picture === null) updatedUser.picture = picture;
+  if (displayName) updatedUser.displayName = displayName;
+
+  const user = await req.user.update(updatedUser);
+
+  return res.status(200).json(serializeResponse(serializeUser(user)));
+}
+
+export { registerTempUser, verifyTempUser, createUser, getUser, updateUser };

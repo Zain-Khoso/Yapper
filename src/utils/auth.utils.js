@@ -42,7 +42,7 @@ function removeRefreshTokenCookie(res) {
 }
 
 // Middleware for protecting routes from unauthenticated users.
-async function allowAuthenticatedUserOnly(req, res) {
+async function allowAuthenticatedUserOnly(req, res, next) {
   const authHeader = req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));

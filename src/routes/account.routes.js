@@ -7,7 +7,8 @@ import {
   registerTempUser,
   verifyTempUser,
   createUser,
-  getCurrentUser,
+  getUser,
+  updateUser,
 } from '../controllers/account.controller.js';
 
 // User Account Related Routes.
@@ -22,7 +23,10 @@ router.patch('/register/verify', verifyTempUser);
 // POST : Creates the Permament User Entry in the db.
 router.post('/create', createUser);
 
-// GET : Gets data of the currently signedin user.
-router.get('/', allowAuthenticatedUserOnly, getCurrentUser);
+// GET : Gets data of the currently signed in user.
+router.get('/', allowAuthenticatedUserOnly, getUser);
+
+// PATCH : Updates data of the currently signed in user.
+router.patch('/update', allowAuthenticatedUserOnly, updateUser);
 
 export default router;
