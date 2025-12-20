@@ -11,13 +11,17 @@ import {
   removeRefreshTokenCookie,
 } from '../utils/auth.utils.js';
 import { serializeResponse } from '../utils/serializers.js';
+import { sanitizeEmail } from '../utils/sanitizers.js';
 
 // Model Imports.
 import User from '../models/user.model.js';
 
 async function login(req, res) {
   // Extracting Body Data.
-  const { email, password } = req.body;
+  let { email, password } = req.body;
+
+  // Sanitizing body data.
+  email = sanitizeEmail(email);
 
   // Validating Body Data.
   const result_email = schema_Email.safeParse(email);

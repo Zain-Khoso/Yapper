@@ -19,10 +19,14 @@ import { serializeResponse, serializeUser } from '../utils/serializers.js';
 // Models.
 import Registration from '../models/registration.model.js';
 import User from '../models/user.model.js';
+import { sanitizeEmail, sanitizeText } from '../utils/sanitizers.js';
 
 async function registerTempUser(req, res, next) {
   // Extracting Body Data.
-  const { email } = req.body;
+  let { email } = req.body;
+
+  // Sanitizing body data.
+  email = sanitizeEmail(email);
 
   // Creating a db Transaction.
   const t = await sequelize.transaction();
@@ -72,7 +76,10 @@ async function registerTempUser(req, res, next) {
 
 async function verifyTempUser(req, res, next) {
   // Extracting Body Data.
-  const { email, otp } = req.body;
+  let { email, otp } = req.body;
+
+  // Sanitizing body data.
+  email = sanitizeEmail(email);
 
   // Creating a db Transaction.
   const t = await sequelize.transaction();
@@ -134,7 +141,12 @@ async function verifyTempUser(req, res, next) {
 
 async function createUser(req, res, next) {
   // Extracting Body Data.
-  const { email, picture, displayName, password } = req.body;
+  let { email, picture, displayName, password } = req.body;
+
+  // Sanitizing body data.
+  email = sanitizeEmail(email);
+  picture = sanitizeText(picture);
+  displayName = sanitizeText(displayName);
 
   // Creating a db Transaction.
   const t = await sequelize.transaction();
@@ -204,7 +216,11 @@ async function getUser(req, res) {
 
 async function updateUser(req, res) {
   // Extracting Body Data.
-  const { picture, displayName } = req.body;
+  let { picture, displayName } = req.body;
+
+  // Sanitizing body data.
+  picture = sanitizeText(picture);
+  displayName = sanitizeText(displayName);
 
   // Validating Body Data.
   const result_picture = schema_URL.safeParse(picture);
