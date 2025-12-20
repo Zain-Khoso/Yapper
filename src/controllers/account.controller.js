@@ -474,6 +474,46 @@ async function requestPasswordChange(req, res, next) {
   }
 }
 
+async function verifyPasswordChangeRequest(req, res) {
+  let { email, otp } = req.body;
+  email = sanitizeEmail(email);
+
+  const result_Email = schema_Email.safeParse(email);
+  const result_OTP = schema_OTP.safeParse(otp);
+
+  if (!result_Email.success || !result_OTP.success) {
+    return res.status(409).json(
+      serializeResponse(
+        {},
+        {
+          email: getZodError(result_Email),
+          otp: getZodError(result_OTP),
+        }
+      )
+    );
+  }
+
+  const user = await User.scope('full').findOne({ where: { email } });
+
+  if (
+    !user ||
+    user.otpAction !== 'password-change' ||
+    user.otp !== otp ||
+    user.otpExpires < new Date()
+  ) {
+    return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
+  }
+
+  await user.update({
+    otp: null,
+    otpExpires: null,
+    otpAction: null,
+    canChangePassword: true,
+  });
+
+  return res.status(200).json(serializeResponse());
+}
+
 export {
   registerTempUser,
   verifyTempUser,
@@ -485,4 +525,5 @@ export {
   requestEmailChange,
   verifyEmailChangeRequest,
   requestPasswordChange,
+  verifyPasswordChangeRequest,
 };
