@@ -6,6 +6,7 @@ import path from 'path';
 
 // Lib Imports.
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 // Local Imports.
 import { handleResponse, viteAssets } from './src/utils/middlewares.js';
@@ -39,6 +40,7 @@ else {
 }
 
 // Integrating Middlewares.
+app.use(cookieParser());
 app.use(express.json());
 app.use(viteAssets());
 

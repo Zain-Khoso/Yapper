@@ -33,6 +33,7 @@
     "@aws-sdk/s3-request-presigner": "^3.948.0",
     "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "he": "^1.2.0",

@@ -78,4 +78,42 @@ async function login(req, res, next) {
   }
 }
 
-export { login };
+async function refresh(req, res, next) {
+  try {
+    const refreshToken = req?.cookies?.['yapper.refreshToken'];
+
+    if (!refreshToken) {
+      req.response = { errors: { root: 'Invalid Request' } };
+
+      return next();
+    }
+
+    let decoded = null;
+
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    } catch (error) {
+      res.clearCookie('yapper.refreshToken', {
+        httpOnly: true,
+        secure: req.app.locals.isProd,
+        sameSite: 'Strict',
+      });
+
+      req.response = { errors: { root: 'Invalid Request' } };
+
+      return next();
+    }
+
+    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_ACCESS_SECRET, {
+      expiresIn: '15m',
+    });
+
+    req.response = { data: { accessToken } };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { login, refresh };
