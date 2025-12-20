@@ -61,19 +61,6 @@ function viteAssets() {
   };
 }
 
-// Middleware for sending responses in a set pattern.
-function handleResponse(req, res) {
-  try {
-    const data = req?.response?.data ?? {};
-    const errors = req?.response?.errors ?? {};
-    let success = Object.keys(errors).length === 0;
-
-    res.status(success ? 200 : 400).json({ success, errors, data });
-  } catch (error) {
-    next(error);
-  }
-}
-
 // Middleware for protecting routes from non-signed in users.
 async function allowAuthenticatedUserOnly(req, res, next) {
   try {
@@ -110,4 +97,4 @@ async function allowAuthenticatedUserOnly(req, res, next) {
   }
 }
 
-export { viteAssets, handleResponse, allowAuthenticatedUserOnly };
+export { viteAssets, allowAuthenticatedUserOnly };

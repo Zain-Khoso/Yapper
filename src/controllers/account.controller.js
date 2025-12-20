@@ -13,12 +13,13 @@ import {
   getZodError,
 } from '../utils/validations.js';
 import { generateOTP } from '../utils/otp.js';
+import { serializeResponse } from '../utils/serializers.js';
 
 // Models.
 import Registration from '../models/registration.model.js';
 import User from '../models/user.model.js';
 
-async function registerTempUser(req, _, next) {
+async function registerTempUser(req, res, next) {
   // Extracting Body Data.
   const { email } = req.body;
 
@@ -32,8 +33,7 @@ async function registerTempUser(req, _, next) {
     if (!result.success) {
       t.rollback();
 
-      req.response = { errors: { email: getZodError(result) } };
-      return next();
+      return res.status(409).json(serializeResponse({}, { email: getZodError(result) }));
     }
 
     // Check if email is taken by a user.
@@ -41,8 +41,7 @@ async function registerTempUser(req, _, next) {
     if (email_Exists) {
       t.rollback();
 
-      req.response = { errors: { email: 'Email is already in use.' } };
-      return next();
+      return res.status(409).json(serializeResponse({}, { email: 'Email is already in use.' }));
     }
 
     const otp = generateOTP();
@@ -62,8 +61,7 @@ async function registerTempUser(req, _, next) {
 
     t.commit();
 
-    req.response = {};
-    next();
+    res.status(201).json(serializeResponse());
   } catch (error) {
     t.rollback();
 
@@ -71,7 +69,7 @@ async function registerTempUser(req, _, next) {
   }
 }
 
-async function verifyTempUser(req, _, next) {
+async function verifyTempUser(req, res, next) {
   // Extracting Body Data.
   const { email, otp } = req.body;
 
@@ -86,13 +84,15 @@ async function verifyTempUser(req, _, next) {
     if (!result_email.success || !result_otp.success) {
       t.rollback();
 
-      req.response = {
-        errors: {
-          email: getZodError(result_email),
-          otp: getZodError(result_otp),
-        },
-      };
-      return next();
+      return res.status(409).json(
+        serializeResponse(
+          {},
+          {
+            email: getZodError(result_email),
+            otp: getZodError(result_otp),
+          }
+        )
+      );
     }
 
     const registration = await Registration.findOne({
@@ -105,16 +105,14 @@ async function verifyTempUser(req, _, next) {
     if (!registration) {
       t.rollback();
 
-      req.response = { errors: { otp: 'Invalid OTP' } };
-      return next();
+      return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
     }
 
     // Comparing the OTP in db and the user provided OTP.
     if (registration.otp !== otp) {
       t.rollback();
 
-      req.response = { errors: { otp: 'Invalid OTP' } };
-      return next();
+      return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
     }
 
     // Marking the registration as valid.
@@ -125,8 +123,7 @@ async function verifyTempUser(req, _, next) {
 
     t.commit();
 
-    req.response = {};
-    return next();
+    res.status(200).json(serializeResponse());
   } catch (error) {
     t.rollback();
 
@@ -134,7 +131,7 @@ async function verifyTempUser(req, _, next) {
   }
 }
 
-async function createUser(req, _, next) {
+async function createUser(req, res, next) {
   // Extracting Body Data.
   const { email, picture, displayName, password } = req.body;
 
@@ -156,15 +153,17 @@ async function createUser(req, _, next) {
     ) {
       t.rollback();
 
-      req.response = {
-        errors: {
-          email: getZodError(result_email),
-          picture: getZodError(result_picture),
-          displayName: getZodError(result_displayName),
-          password: getZodError(result_password),
-        },
-      };
-      return next();
+      return res.status(409).json(
+        serializeResponse(
+          {},
+          {
+            email: getZodError(result_email),
+            picture: getZodError(result_picture),
+            displayName: getZodError(result_displayName),
+            password: getZodError(result_password),
+          }
+        )
+      );
     }
 
     const registration = await Registration.findOne({
@@ -174,8 +173,7 @@ async function createUser(req, _, next) {
     if (!registration) {
       t.rollback();
 
-      req.response = { errors: { root: 'Invalid Request' } };
-      return next();
+      return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
     }
 
     const salt = await bcrypt.genSalt(parseInt(process.env.PASSWORD_SALT));
@@ -191,8 +189,7 @@ async function createUser(req, _, next) {
 
     t.commit();
 
-    req.response = {};
-    return next();
+    return res.status(201).json(serializeResponse());
   } catch (error) {
     t.rollback();
 

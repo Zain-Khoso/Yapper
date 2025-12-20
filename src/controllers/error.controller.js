@@ -1,12 +1,10 @@
+// Local Imports.
+import { serializeResponse } from '../utils/serializers.js';
+
 async function serverError(error, _, res, __) {
   console.log('\n', error, '\n');
 
-  res.status(500).json({
-    data: {},
-    errors: {
-      root: 'Something went wrong.',
-    },
-  });
+  return res.status(500).json(serializeResponse({}, { root: 'Something went wrong.' }));
 }
 
 export { serverError };
