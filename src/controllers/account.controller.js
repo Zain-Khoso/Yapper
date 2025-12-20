@@ -421,6 +421,59 @@ async function verifyEmailChangeRequest(req, res) {
   res.status(200).json(serializeResponse());
 }
 
+async function requestPasswordChange(req, res, next) {
+  let { email } = req.body;
+  email = sanitizeEmail(email);
+
+  const result = schema_Email.safeParse(email);
+  if (!result.success) {
+    return res.status(409).json(serializeResponse({}, { email: getZodError(result) }));
+  }
+
+  const t = await sequelize.transaction();
+
+  try {
+    const user = await User.scope('full').findOne({ where: { email }, transaction: t });
+
+    // Silent fail if user doesn't exist (prevents email enumeration)
+    if (!user) {
+      await t.rollback();
+      return res.status(200).json(serializeResponse());
+    }
+
+    // OTP COOLDOWN
+    if (user.otpExpires > new Date(Date.now() + 1_000 * 60 * 4)) {
+      await t.rollback();
+      return res
+        .status(429)
+        .json(serializeResponse({ root: 'Please wait before requesting again.' }));
+    }
+
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 1_000 * 60 * 5);
+    const otpAction = 'password-change';
+
+    await user.update(
+      {
+        otp,
+        otpExpires,
+        otpAction,
+        canChangePassword: false,
+      },
+      { transaction: t }
+    );
+
+    // TODO: Send Email
+    console.log('\nPassword Reset OTP:', otp, '\n');
+
+    await t.commit();
+    return res.status(200).json(serializeResponse());
+  } catch (error) {
+    await t.rollback();
+    next(error);
+  }
+}
+
 export {
   registerTempUser,
   verifyTempUser,
@@ -431,4 +484,5 @@ export {
   deleteUser,
   requestEmailChange,
   verifyEmailChangeRequest,
+  requestPasswordChange,
 };

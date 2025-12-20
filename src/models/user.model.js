@@ -73,10 +73,11 @@ const User = sequelize.define(
       unique: true,
     },
 
-    newPassword: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    canChangePassword: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
       unique: false,
+      defaultValue: false,
     },
 
     refreshToken: {
