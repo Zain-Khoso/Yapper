@@ -37,7 +37,7 @@ async function registerTempUser(req, res, next) {
     const result = schema_Email.safeParse(email);
 
     if (!result.success) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(serializeResponse({}, { email: getZodError(result) }));
     }
@@ -48,7 +48,7 @@ async function registerTempUser(req, res, next) {
       transaction: t,
     });
     if (email_Exists) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
     }
@@ -58,13 +58,13 @@ async function registerTempUser(req, res, next) {
 
     if (registration) {
       if (registration.isVerified) {
-        t.rollback();
+        await t.rollback();
         return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
       }
 
       // OTP COOLDOWN.
       if (registration.otpExpires > new Date(Date.now() + 1_000 * 60 * 4)) {
-        t.rollback();
+        await t.rollback();
         return res
           .status(429)
           .json(serializeResponse({ root: 'Please wait before requesting again.' }));
@@ -84,11 +84,11 @@ async function registerTempUser(req, res, next) {
     // TODO: Send the actual email.
     console.log('\n', 'OTP: ' + otp, '\n');
 
-    t.commit();
+    await t.commit();
 
     res.status(201).json(serializeResponse());
   } catch (error) {
-    t.rollback();
+    await t.rollback();
 
     next(error);
   }
@@ -110,7 +110,7 @@ async function verifyTempUser(req, res, next) {
     const result_otp = schema_OTP.safeParse(otp);
 
     if (!result_email.success || !result_otp.success) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(
         serializeResponse(
@@ -131,14 +131,14 @@ async function verifyTempUser(req, res, next) {
       transaction: t,
     });
     if (!registration) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
     }
 
     // Comparing the OTP in db and the user provided OTP.
     if (registration.otp !== otp) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
     }
@@ -149,11 +149,11 @@ async function verifyTempUser(req, res, next) {
       { transaction: t }
     );
 
-    t.commit();
+    await t.commit();
 
     res.status(200).json(serializeResponse());
   } catch (error) {
-    t.rollback();
+    await t.rollback();
 
     next(error);
   }
@@ -184,7 +184,7 @@ async function createUser(req, res, next) {
       !result_displayName.success ||
       !result_password.success
     ) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(409).json(
         serializeResponse(
@@ -204,7 +204,7 @@ async function createUser(req, res, next) {
       transaction: t,
     });
     if (!registration) {
-      t.rollback();
+      await t.rollback();
 
       return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
     }
@@ -220,11 +220,11 @@ async function createUser(req, res, next) {
       registration.destroy({ transaction: t }),
     ]);
 
-    t.commit();
+    await t.commit();
 
     return res.status(201).json(serializeResponse());
   } catch (error) {
-    t.rollback();
+    await t.rollback();
 
     next(error);
   }
@@ -366,7 +366,7 @@ async function requestEmailChange(req, res, next) {
       transaction: t,
     });
     if (userExists && userExists.id !== user.id) {
-      t.rollback();
+      await t.rollback();
       return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
     }
 
@@ -381,10 +381,10 @@ async function requestEmailChange(req, res, next) {
     // TODO: Send otp through an actual email.
     console.log('\n', otp, '\n');
 
-    t.commit();
+    await t.commit();
     return res.status(200).json(serializeResponse());
   } catch (error) {
-    t.rollback();
+    await t.rollback();
 
     next(error);
   }
