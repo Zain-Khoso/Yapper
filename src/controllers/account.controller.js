@@ -13,7 +13,7 @@ import {
   getZodError,
 } from '../utils/validations.js';
 import { generateOTP } from '../utils/otp.js';
-import { serializeResponse } from '../utils/serializers.js';
+import { serializeResponse, serializeUser } from '../utils/serializers.js';
 
 // Models.
 import Registration from '../models/registration.model.js';
@@ -197,4 +197,8 @@ async function createUser(req, res, next) {
   }
 }
 
-export { registerTempUser, verifyTempUser, createUser };
+async function getCurrentUser(req, res, next) {
+  res.status(200).json(serializeResponse(serializeUser(req.user)));
+}
+
+export { registerTempUser, verifyTempUser, createUser, getCurrentUser };

@@ -1,51 +1,3 @@
-// function formatUser(user) {
-//   const isDeleted = Object.keys(user).length === 0;
-
-//   return {
-//     id: isDeleted ? '' : user.id,
-//     pfp: isDeleted ? 'Y' : user?.displayName?.at(0)?.toUpperCase(),
-//     displayName: isDeleted ? 'Yapper User' : user.displayName,
-//     lastReadAt: user?.ChatroomMember?.lastReadAt,
-//     isBlocked: user?.ChatroomMember?.isBlocked === true ? true : false,
-//     isDeleted,
-//   };
-// }
-
-// function formatLastSeen(inputDate) {
-//   const date = new Date(inputDate);
-//   const now = new Date();
-
-//   const oneDay = 24 * 60 * 60 * 1000;
-
-//   // Normalize for comparison (strip time)
-//   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-//   const startOfInput = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-//   const diffDays = Math.floor((startOfToday - startOfInput) / oneDay);
-
-//   // TODAY -> return HH:MM
-//   if (diffDays === 0) {
-//     const hours = date.getHours().toString().padStart(2, '0');
-//     const minutes = date.getMinutes().toString().padStart(2, '0');
-//     return `${hours}:${minutes}`;
-//   }
-
-//   // YESTERDAY
-//   if (diffDays === 1) return 'Yesterday';
-
-//   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-//   // LAST 7 DAYS → return weekday name
-//   if (diffDays < 7) return dayNames[date.getDay()];
-
-//   // OLDER → return dd/mm/yyyy
-//   const day = date.getDate().toString().padStart(2, '0');
-//   const month = (date.getMonth() + 1).toString().padStart(2, '0');
-//   const year = date.getFullYear();
-
-//   return `${day}/${month}/${year}`;
-// }
-
 // function formatDateString(date) {
 //   return date.toLocaleDateString('en-US', {
 //     year: 'numeric',
@@ -147,6 +99,43 @@
 //   };
 // }
 
+function formatLastSeen(inputDate) {
+  if (!inputDate) return null;
+
+  const date = new Date(inputDate);
+  const now = new Date();
+
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  // Normalize for comparison (strip time)
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfInput = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const diffDays = Math.floor((startOfToday - startOfInput) / oneDay);
+
+  // TODAY -> return HH:MM
+  if (diffDays === 0) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  // YESTERDAY
+  if (diffDays === 1) return 'Yesterday';
+
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // LAST 7 DAYS → return weekday name
+  if (diffDays < 7) return dayNames[date.getDay()];
+
+  // OLDER → return dd/mm/yyyy
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
 function serializeResponse(data = {}, errors = {}) {
   return {
     success: Object.keys(errors).length === 0,
@@ -155,4 +144,20 @@ function serializeResponse(data = {}, errors = {}) {
   };
 }
 
-export { serializeResponse };
+function serializeUser(user) {
+  const isDeleted = !user || Object.keys(user).length === 0;
+
+  return {
+    id: user?.id ?? '',
+    initial: user?.displayName?.at(0)?.toUpperCase() ?? 'Y',
+    picture: user?.picture ?? '',
+    displayName: user?.displayName ?? 'Yapper User',
+    isOnline: user?.isOnline ?? false,
+    lastSeen: formatLastSeen(user?.lastSeen),
+    // lastReadAt: user?.ChatroomMember?.lastReadAt,
+    // isBlocked: user?.ChatroomMember?.isBlocked === true ? true : false,
+    isDeleted,
+  };
+}
+
+export { serializeResponse, serializeUser };

@@ -2,7 +2,13 @@
 import { Router } from 'express';
 
 // Local Imports.
-import { registerTempUser, verifyTempUser, createUser } from '../controllers/account.controller.js';
+import { allowAuthenticatedUserOnly } from '../utils/auth.utils.js';
+import {
+  registerTempUser,
+  verifyTempUser,
+  createUser,
+  getCurrentUser,
+} from '../controllers/account.controller.js';
 
 // User Account Related Routes.
 const router = Router();
@@ -15,5 +21,8 @@ router.patch('/register/verify', verifyTempUser);
 
 // POST : Creates the Permament User Entry in the db.
 router.post('/create', createUser);
+
+// GET : Gets data of the currently signedin user.
+router.get('/', allowAuthenticatedUserOnly, getCurrentUser);
 
 export default router;
