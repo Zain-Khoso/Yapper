@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 // Util Imports.
-import sequelize from '../utils/database.js';
 import { schema_Email } from '../utils/validations.js';
 
 // Model Imports.
@@ -13,25 +12,18 @@ async function login(req, res, next) {
   // Extracting Body Data.
   const { email, password } = req.body;
 
-  // Creating a db Transaction.
-  const t = await sequelize.transaction();
-
   try {
     // Validating Body Data.
     const result_email = schema_Email.safeParse(email);
 
     if (!result_email.success) {
-      t.rollback();
-
       req.response = { errors: { root: 'Invalid Credentials' } };
 
       return next();
     }
 
-    const user = await User.findOne({ where: { email }, transaction: t });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
-      t.rollback();
-
       req.response = { errors: { root: 'Invalid Credentials' } };
 
       return next();
@@ -40,8 +32,6 @@ async function login(req, res, next) {
     // Comparing password in db and the given one.
     const doMatch = await bcrypt.compare(password, user.password);
     if (!doMatch) {
-      t.rollback();
-
       req.response = { errors: { root: 'Invalid Credentials.' } };
 
       return next();
@@ -56,7 +46,7 @@ async function login(req, res, next) {
     });
 
     // Storing the refreshToken in db.
-    await user.update({ refreshToken }, { transaction: t });
+    await user.update({ refreshToken });
 
     // Sending tokens to client.
     res.cookie('yapper.refreshToken', refreshToken, {
@@ -66,14 +56,10 @@ async function login(req, res, next) {
       maxAge: 1_000 * 60 * 60 * 24 * 30, // 30 days
     });
 
-    t.commit();
-
     req.response = { data: { accessToken } };
 
     next();
   } catch (error) {
-    t.rollback();
-
     next(error);
   }
 }
@@ -106,7 +92,7 @@ async function refresh(req, res, next) {
 
     // Comparing the cookie token with the on in the db.
     const user = await User.findByPk(decoded.userId);
-    if (user.refreshToken !== refreshToken) {
+    if (!user || user.refreshToken !== refreshToken) {
       req.response = { errors: { root: 'Invalid Request' } };
 
       res.clearCookie('yapper.refreshToken', {
@@ -132,6 +118,10 @@ async function refresh(req, res, next) {
 
 async function logout(req, res, next) {
   try {
+    const refreshToken = req?.cookies?.['yapper.refreshToken'];
+
+    if (refreshToken) await User.update({ refreshToken: null }, { where: { refreshToken } });
+
     res.clearCookie('yapper.refreshToken', {
       httpOnly: true,
       secure: req.app.locals.isProd,
