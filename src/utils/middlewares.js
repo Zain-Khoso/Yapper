@@ -55,4 +55,4 @@ function viteAssets() {
   };
 }
 
-export { viteAssets, allowAuthenticatedUserOnly };
+export { viteAssets };
