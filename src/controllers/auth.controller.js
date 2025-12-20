@@ -4,6 +4,12 @@ import jwt from 'jsonwebtoken';
 
 // Util Imports.
 import { schema_Email } from '../utils/validations.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  setRefreshTokenCookie,
+  removeRefreshTokenCookie,
+} from '../utils/auth.utils.js';
 
 // Model Imports.
 import User from '../models/user.model.js';
@@ -30,31 +36,22 @@ async function login(req, res, next) {
     }
 
     // Comparing password in db and the given one.
-    const doMatch = await bcrypt.compare(password, user.password);
-    if (!doMatch) {
+    const passwordsMatch = await bcrypt.compare(password, user.password);
+    if (!passwordsMatch) {
       req.response = { errors: { root: 'Invalid Credentials.' } };
 
       return next();
     }
 
     // Generating Access and Refresh tokens.
-    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: '15m',
-    });
-    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: '30d',
-    });
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
     // Storing the refreshToken in db.
     await user.update({ refreshToken });
 
     // Sending tokens to client.
-    res.cookie('yapper.refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: req.app.locals.isProd,
-      sameSite: 'Strict',
-      maxAge: 1_000 * 60 * 60 * 24 * 30, // 30 days
-    });
+    setRefreshTokenCookie(res, refreshToken);
 
     req.response = { data: { accessToken } };
 
@@ -79,11 +76,7 @@ async function refresh(req, res, next) {
     try {
       decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     } catch (error) {
-      res.clearCookie('yapper.refreshToken', {
-        httpOnly: true,
-        secure: req.app.locals.isProd,
-        sameSite: 'Strict',
-      });
+      removeRefreshTokenCookie(res);
 
       req.response = { errors: { root: 'Invalid Request' } };
 
@@ -93,25 +86,21 @@ async function refresh(req, res, next) {
     // Comparing the cookie token with the on in the db.
     const user = await User.findByPk(decoded.userId);
     if (!user || user.refreshToken !== refreshToken) {
-      req.response = { errors: { root: 'Invalid Request' } };
+      removeRefreshTokenCookie(res);
 
-      res.clearCookie('yapper.refreshToken', {
-        httpOnly: true,
-        secure: req.app.locals.isProd,
-        sameSite: 'Strict',
-      });
+      req.response = { errors: { root: 'Invalid Request' } };
 
       return next();
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: '15m',
-    });
+    const accessToken = generateAccessToken(user.id);
 
     req.response = { data: { accessToken } };
 
     next();
   } catch (error) {
+    removeRefreshTokenCookie(res);
+
     next(error);
   }
 }
@@ -122,11 +111,7 @@ async function logout(req, res, next) {
 
     if (refreshToken) await User.update({ refreshToken: null }, { where: { refreshToken } });
 
-    res.clearCookie('yapper.refreshToken', {
-      httpOnly: true,
-      secure: req.app.locals.isProd,
-      sameSite: 'Strict',
-    });
+    removeRefreshTokenCookie(res);
 
     next();
   } catch (error) {
