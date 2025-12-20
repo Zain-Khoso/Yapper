@@ -24,14 +24,12 @@ async function login(req, res, next) {
 
     if (!result_email.success) {
       req.response = { errors: { root: 'Invalid Credentials' } };
-
       return next();
     }
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.scope('full').findOne({ where: { email } });
     if (!user) {
       req.response = { errors: { root: 'Invalid Credentials' } };
-
       return next();
     }
 
@@ -39,7 +37,6 @@ async function login(req, res, next) {
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) {
       req.response = { errors: { root: 'Invalid Credentials.' } };
-
       return next();
     }
 
@@ -54,7 +51,6 @@ async function login(req, res, next) {
     setRefreshTokenCookie(res, refreshToken);
 
     req.response = { data: { accessToken } };
-
     next();
   } catch (error) {
     next(error);
@@ -67,7 +63,6 @@ async function refresh(req, res, next) {
     const refreshToken = req?.cookies?.['yapper.refreshToken'];
     if (!refreshToken) {
       req.response = { errors: { root: 'Invalid Request' } };
-
       return next();
     }
 
@@ -84,19 +79,17 @@ async function refresh(req, res, next) {
     }
 
     // Comparing the cookie token with the on in the db.
-    const user = await User.findByPk(decoded.userId);
+    const user = await User.scope('full').findByPk(decoded.userId);
     if (!user || user.refreshToken !== refreshToken) {
       removeRefreshTokenCookie(res);
 
       req.response = { errors: { root: 'Invalid Request' } };
-
       return next();
     }
 
     const accessToken = generateAccessToken(user.id);
 
     req.response = { data: { accessToken } };
-
     next();
   } catch (error) {
     removeRefreshTokenCookie(res);

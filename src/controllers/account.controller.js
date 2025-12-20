@@ -175,7 +175,6 @@ async function createUser(req, _, next) {
       t.rollback();
 
       req.response = { errors: { root: 'Invalid Request' } };
-
       return next();
     }
 
