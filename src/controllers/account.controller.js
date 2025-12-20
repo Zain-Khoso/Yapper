@@ -53,20 +53,36 @@ async function registerTempUser(req, res, next) {
       return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
     }
 
+    const registration = await Registration.findOne({ where: { email }, transaction: t });
     const otp = generateOTP();
 
-    // Creating a registration row in db to save otp info.
-    const [registration, __] = await Registration.upsert(
-      {
-        email,
-        otp,
-        otpExpires: new Date(Date.now() + 1000 * 60 * 5),
-      },
-      { transaction: t }
-    );
+    if (registration) {
+      if (registration.isVerified) {
+        t.rollback();
+        return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
+      }
+
+      // OTP COOLDOWN.
+      if (registration.otpExpires > new Date(Date.now() + 1_000 * 60 * 4)) {
+        t.rollback();
+        return res
+          .status(429)
+          .json(serializeResponse({ root: 'Please wait before requesting again.' }));
+      }
+
+      await registration.update(
+        { otp, otpExpires: new Date(Date.now() + 1000 * 60 * 5) },
+        { transaction: t }
+      );
+    } else {
+      await Registration.create(
+        { email, otp, otpExpires: new Date(Date.now() + 1000 * 60 * 5) },
+        { transaction: t }
+      );
+    }
 
     // TODO: Send the actual email.
-    console.log('\n', 'OTP: ' + registration.otp, '\n');
+    console.log('\n', 'OTP: ' + otp, '\n');
 
     t.commit();
 
