@@ -367,6 +367,37 @@ async function requestEmailChange(req, res, next) {
   }
 }
 
+async function verifyEmailChangeRequest(req, res) {
+  const user = req.user;
+
+  if (!user?.otp || !user?.otpExpires || user?.otpAction !== 'email-change' || !user?.newEmail) {
+    return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
+  }
+
+  // Extracting & Validating Body Data.
+  let { otp } = req.body;
+  const result = schema_OTP.safeParse(otp);
+  if (!result.success) {
+    return res.status(409).json(serializeResponse({}, { otp: getZodError(result) }));
+  }
+
+  // Validating the given OTP with user in db.
+  if (user.otp !== otp || user.otpExpires < new Date()) {
+    return res.status(409).json(serializeResponse({}, { otp: 'Invalid OTP' }));
+  }
+
+  await user.update({
+    email: user.newEmail,
+    otp: null,
+    otpExpires: null,
+    otpAction: null,
+    newEmail: null,
+  });
+
+  removeRefreshTokenCookie(res);
+  res.status(200).json(serializeResponse());
+}
+
 export {
   registerTempUser,
   verifyTempUser,
@@ -376,4 +407,5 @@ export {
   requestDeletion,
   deleteUser,
   requestEmailChange,
+  verifyEmailChangeRequest,
 };

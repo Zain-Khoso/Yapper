@@ -12,6 +12,7 @@ import {
   requestDeletion,
   deleteUser,
   requestEmailChange,
+  verifyEmailChangeRequest,
 } from '../controllers/account.controller.js';
 
 // User Account Related Routes.
@@ -40,5 +41,8 @@ router.delete('/delete', allowAuthenticatedUserOnly, deleteUser);
 
 // POST : Sends a confirmation email to the provided email.
 router.post('/change/email', allowAuthenticatedUserOnly, requestEmailChange);
+
+// PATCH : Verifies the the given otp and updates the email address.
+router.patch('/change/email', allowAuthenticatedUserOnly, verifyEmailChangeRequest);
 
 export default router;
