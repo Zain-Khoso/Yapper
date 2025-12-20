@@ -514,6 +514,54 @@ async function verifyPasswordChangeRequest(req, res) {
   return res.status(200).json(serializeResponse());
 }
 
+async function changePassword(req, res, next) {
+  let { email, password } = req.body;
+  email = sanitizeEmail(email);
+
+  const result_Email = schema_Email.safeParse(email);
+  const result_Password = schema_Password.safeParse(password);
+
+  if (!result_Email.success || !result_Password.success) {
+    return res.status(409).json(
+      serializeResponse(
+        {},
+        {
+          email: getZodError(result_Email),
+          password: getZodError(result_Password),
+        }
+      )
+    );
+  }
+
+  const salt = await bcrypt.genSalt(parseInt(process.env.PASSWORD_SALT));
+  const password_hash = await bcrypt.hash(password, salt);
+
+  const t = await sequelize.transaction();
+
+  try {
+    const user = await User.findOne({ where: { email }, transaction: t });
+
+    if (!user || !user.canChangePassword) {
+      await t.rollback();
+      return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
+    }
+
+    await user.update(
+      {
+        password: password_hash,
+        canChangePassword: false,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+    return res.status(200).json(serializeResponse());
+  } catch (error) {
+    await t.rollback();
+    next(error);
+  }
+}
+
 export {
   registerTempUser,
   verifyTempUser,
@@ -526,4 +574,5 @@ export {
   verifyEmailChangeRequest,
   requestPasswordChange,
   verifyPasswordChangeRequest,
+  changePassword,
 };

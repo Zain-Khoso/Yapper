@@ -15,6 +15,7 @@ import {
   verifyEmailChangeRequest,
   requestPasswordChange,
   verifyPasswordChangeRequest,
+  changePassword,
 } from '../controllers/account.controller.js';
 
 // User Account Related Routes.
@@ -52,5 +53,8 @@ router.put('/change/password', requestPasswordChange);
 
 // POST : Verifies the the given otp and grants permission to change password.
 router.post('/change/password', verifyPasswordChangeRequest);
+
+// PATCH : Resets a user's password.
+router.patch('/change/password', changePassword);
 
 export default router;
