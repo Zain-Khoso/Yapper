@@ -67,10 +67,28 @@ async function allowAuthenticatedUserOnly(req, res, next) {
   next();
 }
 
+// Middleware for protecting routes from authenticated users.
+async function allowNonAuthenticatedUserOnly(req, res, next) {
+  const authHeader = req.header('Authorization');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return next();
+
+  const token = authHeader.split(' ').at(-1);
+
+  try {
+    jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+
+    return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
+  } catch (error) {
+    return next();
+  }
+}
+
 export {
   generateAccessToken,
   generateRefreshToken,
   setRefreshTokenCookie,
   removeRefreshTokenCookie,
   allowAuthenticatedUserOnly,
+  allowNonAuthenticatedUserOnly,
 };

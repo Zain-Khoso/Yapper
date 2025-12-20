@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // Local Imports.
-import { allowAuthenticatedUserOnly } from '../utils/auth.utils.js';
+import { allowAuthenticatedUserOnly, allowNonAuthenticatedUserOnly } from '../utils/auth.utils.js';
 import {
   registerTempUser,
   verifyTempUser,
@@ -49,12 +49,12 @@ router.post('/change/email', allowAuthenticatedUserOnly, requestEmailChange);
 router.patch('/change/email', allowAuthenticatedUserOnly, verifyEmailChangeRequest);
 
 // PUT : Sends a confirmation email to the provided email.
-router.put('/change/password', requestPasswordChange);
+router.put('/change/password', allowNonAuthenticatedUserOnly, requestPasswordChange);
 
 // POST : Verifies the the given otp and grants permission to change password.
-router.post('/change/password', verifyPasswordChangeRequest);
+router.post('/change/password', allowNonAuthenticatedUserOnly, verifyPasswordChangeRequest);
 
 // PATCH : Resets a user's password.
-router.patch('/change/password', changePassword);
+router.patch('/change/password', allowNonAuthenticatedUserOnly, changePassword);
 
 export default router;
