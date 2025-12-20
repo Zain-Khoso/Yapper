@@ -334,6 +334,10 @@ async function requestEmailChange(req, res, next) {
     return res.status(409).json(serializeResponse({}, { email: getZodError(result) }));
   }
 
+  if (user.email === email) {
+    return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
+  }
+
   const t = await sequelize.transaction();
 
   try {
