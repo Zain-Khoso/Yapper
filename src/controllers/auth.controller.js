@@ -116,4 +116,18 @@ async function refresh(req, res, next) {
   }
 }
 
-export { login, refresh };
+async function logout(req, res, next) {
+  try {
+    res.clearCookie('yapper.refreshToken', {
+      httpOnly: true,
+      secure: req.app.locals.isProd,
+      sameSite: 'Strict',
+    });
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { login, refresh, logout };
