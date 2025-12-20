@@ -42,33 +42,29 @@ function removeRefreshTokenCookie(res) {
 }
 
 // Middleware for protecting routes from unauthenticated users.
-async function allowAuthenticatedUserOnly(req, res, next) {
-  try {
-    const authHeader = req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
-    }
-
-    let decoded = null;
-    const token = authHeader.split(' ').at(-1);
-
-    try {
-      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    } catch (error) {
-      return res.status(403).json(serializeResponse({}, { root: 'Invalid Request.' }));
-    }
-
-    const user = await User.findByPk(decoded.userId);
-    if (!user) {
-      removeRefreshTokenCookie(res);
-      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    next(error);
+async function allowAuthenticatedUserOnly(req, res) {
+  const authHeader = req.header('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
   }
+
+  let decoded = null;
+  const token = authHeader.split(' ').at(-1);
+
+  try {
+    decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+  } catch (error) {
+    return res.status(403).json(serializeResponse({}, { root: 'Invalid Request.' }));
+  }
+
+  const user = await User.findByPk(decoded.userId);
+  if (!user) {
+    removeRefreshTokenCookie(res);
+    return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
+  }
+
+  req.user = user;
+  next();
 }
 
 export {

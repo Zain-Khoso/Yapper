@@ -15,43 +15,39 @@ import { serializeResponse } from '../utils/serializers.js';
 // Model Imports.
 import User from '../models/user.model.js';
 
-async function login(req, res, next) {
+async function login(req, res) {
   // Extracting Body Data.
   const { email, password } = req.body;
 
-  try {
-    // Validating Body Data.
-    const result_email = schema_Email.safeParse(email);
+  // Validating Body Data.
+  const result_email = schema_Email.safeParse(email);
 
-    if (!result_email.success) {
-      return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
-    }
-
-    const user = await User.scope('full').findOne({ where: { email } });
-    if (!user) {
-      return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
-    }
-
-    // Comparing password in db and the given one.
-    const passwordsMatch = await bcrypt.compare(password, user.password);
-    if (!passwordsMatch) {
-      return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
-    }
-
-    // Generating Access and Refresh tokens.
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
-
-    // Storing the refreshToken in db.
-    await user.update({ refreshToken });
-
-    // Sending tokens to client.
-    setRefreshTokenCookie(res, refreshToken);
-
-    return res.status(200).json(serializeResponse({ accessToken }));
-  } catch (error) {
-    next(error);
+  if (!result_email.success) {
+    return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
   }
+
+  const user = await User.scope('full').findOne({ where: { email } });
+  if (!user) {
+    return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
+  }
+
+  // Comparing password in db and the given one.
+  const passwordsMatch = await bcrypt.compare(password, user.password);
+  if (!passwordsMatch) {
+    return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
+  }
+
+  // Generating Access and Refresh tokens.
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken(user.id);
+
+  // Storing the refreshToken in db.
+  await user.update({ refreshToken });
+
+  // Sending tokens to client.
+  setRefreshTokenCookie(res, refreshToken);
+
+  return res.status(200).json(serializeResponse({ accessToken }));
 }
 
 async function refresh(req, res, next) {
@@ -89,17 +85,13 @@ async function refresh(req, res, next) {
   }
 }
 
-async function logout(req, res, next) {
-  try {
-    const refreshToken = req?.cookies?.['yapper.refreshToken'];
-    if (refreshToken) await User.update({ refreshToken: null }, { where: { refreshToken } });
+async function logout(req, res) {
+  const refreshToken = req?.cookies?.['yapper.refreshToken'];
+  if (refreshToken) await User.update({ refreshToken: null }, { where: { refreshToken } });
 
-    removeRefreshTokenCookie(res);
+  removeRefreshTokenCookie(res);
 
-    return res.status(200).json(serializeResponse());
-  } catch (error) {
-    next(error);
-  }
+  return res.status(200).json(serializeResponse());
 }
 
 export { login, refresh, logout };
