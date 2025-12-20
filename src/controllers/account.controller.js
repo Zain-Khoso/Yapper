@@ -15,6 +15,7 @@ import {
 } from '../utils/validations.js';
 import { generateOTP } from '../utils/otp.js';
 import { serializeResponse, serializeUser } from '../utils/serializers.js';
+import { removeRefreshTokenCookie } from '../utils/auth.utils.js';
 
 // Models.
 import Registration from '../models/registration.model.js';
@@ -268,4 +269,49 @@ async function requestDeletion(req, res) {
   return res.status(200).json(serializeResponse());
 }
 
-export { registerTempUser, verifyTempUser, createUser, getUser, updateUser, requestDeletion };
+async function deleteUser(req, res) {
+  const user = req.user;
+
+  // Extracting Body Data.
+  let { otp } = req.body;
+
+  // Validating Body Data.
+  const result = schema_OTP.safeParse(otp);
+
+  if (!result.success) {
+    return res.status(409).json(
+      serializeResponse(
+        {},
+        {
+          otp: getZodError(result),
+        }
+      )
+    );
+  }
+
+  // Validating the given OTP with user in db.
+  if (user.otp !== otp || user.otpExpires < new Date() || user.otpAction !== 'account-delete') {
+    return res.status(409).json(
+      serializeResponse(
+        {},
+        {
+          otp: 'Invalid OTP',
+        }
+      )
+    );
+  }
+
+  await user.destroy();
+  removeRefreshTokenCookie(res);
+  res.status(200).json(serializeResponse());
+}
+
+export {
+  registerTempUser,
+  verifyTempUser,
+  createUser,
+  getUser,
+  updateUser,
+  requestDeletion,
+  deleteUser,
+};

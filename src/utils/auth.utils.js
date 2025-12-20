@@ -57,7 +57,7 @@ async function allowAuthenticatedUserOnly(req, res, next) {
     return res.status(403).json(serializeResponse({}, { root: 'Invalid Request.' }));
   }
 
-  const user = await User.findByPk(decoded.userId);
+  const user = await User.scope('full').findByPk(decoded.userId);
   if (!user) {
     removeRefreshTokenCookie(res);
     return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
