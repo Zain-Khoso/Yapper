@@ -315,6 +315,58 @@ async function deleteUser(req, res) {
   res.status(200).json(serializeResponse());
 }
 
+async function requestEmailChange(req, res, next) {
+  const user = req.user;
+
+  // OTP COOLDOWN.
+  if (user.otpExpires > new Date(Date.now() + 1_000 * 60 * 4)) {
+    return res
+      .status(429)
+      .json(serializeResponse({ root: 'Please wait before requesting again.' }));
+  }
+
+  // Working body data.
+  let { email } = req.body;
+  email = sanitizeEmail(email);
+
+  const result = schema_Email.safeParse(email);
+  if (!result.success) {
+    return res.status(409).json(serializeResponse({}, { email: getZodError(result) }));
+  }
+
+  const t = await sequelize.transaction();
+
+  try {
+    // Checking if a user already exists with this email.
+    const userExists = await User.scope('full').findOne({
+      where: { [Op.or]: [{ email }, { newEmail: email }] },
+      transaction: t,
+    });
+    if (userExists && userExists.id !== user.id) {
+      t.rollback();
+      return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
+    }
+
+    // Generating OTP.
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 1_000 * 60 * 5); // Five minutes.
+    const otpAction = 'email-change';
+
+    // Storing otp in db.
+    await user.update({ otp, otpExpires, otpAction, newEmail: email });
+
+    // TODO: Send otp through an actual email.
+    console.log('\n', otp, '\n');
+
+    t.commit();
+    return res.status(200).json(serializeResponse());
+  } catch (error) {
+    t.rollback();
+
+    next(error);
+  }
+}
+
 export {
   registerTempUser,
   verifyTempUser,
@@ -323,4 +375,5 @@ export {
   updateUser,
   requestDeletion,
   deleteUser,
+  requestEmailChange,
 };

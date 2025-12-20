@@ -67,6 +67,18 @@ const User = sequelize.define(
       unique: false,
     },
 
+    newEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+
+    newPassword: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: false,
+    },
+
     refreshToken: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -75,7 +87,17 @@ const User = sequelize.define(
   },
   {
     defaultScope: {
-      attributes: { exclude: ['password', 'otp', 'otpExpires', 'otpAction', 'refreshToken'] },
+      attributes: {
+        exclude: [
+          'password',
+          'otp',
+          'otpExpires',
+          'otpAction',
+          'refreshToken',
+          'newEmail',
+          'newPassword',
+        ],
+      },
     },
 
     scopes: {
