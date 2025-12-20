@@ -279,10 +279,12 @@ async function requestDeletion(req, res) {
 async function deleteUser(req, res) {
   const user = req.user;
 
-  // Extracting Body Data.
-  let { otp } = req.body;
+  if (!user?.otp || !user?.otpExpires || user?.otpAction !== 'account-delete') {
+    return res.status(400).json(serializeResponse({}, { root: 'Invalid Request' }));
+  }
 
-  // Validating Body Data.
+  // Extracting & Validating Body Data.
+  let { otp } = req.body;
   const result = schema_OTP.safeParse(otp);
 
   if (!result.success) {
@@ -297,7 +299,7 @@ async function deleteUser(req, res) {
   }
 
   // Validating the given OTP with user in db.
-  if (user.otp !== otp || user.otpExpires < new Date() || user.otpAction !== 'account-delete') {
+  if (user.otp !== otp || user.otpExpires < new Date()) {
     return res.status(409).json(
       serializeResponse(
         {},
