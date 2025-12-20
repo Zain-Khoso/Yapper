@@ -80,16 +80,16 @@ async function login(req, res, next) {
 
 async function refresh(req, res, next) {
   try {
+    // Checking if the cookie exists.
     const refreshToken = req?.cookies?.['yapper.refreshToken'];
-
     if (!refreshToken) {
       req.response = { errors: { root: 'Invalid Request' } };
 
       return next();
     }
 
+    // Validating the jwt token.
     let decoded = null;
-
     try {
       decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     } catch (error) {
@@ -104,7 +104,21 @@ async function refresh(req, res, next) {
       return next();
     }
 
-    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_ACCESS_SECRET, {
+    // Comparing the cookie token with the on in the db.
+    const user = await User.findByPk(decoded.userId);
+    if (user.refreshToken !== refreshToken) {
+      req.response = { errors: { root: 'Invalid Request' } };
+
+      res.clearCookie('yapper.refreshToken', {
+        httpOnly: true,
+        secure: req.app.locals.isProd,
+        sameSite: 'Strict',
+      });
+
+      return next();
+    }
+
+    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_ACCESS_SECRET, {
       expiresIn: '15m',
     });
 
