@@ -1,6 +1,10 @@
 // Lib Imports.
 import jwt from 'jsonwebtoken';
 
+// Local Imports.
+import User from '../models/user.model.js';
+import { serializeResponse } from './serializers.js';
+
 // Constants.
 const COOKIE_NAME = 'yapper.refreshToken';
 const COOKIE_OPTIONS = {
@@ -37,9 +41,40 @@ function removeRefreshTokenCookie(res) {
   res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
 }
 
+// Middleware for protecting routes from unauthenticated users.
+async function allowAuthenticatedUserOnly(req, res, next) {
+  try {
+    const authHeader = req.header('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
+    }
+
+    let decoded = null;
+    const token = authHeader.split(' ').at(-1);
+
+    try {
+      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    } catch (error) {
+      return res.status(403).json(serializeResponse({}, { root: 'Invalid Request.' }));
+    }
+
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+      removeRefreshTokenCookie(res);
+      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request.' }));
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 export {
   generateAccessToken,
   generateRefreshToken,
   setRefreshTokenCookie,
   removeRefreshTokenCookie,
+  allowAuthenticatedUserOnly,
 };

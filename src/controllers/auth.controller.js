@@ -59,7 +59,7 @@ async function refresh(req, res, next) {
     // Checking if the cookie exists.
     const refreshToken = req?.cookies?.['yapper.refreshToken'];
     if (!refreshToken) {
-      return res.status(403).json(serializeResponse({}, { root: 'Invalid Request' }));
+      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request' }));
     }
 
     // Validating the jwt token.
@@ -69,7 +69,7 @@ async function refresh(req, res, next) {
     } catch (error) {
       removeRefreshTokenCookie(res);
 
-      return res.status(403).json(serializeResponse({}, { root: 'Invalid Request' }));
+      return res.status(401).json(serializeResponse({}, { root: 'Invalid Request' }));
     }
 
     // Comparing the cookie token with the on in the db.
