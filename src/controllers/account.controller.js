@@ -251,4 +251,21 @@ async function updateUser(req, res) {
   return res.status(200).json(serializeResponse(serializeUser(user)));
 }
 
-export { registerTempUser, verifyTempUser, createUser, getUser, updateUser };
+async function requestDeletion(req, res) {
+  const user = req.user;
+
+  // Generating OTP.
+  const otp = generateOTP();
+  const otpExpires = new Date(Date.now() + 1_000 * 60 * 5); // Five minutes.
+  const otpAction = 'account-delete';
+
+  // Storing otp in db.
+  await user.update({ otp, otpExpires, otpAction });
+
+  // TODO: Send otp through an actual email.
+  console.log('\n', otp, '\n');
+
+  return res.status(200).json(serializeResponse());
+}
+
+export { registerTempUser, verifyTempUser, createUser, getUser, updateUser, requestDeletion };
