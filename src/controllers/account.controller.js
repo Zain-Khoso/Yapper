@@ -43,11 +43,14 @@ async function registerTempUser(req, res, next) {
     }
 
     // Check if email is taken by a user.
-    const email_Exists = await User.findOne({ where: { email }, transaction: t });
+    const email_Exists = await User.findOne({
+      where: { [Op.or]: [{ email }, { newEmail: email }] },
+      transaction: t,
+    });
     if (email_Exists) {
       t.rollback();
 
-      return res.status(409).json(serializeResponse({}, { email: 'Email is already in use.' }));
+      return res.status(409).json(serializeResponse({}, { email: 'This email is taken.' }));
     }
 
     const otp = generateOTP();
