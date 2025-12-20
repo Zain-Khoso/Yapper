@@ -255,6 +255,13 @@ async function updateUser(req, res) {
 async function requestDeletion(req, res) {
   const user = req.user;
 
+  // OTP COOLDOWN.
+  if (user.otpExpires > new Date(Date.now() + 1_000 * 60 * 4)) {
+    return res
+      .status(429)
+      .json(serializeResponse({ root: 'Please wait before requesting again.' }));
+  }
+
   // Generating OTP.
   const otp = generateOTP();
   const otpExpires = new Date(Date.now() + 1_000 * 60 * 5); // Five minutes.
