@@ -1,0 +1,64 @@
+.hero-content {
+  width: 100%;
+}
+
+.hero-content .hero-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.hero-content .hero-copy .left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hero-content .hero-copy .left h1 {
+  color: var(--color-foreground-secondary);
+}
+
+.hero-content .hero-copy .left h1 span:last-child {
+  color: var(--color-foreground);
+}
+
+.hero-content .hero-copy > .illustration {
+  flex: 1;
+  height: auto;
+}
+
+@media screen and (max-width: 1024px) {
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .hero-content .hero-copy {
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: end;
+  }
+
+  .hero-content .hero-copy > .illustration {
+    width: auto;
+    max-height: 245px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    gap: 4rem;
+  }
+
+  .hero-content .hero-copy > .illustration {
+    max-height: 180px;
+  }
+
+  .hero-content .hero-copy .left .btn-group .btn:last-child {
+    display: none;
+  }
+}

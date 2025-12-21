@@ -22,7 +22,7 @@ function getNotFoundPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.status(404).render('not-found', { metadata, bundleName: 'landing' });
+  res.status(404).render('not-found', { metadata, bundleName: 'errors' });
 }
 
 function getServerErrorPage(error, req, res, _) {
@@ -39,7 +39,7 @@ function getServerErrorPage(error, req, res, _) {
 
   console.log(`\n Server Error (${pagePath}): `, error, '\n');
 
-  res.status(500).render('server-error', { metadata, bundleName: 'landing' });
+  res.status(500).render('server-error', { metadata, bundleName: 'errors' });
 }
 
 export { notFoundError, serverError, getNotFoundPage, getServerErrorPage };
