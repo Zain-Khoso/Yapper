@@ -44,6 +44,8 @@ export default class Form {
   }
 
   addLineSteps() {
+    if (this.elem_Forms.length < 2) return this.elem_LineSteps.remove();
+
     Array.from(this.elem_Forms).forEach(() => {
       const elem_LineStep = document.createElement('li');
       elem_LineStep.classList.add('line-step');
