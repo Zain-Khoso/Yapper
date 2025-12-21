@@ -1,7 +1,9 @@
 'use strict';
 
+import { showError } from './utils';
+
 export default class Form {
-  constructor(containerId, steps) {
+  constructor(containerId) {
     this.elem_Container = document.getElementById(containerId);
 
     if (!this.elem_Container)
@@ -14,8 +16,13 @@ export default class Form {
     this.elem_BackButtons = this.elem_Container.querySelectorAll('.btn.back');
 
     this.activeStep = 0;
-    this.steps = steps;
+    this.steps = [];
     this.isLoading = false;
+    this.errors = new Map();
+  }
+
+  setSteps(steps) {
+    this.steps = steps;
 
     this.addLineSteps();
     this.changeForm();
@@ -24,7 +31,11 @@ export default class Form {
       elem.addEventListener('submit', (event) => {
         event.preventDefault();
 
-        this.nextStep();
+        if (this.errors.size === 0) this.nextStep();
+        else {
+          const firstError = this.errors.entries().next().value;
+          new showError(firstError[1]);
+        }
       })
     );
 

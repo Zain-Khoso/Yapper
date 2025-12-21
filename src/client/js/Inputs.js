@@ -9,11 +9,12 @@ import { getZodError } from '../../utils/validations';
 
 // Base Object of All Input Components.
 export class Input {
-  constructor(id, schema) {
+  constructor(id, schema, form) {
     this.elem_Input = document.getElementById(id);
 
     if (!this.elem_Input) return console.error('Cannot find an Entry with the ID: ' + id);
 
+    this.Form = form;
     this.schema = schema;
     this.errorText = '';
   }
@@ -33,11 +34,13 @@ export class Input {
   setError(text) {
     this.errorText = text;
     this.elem_Entry.classList.add('error');
+    this.Form.errors.set('email', text);
   }
 
   removeError() {
     this.errorText = '';
     this.elem_Entry.classList.remove('error');
+    this.Form.errors.delete('email');
   }
 
   isValid() {
@@ -56,8 +59,8 @@ export class Input {
 
 // Object to handle Profile Picture related UI behaviour.
 export class ProfilePicture extends Input {
-  constructor(id, schema) {
-    super(id, schema);
+  constructor(id, schema, form) {
+    super(id, schema, form);
 
     this.elem_Entry = this.elem_Input.closest('.picture-input');
     this.elem_Placeholder = this.elem_Entry.querySelector('.placeholder');
@@ -122,8 +125,8 @@ export class ProfilePicture extends Input {
 
 // Object to handle all Entry (text input tags) related UI behaviour.
 export class Entry extends Input {
-  constructor(id, schema) {
-    super(id, schema);
+  constructor(id, schema, form) {
+    super(id, schema, form);
 
     this.elem_Entry = this.elem_Input.closest('.entry');
     this.elem_Error = this.elem_Entry.querySelector('.error-text');
@@ -155,8 +158,8 @@ export class Entry extends Input {
 
 // Object to handle confirm password inputs related UI behaviour.
 export class ConfirmPassword extends Entry {
-  constructor(id, schema, Password) {
-    super(id, schema);
+  constructor(id, schema, Password, form) {
+    super(id, schema, form);
 
     this.Password = Password;
   }
@@ -177,8 +180,8 @@ export class ConfirmPassword extends Entry {
 
 // Object to handle all checkbox inputs related UI behaviour.
 export class Checkbox extends Entry {
-  constructor(id, schema) {
-    super(id, schema);
+  constructor(id, schema, form) {
+    super(id, schema, form);
   }
 
   getValue() {

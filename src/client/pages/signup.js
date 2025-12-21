@@ -19,27 +19,28 @@ import {
   schema_ConfirmPassword,
   schema_Checkbox,
 } from '../../utils/validations';
+import { API, showError } from '../js/utils';
 
 // Components.
-import Form from '../js/SteppedForm';
-import {
-  Entry,
-  ProfilePicture,
-  ConfirmPassword as ConfirmPasswordObj,
-  Checkbox,
-} from '../js/Inputs';
+import SteppedForm from '../js/SteppedForm';
+import { Entry, ConfirmPassword as ConfirmPasswordObj, Checkbox } from '../js/Inputs';
 
 // Constants.
-const Email = new Entry('email', schema_Email);
-const OTP = new Entry('otp', schema_OTP);
-const Picture = new ProfilePicture('file-pfp', schema_PictureFile);
-const DisplayName = new Entry('displayName', schema_DisplayName);
-const Password = new Entry('password', schema_Password);
-const ConfirmPassword = new ConfirmPasswordObj('confirmPassword', schema_ConfirmPassword, Password);
-const TAC = new Checkbox('checkbox-tac', schema_Checkbox);
-const PP = new Checkbox('checkbox-pp', schema_Checkbox);
+const Form = new SteppedForm('signup-steps');
+const Email = new Entry('email', schema_Email, Form);
+const OTP = new Entry('otp', schema_OTP, Form);
+const DisplayName = new Entry('displayName', schema_DisplayName, Form);
+const Password = new Entry('password', schema_Password, Form);
+const ConfirmPassword = new ConfirmPasswordObj(
+  'confirmPassword',
+  schema_ConfirmPassword,
+  Password,
+  Form
+);
+const TAC = new Checkbox('checkbox-tac', schema_Checkbox, Form);
+const PP = new Checkbox('checkbox-pp', schema_Checkbox, Form);
 
-// Form Configs.
+// Form Configuration.
 const formOptions = [
   {
     title: 'Enter your email',
@@ -47,11 +48,23 @@ const formOptions = [
     fields: [Email],
     async handleSubmit() {
       try {
-        console.log('Email: ', Email.getValue());
+        await API.put('/account/register', { email: Email.getValue() });
 
-        await new Promise((res) => setTimeout(res, 500));
         return true;
-      } catch {
+      } catch (error) {
+        if (error.isAxiosError) {
+          const {
+            response: {
+              data: { errors },
+            },
+          } = error;
+
+          if (errors?.email) Email.setError(errors.email);
+          if (errors?.root) new showError('Server Error', errors.root);
+
+          if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
+        } else new showError('Something went wrong.');
+
         return false;
       }
     },
@@ -62,11 +75,27 @@ const formOptions = [
     fields: [OTP],
     async handleSubmit() {
       try {
-        console.log('OTP: ', OTP.getValue());
+        await API.patch('/account/register/verify', {
+          email: Email.getValue(),
+          otp: OTP.getValue(),
+        });
 
-        await new Promise((res) => setTimeout(res, 500));
         return true;
-      } catch {
+      } catch (error) {
+        if (error.isAxiosError) {
+          const {
+            response: {
+              data: { errors },
+            },
+          } = error;
+
+          if (errors?.email) Email.setError(errors.email);
+          if (errors?.otp) OTP.setError(errors.otp);
+          if (errors?.root) new showError('Server Error', errors.root);
+
+          if (Object.keys(errors ?? {}).length === 0) new showError('Something went wrong.');
+        } else new showError('Something went wrong.');
+
         return false;
       }
     },
@@ -74,22 +103,37 @@ const formOptions = [
   {
     title: 'Set up your profile',
     subtitle: "Choose how you'll appear to others on Yapper.",
-    fields: [Picture, DisplayName, Password, ConfirmPassword, TAC, PP],
+    fields: [DisplayName, Password, ConfirmPassword, TAC, PP],
     async handleSubmit() {
       try {
-        console.log('Picture: ', Picture.getValue());
-        console.log('DisplayName: ', DisplayName.getValue());
-        console.log('Password: ', Password.getValue());
-        console.log('ConfirmPassword: ', ConfirmPassword.getValue());
+        await API.post('/account/create', {
+          email: Email.getValue(),
+          displayName: DisplayName.getValue(),
+          password: Password.getValue(),
+        });
 
-        await new Promise((res) => setTimeout(res, 500));
+        location.assign('/login');
+      } catch (error) {
+        if (error.isAxiosError) {
+          const {
+            response: {
+              data: { errors },
+            },
+          } = error;
 
-        return true;
-      } catch {
+          if (errors?.email) Email.setError(errors.email);
+          if (errors?.picture) Picture.setError(errors.picture);
+          if (errors?.displayName) DisplayName.setError(errors.displayName);
+          if (errors?.password) Password.setError(errors.password);
+          if (errors?.root) new showError('Server Error', errors.root);
+
+          if (Object.keys(errors ?? {}).length === 0) new showError('Something went wrong.');
+        } else new showError('Something went wrong.');
+
         return false;
       }
     },
   },
 ];
 
-new Form('signup-steps', formOptions);
+Form.setSteps(formOptions);
