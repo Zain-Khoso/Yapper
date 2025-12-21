@@ -41,6 +41,7 @@ function startCooldown(element, seconds = 60) {
   const originalText = element.textContent || element.value;
   let remaining = seconds;
 
+  element.disabled = true;
   element.textContent = `Resend in ${remaining}s`;
 
   const timer = setInterval(() => {
