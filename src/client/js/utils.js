@@ -23,6 +23,14 @@ const showError = Swal.mixin({
     cancelButton: 'btn outline',
   },
 });
+const showInfo = Swal.mixin({
+  icon: 'info',
+  iconColor: 'var(--color-foreground)',
+  customClass: {
+    confirmButton: 'btn primary',
+    cancelButton: 'btn outline',
+  },
+});
 const showSuccess = Swal.mixin({
   icon: 'success',
   iconColor: 'var(--color-success)',
@@ -82,10 +90,16 @@ API.interceptors.response.use(
         return API(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        return location.assign('/login');
+        if (!['/login', '/signup'].includes(location.pathname)) return location.assign('/login');
       } finally {
         isRefreshing = false;
       }
+    }
+
+    if (error.response?.status === 429) {
+      new showInfo('Cooldown', 'Wait a minute before retrying.');
+
+      return Promise.resolve(error.response);
     }
 
     return Promise.reject(error);

@@ -108,7 +108,7 @@ async function protectRoute(req, res, next) {
 async function redirectIfAuthenticated(req, res, next) {
   const refreshToken = req.cookies['yapper.refreshToken'];
   if (!refreshToken) return next();
-  console.log('Hello World');
+
   try {
     const decodedRefresh = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await User.scope('full').findByPk(decodedRefresh.userId);
