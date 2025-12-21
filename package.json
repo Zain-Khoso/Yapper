@@ -22,7 +22,7 @@
   "repository": {
     "url": "https://github.com/Zain-Khoso/Yapper.git"
   },
-  "packageManager": "pnpm@10.26.0",
+  "packageManager": "pnpm@10.26.1",
   "browserslist": [
     "> 1%",
     "last 2 versions",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.23",
+    "axios": "^1.13.2",
     "cross-env": "^10.1.0",
     "esbuild": "^0.27.2",
     "fs-extra": "^11.3.2",

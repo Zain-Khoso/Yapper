@@ -2,6 +2,7 @@
 
 // Lib Imports.
 import { default as BaseSwal } from 'sweetalert2';
+import axios from 'axios';
 
 // Local Imports.
 import { getTheme } from './theme';
@@ -14,7 +15,6 @@ const Swal = BaseSwal.mixin({
     cancelButton: 'btn outline',
   },
 });
-
 const showError = Swal.mixin({
   icon: 'error',
   iconColor: 'var(--color-danger)',
@@ -32,4 +32,6 @@ const showSuccess = Swal.mixin({
   },
 });
 
-export { Swal, showError, showSuccess };
+const API = axios.create({ baseURL: '/api/v1' });
+
+export { Swal, showError, showSuccess, API };
