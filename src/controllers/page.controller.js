@@ -1,7 +1,7 @@
 // Local Imports.
 import getMetadata from '../utils/metadata.js';
 
-export function getLandingPage(req, res) {
+function getLandingPage(req, res) {
   const metadata = getMetadata({
     absoluteTitle: 'Yapper — Simple Real-Time Chat for Learning & Fun',
     description:
@@ -24,7 +24,7 @@ export function getLandingPage(req, res) {
   res.render('landing', { metadata, bundleName: 'landing' });
 }
 
-export function getSignUpPage(req, res) {
+function getSignUpPage(req, res) {
   const metadata = getMetadata({
     title: 'Sign Up',
     description:
@@ -43,7 +43,7 @@ export function getSignUpPage(req, res) {
   res.render('signup', { metadata, bundleName: 'signup' });
 }
 
-export function getLoginPage(req, res) {
+function getLoginPage(req, res) {
   const metadata = getMetadata({
     title: 'Log In',
     description:
@@ -56,7 +56,7 @@ export function getLoginPage(req, res) {
   res.render('login', { metadata, bundleName: 'login' });
 }
 
-export function getChangeEmailPage(req, res) {
+function getChangeEmailPage(req, res) {
   const metadata = getMetadata({
     title: 'Change Email',
     description:
@@ -69,7 +69,7 @@ export function getChangeEmailPage(req, res) {
   res.render('change-email', { metadata, user: {} }); // TODO: remove this user attribute.
 }
 
-export function getChangePasswordPage(req, res) {
+function getChangePasswordPage(req, res) {
   const metadata = getMetadata({
     title: 'Change Password',
     description:
@@ -88,7 +88,7 @@ export function getChangePasswordPage(req, res) {
   res.render('change-password', { metadata });
 }
 
-export function getSettingsPage(req, res) {
+function getSettingsPage(req, res) {
   const metadata = getMetadata({
     title: 'Settings',
     description:
@@ -101,7 +101,7 @@ export function getSettingsPage(req, res) {
   res.render('settings', { metadata, user: {} }); // TODO: remove this user attribute.
 }
 
-export function getChatPage(req, res) {
+function getChatPage(req, res) {
   const metadata = getMetadata({
     title: 'Chat',
     description:
@@ -114,6 +114,17 @@ export function getChatPage(req, res) {
   res.render('chat', { metadata });
 }
 
-export function getCallsPage(_, res) {
+function getCallsPage(_, res) {
   res.redirect('/chat');
 }
+
+export {
+  getLandingPage,
+  getSignUpPage,
+  getLoginPage,
+  getChangeEmailPage,
+  getChangePasswordPage,
+  getSettingsPage,
+  getChatPage,
+  getCallsPage,
+};
