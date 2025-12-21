@@ -9,6 +9,8 @@ import { getTheme } from './theme';
 
 // Variables.
 let cooldownTimer = null;
+let isRefreshing = false;
+let failedQueue = [];
 
 // Constants.
 const PROTECTED_ROUTES = ['change-email', '/chat', '/calls', '/settings'];
@@ -46,8 +48,34 @@ const showSuccess = Swal.mixin({
 
 const API = axios.create({ baseURL: '/api/v1' });
 
-let isRefreshing = false;
-let failedQueue = [];
+// DOM Selections.
+const elem_Dropdowns = document.querySelectorAll('.dropdown');
+
+// Functions.
+function startCooldown(element, seconds = 60) {
+  if (!element) return;
+
+  const originalText = element.textContent || element.value;
+  let remaining = seconds;
+
+  element.disabled = true;
+  element.textContent = `Resend in ${remaining}s`;
+
+  if (cooldownTimer) clearInterval(cooldownTimer);
+
+  cooldownTimer = setInterval(() => {
+    remaining--;
+
+    if (remaining <= 0) {
+      clearInterval(cooldownTimer);
+      element.disabled = false;
+      element.textContent = originalText;
+    } else {
+      element.textContent = `Resend in ${remaining}s`;
+      element.disabled = true;
+    }
+  }, 1000);
+}
 
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
@@ -58,6 +86,47 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+const handleDropdownToggle = (event) => {
+  event.stopPropagation();
+
+  const elem_Btn = event.currentTarget;
+  const elem_Dropdown = elem_Btn.closest('.dropdown');
+  const elem_List = elem_Dropdown.querySelector('.dropdown-list');
+
+  const isOpen = elem_List.classList.contains('show');
+
+  closeAllDropdowns();
+
+  if (!isOpen) {
+    openDropdown(elem_List);
+  }
+};
+
+const openDropdown = (elem_ItemList) => {
+  elem_ItemList.style.display = 'block';
+
+  setTimeout(() => elem_ItemList.classList.add('show'), 100);
+
+  document.body.addEventListener('click', closeAllDropdowns, { once: true });
+};
+
+const closeDropdown = (elem_ItemList) => {
+  elem_ItemList.classList.remove('show');
+  setTimeout(() => (elem_ItemList.style.display = 'none'), 300);
+};
+
+const closeAllDropdowns = () => {
+  document.querySelectorAll('.dropdown-list.show').forEach(closeDropdown);
+};
+
+// Event Listeners.
+elem_Dropdowns.forEach((dropdown) => {
+  const control = dropdown.querySelector('button');
+
+  control?.addEventListener('click', handleDropdownToggle);
+});
+
+// Axios Auth Intercepter.
 API.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -104,31 +173,5 @@ API.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Functions.
-function startCooldown(element, seconds = 60) {
-  if (!element) return;
-
-  const originalText = element.textContent || element.value;
-  let remaining = seconds;
-
-  element.disabled = true;
-  element.textContent = `Resend in ${remaining}s`;
-
-  if (cooldownTimer) clearInterval(cooldownTimer);
-
-  cooldownTimer = setInterval(() => {
-    remaining--;
-
-    if (remaining <= 0) {
-      clearInterval(cooldownTimer);
-      element.disabled = false;
-      element.textContent = originalText;
-    } else {
-      element.textContent = `Resend in ${remaining}s`;
-      element.disabled = true;
-    }
-  }, 1000);
-}
 
 export { Swal, showInfo, showError, showSuccess, API, startCooldown };
