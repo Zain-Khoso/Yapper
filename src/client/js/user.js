@@ -1,16 +1,29 @@
 'use strict';
 
-// TODO: Setup a global axios instance.
-// TODO: Transform the currentUser into a Map.
+// Local Imports.
+import { API } from './utils';
+
 (async function () {
-  if (window?.currentUser) return;
+  if (window?.user) return;
 
   try {
-    const { data: user } = await axios.get('/api/v1/account');
+    const {
+      data: { data },
+    } = await API.get('/account');
+
+    Object.keys(data).forEach((key) => {
+      if (!window?.currentUser) window.currentUser = new Map();
+
+      window.currentUser.set(key, data[key]);
+    });
   } catch {
     window.currentUser = null;
-
-    document.querySelectorAll('.auth-action').forEach((elem) => elem.classList.add('hidden'));
-    document.querySelectorAll('.noauth-action').forEach((elem) => elem.classList.remove('hidden'));
+  } finally {
+    document
+      .querySelectorAll('.auth-action')
+      .forEach((elem) => elem.classList.toggle('hidden', !window?.currentUser));
+    document
+      .querySelectorAll('.noauth-action')
+      .forEach((elem) => elem.classList.toggle('hidden', window?.currentUser));
   }
 })();
