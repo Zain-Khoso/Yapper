@@ -98,12 +98,6 @@ API.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 429) {
-      new showInfo('Cooldown', 'Wait a minute before retrying.');
-
-      return Promise.resolve(error.response);
-    }
-
     return Promise.reject(error);
   }
 );

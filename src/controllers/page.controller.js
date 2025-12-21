@@ -85,7 +85,7 @@ function getChangePasswordPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('change-password', { metadata });
+  res.render('change-password', { metadata, bundleName: 'change-password' });
 }
 
 function getSettingsPage(req, res) {
