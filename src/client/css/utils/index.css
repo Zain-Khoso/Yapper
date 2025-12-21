@@ -81,6 +81,10 @@ body {
   overflow-x: hidden;
 }
 
+body.swal2-height-auto.swal2-height-auto {
+  height: 100dvh !important;
+}
+
 h1 {
   font-family: 'Alexandria', sans-serif;
   font-optical-sizing: auto;
