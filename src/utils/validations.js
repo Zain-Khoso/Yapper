@@ -59,6 +59,8 @@ const schema_Checkbox = z.boolean('You must our these Terms and Conditions');
 
 const schema_URL = z.url('Invalid URL').optional().or(z.literal(null));
 
+const schema_String = z.string().min(1, 'Required');
+
 // Function to get the first error message of any given schema.
 function getZodError(result) {
   if (result.success) return '';
@@ -78,5 +80,6 @@ export {
   schema_ConfirmPassword,
   schema_Checkbox,
   schema_URL,
+  schema_String,
   getZodError,
 };
