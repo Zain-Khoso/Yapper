@@ -11,7 +11,7 @@ async function signPictureUpload(req, res) {
   const picture = req.body;
   const result = schema_PictureObject.safeParse(picture);
   if (!result.success) {
-    return res.status(409).json(serializeResponse({}, { file: getZodError(result) }));
+    return res.status(409).json(serializeResponse({}, { picture: getZodError(result) }));
   }
 
   const fileKey = `pictures/${crypto.randomUUID()}`;

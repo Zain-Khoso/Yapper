@@ -8,6 +8,6 @@ import { signPictureUpload } from '../controllers/upload.controller.js';
 const router = Router();
 
 // POST : Sign user picture upload.
-router.use('/picture', signPictureUpload);
+router.post('/picture', signPictureUpload);
 
 export default router;
