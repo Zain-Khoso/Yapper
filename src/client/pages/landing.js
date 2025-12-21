@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 // Page Styles.
 import '../css/utils/index.css';
