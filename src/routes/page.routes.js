@@ -11,6 +11,7 @@ import {
   getSettingsPage,
   getChatPage,
   getCallsPage,
+  getAccountDeletePage,
 } from '../controllers/page.controller.js';
 import { getNotFoundPage, getServerErrorPage } from '../controllers/error.controller.js';
 import { protectRoute, redirectIfAuthenticated } from '../utils/auth.utils.js';
@@ -33,6 +34,9 @@ router.get('/change-email', protectRoute, getChangeEmailPage);
 
 // GET: Change Password Page.
 router.get('/change-password', getChangePasswordPage);
+
+// GET: Account Delete Page.
+router.get('/delete-account', protectRoute, getAccountDeletePage);
 
 // GET: Settings Page.
 router.get('/settings', protectRoute, getSettingsPage);

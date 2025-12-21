@@ -1,0 +1,22 @@
+extends layouts/auth
+
+include components/entry
+
+block content 
+  main#delete-account.page
+    ul.line-steps 
+
+    header.heading
+      h2 Delete your account
+      p This will permanently remove your profile (not messages). This action cannot be undone.
+    
+    form.form
+      +entry("otp", "Verification code", "")
+      
+      p 
+        span Didn't get the code? 
+        button#resend-code.bold(type="button") Resend
+
+      .btn-group.reverse
+        button.btn.danger Delete Account 
+        a.btn.outline(href="/settings") Back 

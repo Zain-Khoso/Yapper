@@ -88,6 +88,18 @@ function getChangePasswordPage(req, res) {
   res.render('change-password', { metadata, bundleName: 'change-password' });
 }
 
+function getAccountDeletePage(req, res) {
+  const metadata = getMetadata({
+    title: 'Delete Account',
+    description: 'Permanently delete your Yapper account information.',
+    keywords: ['delete account', 'remove profile', 'account management', 'privacy', 'yapper'],
+    baseURL: req.protocol + '://' + req.get('host'),
+    pagePath: req.originalUrl,
+  });
+
+  res.render('delete-account', { metadata, bundleName: 'delete-account' });
+}
+
 function getSettingsPage(req, res) {
   const metadata = getMetadata({
     title: 'Settings',
@@ -124,6 +136,7 @@ export {
   getLoginPage,
   getChangeEmailPage,
   getChangePasswordPage,
+  getAccountDeletePage,
   getSettingsPage,
   getChatPage,
   getCallsPage,
