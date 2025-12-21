@@ -1,68 +1,17 @@
 extends index
 
-include ../svgs/message-box
-include ../svgs/phone
-include ../svgs/settings
-include ../svgs/search
-include ../svgs/more-vertical
-
-block styles 
-  link(rel="stylesheet", href="/css/app.css")
-
-  block page-styles 
-
-block scripts 
-  script(type="module", src="/js/app.js", defer) 
-
-  block page-scripts
-
 block body 
-  body.app 
-    nav.left-bar 
+  body.page
+    nav.page-controls 
       .controls  
         a.control(href="/chat")
-          +messageBox('icon', 
-            path === 'chat' ? 'fill-foreground' : 'fill-foreground-secondary', path ===  'chat' ?  'stroke-foreground' : 'stroke-foreground-secondary')
+          span(class=`material-icons ${bundleName==="chat" ? "active" : ""}`) chat
+
         a.control(href="/calls")
-          +phone('icon', path === 'calls' ? 'fill-foreground' : 'fill-foreground-secondary', path === 'calls' ?  'stroke-foreground' : 'stroke-foreground-secondary')
+          span(class=`material-icons ${bundleName==="calls" ? "active" : ""}`) call
        
       .controls  
         a.control(href="/settings")
-          +setting('icon', path === 'settings' ? 'fill-foreground' : 'fill-foreground-secondary', path === 'settings' ?  'stroke-foreground' : 'stroke-foreground-secondary')
-        a.control(href="/settings/account")
-          div(class=`${path === 'account' ? 'user-icon active' : 'user-icon'}`)
-            span.user-initial Z
+          span(class=`material-icons ${bundleName==="settings" ? "active" : ""}`) settings
 
-    aside.app-controls 
-      header.head 
-        .wrapper 
-          h2 #{heading}
-
-          div.dropdown#dropdown-pages
-            button 
-              +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            
-            .dropdown-list.right
-              a(href="/chat", class=`${path === "chat" ? "dropdown-item active" : "dropdown-item"}`)
-                +messageBox('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-
-                span.label Chat
-              
-              a(href="/calls", class=`${path === "calls" ? "dropdown-item active" : "dropdown-item"}`)
-                +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-
-                span.label Calls
-
-              a(href="/settings", class=`${path === "settings" || path === "account" ? "dropdown-item active" : "dropdown-item"}`)
-                +setting('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-
-                span.label Settings
-
-        if path === 'chat'
-          .btn-group
-            button#btn-add-chat.btn.primary Add a Yap
-      
-      block page-controls 
-
-    main#page-content.content-wrapper 
-      block content
+    block content
