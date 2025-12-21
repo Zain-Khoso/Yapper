@@ -3,8 +3,17 @@
 // Local Imports.
 import { API } from './utils';
 
-(async function () {
-  if (window?.user) return;
+// Variables.
+let isLoading = false;
+let callbacks = [];
+
+async function loadCurrentUser(callback = undefined) {
+  callbacks.push(callback);
+
+  if (isLoading) return;
+  isLoading = true;
+
+  if (window?.currentUser) return window.currentUser;
 
   try {
     const {
@@ -16,6 +25,9 @@ import { API } from './utils';
 
       window.currentUser.set(key, data[key]);
     });
+
+    await Promise.all(callbacks.map(async (cb) => await cb?.()));
+    callbacks = [];
   } catch {
     window.currentUser = null;
   } finally {
@@ -26,4 +38,8 @@ import { API } from './utils';
       .querySelectorAll('.noauth-action')
       .forEach((elem) => elem.classList.toggle('hidden', window?.currentUser));
   }
-})();
+}
+
+loadCurrentUser();
+
+export { loadCurrentUser };
