@@ -66,7 +66,7 @@ function getChangeEmailPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('change-email', { metadata, user: {} }); // TODO: remove this user attribute.
+  res.render('change-email', { metadata, bundleName: 'change-email' });
 }
 
 function getChangePasswordPage(req, res) {

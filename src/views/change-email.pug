@@ -1,30 +1,32 @@
 extends layouts/auth
 
 include components/entry
-include svgs/checkbox
-include svgs/checkedbox
-
-block scripts 
-  script(src="https://unpkg.com/validator@latest/validator.min.js")
-
-  script(type="module", src="/js/change-email.js", defer) 
 
 block content 
-  main.page 
+  main#change-email.page
+    ul.line-steps 
+
     header.heading
-      h2 Update Your Email
-      p Keep your account details up to date. Enter your new email below.
+      h2 Enter your email
+      p We'll send a verification code to your new email address to confirm the change.
     
-    form#form
-      section.inputs-group 
-        +entry("newEmail", "New Email", user.email)
-
-        +entry("confirmNewEmail", "Confirm New Email", user.email)
-
-      .btn-group.reverse
-        button#submit.btn.primary Save New Email
+    form.form
+      +entry("email", "New Email", "johndoe@example.com")
       
       p 
-        span Changed your mind? 
-        a.highlight(href="/settings/account")  Go back to Account Settings
+        span You didn't mean to come here? 
+        a.bold(href="/") Go back 
+
+      .btn-group
+        button.btn.primary Continue 
+    
+    form.form.hidden
+      +entry("otp", "Verification code", "")
       
+      p 
+        span Didn't get the code? 
+        button#resend-code.bold(type="button") Resend
+
+      .btn-group.reverse
+        button.btn.primary Update Email
+        button.btn.outline.back(type="button") Back 
