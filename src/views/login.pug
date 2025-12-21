@@ -1,33 +1,21 @@
 extends layouts/auth
 
 include components/entry
-include svgs/checkbox
-include svgs/checkedbox
-
-block scripts 
-  script(src="https://unpkg.com/validator@latest/validator.min.js")
-
-  script(type="module", src="/js/login.js", defer) 
 
 block content 
-  main.page 
+  main#login-form.page
+    ul.line-steps 
+
     header.heading
-      h2 Welcome back to Yapper 
-      p Log in and continue your conversations — fast, simple, and distraction-free.
+      h2 Welcome back
+      p Sign in to continue your conversations on Yapper.
     
-    form#form
-      section.inputs-group 
-        +entry("email", "Email", "abc@xyz.com")
+    form.form
+      +entry("email", "Email", "johndoe@example.com")
 
-        +entry("password", "Password", "********", "password", "password")
-
-        a.highlight(href="/forgot-password") Forgot Your Password?
-
-      .btn-group.reverse
-        button#submit.btn.primary Login
-        button#cancel.btn.outline Go Back 
+      +entry("password", "Password", "********", 'password')
       
-      p 
-        span Don't have an account?
-        a.highlight(href="/create-account")  Create One
-      
+      a.bold(href="/change-password") Forgot your password?  
+
+      .btn-group
+        button.btn.primary Login 
