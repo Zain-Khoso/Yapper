@@ -149,6 +149,7 @@ function serializeUser(user) {
 
   return {
     id: user?.id ?? '',
+    email: user?.email ?? '',
     initial: user?.displayName?.at(0)?.toUpperCase() ?? 'Y',
     picture: user?.picture ?? '',
     displayName: user?.displayName ?? 'Yapper User',
