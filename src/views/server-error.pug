@@ -1,0 +1,24 @@
+extends layouts/static
+
+include svgs/serverError
+include components/footer
+
+block hero-content 
+  section.hero-content.container
+    article.hero-copy 
+      section.left 
+        h1 Something went wrong.
+
+        p It's not you, it's us. Our server ran into an unexpected hiccup while trying to process your request.
+
+        p Since Yapper is a hobby project, you might have stumbled upon a bug or an edge case I'm still smoothing out.
+
+        .btn-group.reverse
+          a.btn.primary(href="/") Try Again
+          a.btn.outline(href="https://github.com/Zain-Khoso/Yapper/issues", target="_blank") Report Issue
+      
+      +serverError
+
+block content 
+  main.page-contents
+    +footer

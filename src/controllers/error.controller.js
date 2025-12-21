@@ -39,7 +39,7 @@ function getServerErrorPage(error, req, res, _) {
 
   console.log(`\n Server Error (${pagePath}): `, error, '\n');
 
-  res.status(500).render('not-found', { metadata, bundleName: 'landing' });
+  res.status(500).render('server-error', { metadata, bundleName: 'landing' });
 }
 
 export { notFoundError, serverError, getNotFoundPage, getServerErrorPage };
