@@ -14,8 +14,13 @@ function getTheme() {
 
 // IIFE to set the user's prefered theme on page load.
 (function () {
-  document.documentElement.setAttribute('data-theme', getTheme());
-  localStorage.setItem('theme', getTheme());
+  const elem_ThemeLabel = document.querySelector('#setting-theme .setting-value');
+  const theme = getTheme();
+
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+
+  if (elem_ThemeLabel) elem_ThemeLabel.textContent = theme.at(0).toUpperCase() + theme.slice(1);
 })();
 
 export { getTheme };
