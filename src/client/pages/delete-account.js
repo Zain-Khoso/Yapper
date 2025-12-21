@@ -55,7 +55,7 @@ const formOptions = [
 
 Form.setSteps(formOptions);
 
-// startCooldown(Form.elem_ResendCode);
+startCooldown(Form.elem_ResendCode);
 Form.elem_ResendCode?.addEventListener('click', async ({ target }) => {
   try {
     await API.get('/account/delete', { email: window.currentUser.get('email') });
