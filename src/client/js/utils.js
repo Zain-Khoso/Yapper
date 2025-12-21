@@ -8,6 +8,7 @@ import axios from 'axios';
 import { getTheme } from './theme';
 
 // Constants.
+const PROTECTED_ROUTES = ['change-email', '/chat', '/calls', '/settings'];
 const Swal = BaseSwal.mixin({
   theme: getTheme(),
   customClass: {
@@ -90,7 +91,8 @@ API.interceptors.response.use(
         return API(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        if (!['/login', '/signup'].includes(location.pathname)) return location.assign('/login');
+
+        if (PROTECTED_ROUTES.includes(location.pathname)) return location.assign('/login');
       } finally {
         isRefreshing = false;
       }
