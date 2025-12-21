@@ -67,7 +67,7 @@ class App {
   }
 
   async handleDisplayNameChange() {
-    const confirmation = await Swal.fire({
+    await Swal.fire({
       icon: 'question',
       iconColor: 'var(--color-foreground)',
       title: 'Change Name',
@@ -75,6 +75,9 @@ class App {
       showCancelButton: true,
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
       input: 'text',
       inputLabel: 'New Name',
       inputPlaceholder: window.currentUser.get('displayName'),
@@ -82,38 +85,44 @@ class App {
         const result = schema_DisplayName.safeParse(value);
         if (!result.success) return getZodError(result);
       },
+      preConfirm: async function (newName) {
+        try {
+          Swal.disableInput();
+          Swal.disableButtons();
+
+          await API.patch('/account/update', { displayName: newName, picture: null });
+
+          await new showSuccess(
+            'Name Changed',
+            `Your name has been changed from ${window.currentUser.get('displayName')} to ${newName}`
+          );
+
+          location.reload();
+        } catch (error) {
+          Swal.enableInput();
+          Swal.enableButtons();
+
+          if (error.isAxiosError) {
+            const {
+              response: {
+                data: { errors },
+              },
+            } = error;
+
+            if (errors?.displayName) Swal.showValidationMessage('Error', errors.displayName);
+            if (errors?.picture) Swal.showValidationMessage('Error', errors.picture);
+            if (errors?.root) Swal.showValidationMessage('Server Error', errors.root);
+
+            if (!Object.keys(errors ?? {}).length)
+              Swal.showValidationMessage('Something went wrong.');
+          } else Swal.showValidationMessage('Something went wrong.');
+        }
+      },
     });
-
-    if (!confirmation.isConfirmed) return;
-
-    try {
-      await API.patch('/account/update', { displayName: confirmation.value, picture: null });
-
-      await new showSuccess(
-        'Name Changed',
-        `Your name has been changed from ${window.currentUser.get('displayName')} to ${confirmation.value}`
-      );
-
-      location.reload();
-    } catch (error) {
-      if (error.isAxiosError) {
-        const {
-          response: {
-            data: { errors },
-          },
-        } = error;
-
-        if (errors?.displayName) new showError('Error', errors.displayName);
-        if (errors?.picture) new showError('Error', errors.picture);
-        if (errors?.root) new showError('Server Error', errors.root);
-
-        if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
-      } else new showError('Something went wrong.');
-    }
   }
 
   async handleLogout() {
-    const confirmation = await Swal.fire({
+    await Swal.fire({
       icon: 'question',
       iconColor: 'var(--color-foreground)',
       title: 'Logout',
@@ -121,31 +130,40 @@ class App {
       showCancelButton: true,
       confirmButtonText: 'YES',
       cancelButtonText: 'NO',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      preConfirm: async function () {
+        try {
+          Swal.disableInput();
+          Swal.disableButtons();
+
+          await API.get('/auth/logout');
+
+          location.assign('/');
+        } catch (error) {
+          Swal.enableInput();
+          Swal.enableButtons();
+
+          if (error.isAxiosError) {
+            const {
+              response: {
+                data: { errors },
+              },
+            } = error;
+
+            if (errors?.root) Swal.showValidationMessage('Server Error', errors.root);
+
+            if (!Object.keys(errors ?? {}).length)
+              Swal.showValidationMessage('Something went wrong.');
+          } else Swal.showValidationMessage('Something went wrong.');
+        }
+      },
     });
-
-    if (!confirmation.isConfirmed) return;
-
-    try {
-      await API.get('/auth/logout');
-
-      location.assign('/');
-    } catch (error) {
-      if (error.isAxiosError) {
-        const {
-          response: {
-            data: { errors },
-          },
-        } = error;
-
-        if (errors?.root) new showError('Server Error', errors.root);
-
-        if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
-      } else new showError('Something went wrong.');
-    }
   }
 
   async handleDelete() {
-    const confirmation = await Swal.fire({
+    await Swal.fire({
       icon: 'question',
       iconColor: 'var(--color-foreground)',
       title: 'Delete Account',
@@ -156,27 +174,33 @@ class App {
         confirmButton: 'btn danger',
         cancelButton: 'btn outline',
       },
+      preConfirm: async function () {
+        try {
+          Swal.disableInput();
+          Swal.disableButtons();
+
+          await API.get('/account/delete');
+
+          location.assign('/delete-account');
+        } catch (error) {
+          Swal.enableInput();
+          Swal.enableButtons();
+
+          if (error.isAxiosError) {
+            const {
+              response: {
+                data: { errors },
+              },
+            } = error;
+
+            if (errors?.root) Swal.showValidationMessage('Server Error', errors.root);
+
+            if (!Object.keys(errors ?? {}).length)
+              Swal.showValidationMessage('Something went wrong.');
+          } else Swal.showValidationMessage('Something went wrong.');
+        }
+      },
     });
-
-    if (!confirmation.isConfirmed) return;
-
-    try {
-      await API.get('/account/delete');
-
-      location.assign('/delete-account');
-    } catch (error) {
-      if (error.isAxiosError) {
-        const {
-          response: {
-            data: { errors },
-          },
-        } = error;
-
-        if (errors?.root) new showError('Server Error', errors.root);
-
-        if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
-      } else new showError('Something went wrong.');
-    }
   }
 }
 

@@ -49,12 +49,12 @@ router.post('/change/email', allowAuthenticatedUserOnly, requestEmailChange);
 router.patch('/change/email', allowAuthenticatedUserOnly, verifyEmailChangeRequest);
 
 // PUT : Sends a confirmation email to the provided email.
-router.put('/change/password', allowNonAuthenticatedUserOnly, requestPasswordChange);
+router.put('/change/password', requestPasswordChange);
 
 // POST : Verifies the the given otp and grants permission to change password.
-router.post('/change/password', allowNonAuthenticatedUserOnly, verifyPasswordChangeRequest);
+router.post('/change/password', verifyPasswordChangeRequest);
 
 // PATCH : Resets a user's password.
-router.patch('/change/password', allowNonAuthenticatedUserOnly, changePassword);
+router.patch('/change/password', changePassword);
 
 export default router;
