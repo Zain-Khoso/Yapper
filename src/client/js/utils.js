@@ -34,4 +34,27 @@ const showSuccess = Swal.mixin({
 
 const API = axios.create({ baseURL: '/api/v1' });
 
-export { Swal, showError, showSuccess, API };
+// Functions.
+function startCooldown(element, seconds = 60) {
+  if (!element) return;
+
+  const originalText = element.textContent || element.value;
+  let remaining = seconds;
+
+  element.textContent = `Resend in ${remaining}s`;
+
+  const timer = setInterval(() => {
+    remaining--;
+
+    if (remaining <= 0) {
+      clearInterval(timer);
+      element.disabled = false;
+      element.textContent = originalText;
+    } else {
+      element.textContent = `Resend in ${remaining}s`;
+      element.disabled = true;
+    }
+  }, 1000);
+}
+
+export { Swal, showError, showSuccess, API, startCooldown };

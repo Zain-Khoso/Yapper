@@ -13,13 +13,12 @@ import '../js/user';
 import {
   schema_Email,
   schema_OTP,
-  schema_PictureFile,
   schema_DisplayName,
   schema_Password,
   schema_ConfirmPassword,
   schema_Checkbox,
 } from '../../utils/validations';
-import { API, showError } from '../js/utils';
+import { API, showError, startCooldown } from '../js/utils';
 
 // Components.
 import SteppedForm from '../js/SteppedForm';
@@ -50,6 +49,7 @@ const formOptions = [
       try {
         await API.put('/account/register', { email: Email.getValue() });
 
+        startCooldown(Form?.elem_ResendCode);
         return true;
       } catch (error) {
         if (error.isAxiosError) {
@@ -137,3 +137,26 @@ const formOptions = [
 ];
 
 Form.setSteps(formOptions);
+
+Form.elem_ResendCode?.addEventListener('click', async ({ target }) => {
+  try {
+    await API.put('/account/register', { email: Email.getValue() });
+
+    startCooldown(target);
+  } catch (error) {
+    if (error.isAxiosError) {
+      const {
+        response: {
+          data: { errors },
+        },
+      } = error;
+
+      if (errors?.email) Email.setError(errors.email);
+      if (errors?.root) new showError('Server Error', errors.root);
+
+      if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
+    } else new showError('Something went wrong.');
+
+    return false;
+  }
+});

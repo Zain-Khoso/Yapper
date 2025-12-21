@@ -14,6 +14,7 @@ export default class Form {
     this.elem_Subtitle = this.elem_Container.querySelector('.heading p');
     this.elem_Forms = this.elem_Container.querySelectorAll('.form');
     this.elem_BackButtons = this.elem_Container.querySelectorAll('.btn.back');
+    this.elem_ResendCode = this.elem_Container.querySelector('#resend-code');
 
     this.activeStep = 0;
     this.steps = [];
