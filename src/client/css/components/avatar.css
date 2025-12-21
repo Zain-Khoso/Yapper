@@ -1,4 +1,4 @@
-.user-icon {
+.avatar {
   display: grid;
   place-items: center;
 
@@ -9,11 +9,11 @@
   overflow: hidden;
 }
 
-.user-icon.active {
+.avatar.active {
   background-color: var(--color-foreground);
 }
 
-.user-icon .user-initial {
+.avatar .initial {
   font-size: 2rem;
   font-weight: 600;
   color: var(--color-background);
