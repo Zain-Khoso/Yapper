@@ -161,11 +161,10 @@ async function verifyTempUser(req, res, next) {
 
 async function createUser(req, res, next) {
   // Extracting Body Data.
-  let { email, picture, displayName, password } = req.body;
+  let { email, displayName, password } = req.body;
 
   // Sanitizing body data.
   email = sanitizeEmail(email);
-  picture = sanitizeText(picture);
   displayName = sanitizeText(displayName);
 
   // Creating a db Transaction.
@@ -174,16 +173,10 @@ async function createUser(req, res, next) {
   try {
     // Validating Body Data.
     const result_email = schema_Email.safeParse(email);
-    const result_picture = schema_URL.safeParse(picture);
     const result_displayName = schema_DisplayName.safeParse(displayName);
     const result_password = schema_Password.safeParse(password);
 
-    if (
-      !result_email.success ||
-      !result_picture.success ||
-      !result_displayName.success ||
-      !result_password.success
-    ) {
+    if (!result_email.success || !result_displayName.success || !result_password.success) {
       await t.rollback();
 
       return res.status(409).json(
@@ -191,7 +184,6 @@ async function createUser(req, res, next) {
           {},
           {
             email: getZodError(result_email),
-            picture: getZodError(result_picture),
             displayName: getZodError(result_displayName),
             password: getZodError(result_password),
           }
@@ -213,10 +205,7 @@ async function createUser(req, res, next) {
     const password_hash = await bcrypt.hash(password, salt);
 
     await Promise.all([
-      User.create(
-        { email, picture: null, displayName, password: password_hash },
-        { transaction: t }
-      ),
+      User.create({ email, displayName, password: password_hash }, { transaction: t }),
       registration.destroy({ transaction: t }),
     ]);
 
