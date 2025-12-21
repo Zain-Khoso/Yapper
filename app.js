@@ -13,8 +13,6 @@ import { viteAssets } from './src/utils/middlewares.js';
 import sequelize from './src/utils/database.js';
 import pageRouter from './src/routes/page.routes.js';
 import apiRouter from './src/routes/api.routes.js';
-import { getNotFoundPage } from './src/controllers/page.controller.js';
-import { serverError } from './src/controllers/error.controller.js';
 
 // Initializing Express.
 const app = express();
@@ -47,10 +45,6 @@ app.use(viteAssets());
 // Routes.
 app.use(pageRouter);
 app.use('/api/v1/', apiRouter);
-
-// Error Middlewares.
-app.use(getNotFoundPage);
-app.use(serverError);
 
 // Defining Model Associations.
 import './src/utils/associations.js';
