@@ -12,6 +12,7 @@ import {
   getChatPage,
   getCallsPage,
 } from '../controllers/page.controller.js';
+import { getNotFoundPage, getServerErrorPage } from '../controllers/error.controller.js';
 
 const router = Router();
 
@@ -40,5 +41,11 @@ router.get('/chat', getChatPage);
 
 // GET: Calls Page.
 router.get('/calls', getCallsPage);
+
+// Handles invalid routes.
+router.use(getNotFoundPage);
+
+// Handles server errors for page routes.
+router.use(getServerErrorPage);
 
 export default router;

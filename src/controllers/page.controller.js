@@ -117,17 +117,3 @@ export function getChatPage(req, res) {
 export function getCallsPage(_, res) {
   res.redirect('/chat');
 }
-
-export function getNotFoundPage(req, res) {
-  const metadata = getMetadata({
-    title: 'Page Not Found',
-    description:
-      'The page you are looking for does not exist or may have been moved. Return to Yapper to continue chatting.',
-    keywords: ['404', 'page not found', 'error page', 'yapper'],
-    baseURL: req.protocol + '://' + req.get('host'),
-    pagePath: req.originalUrl,
-  });
-
-  // TODO: Check req.method to send JSON responses for API reqs.
-  res.status(404).render('not-found', { metadata, bundleName: 'landing' });
-}

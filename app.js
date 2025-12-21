@@ -43,8 +43,8 @@ app.use(express.json());
 app.use(viteAssets());
 
 // Routes.
-app.use(pageRouter);
 app.use('/api/v1/', apiRouter);
+app.use(pageRouter);
 
 // Defining Model Associations.
 import './src/utils/associations.js';
