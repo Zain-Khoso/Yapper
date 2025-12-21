@@ -53,7 +53,7 @@ export function getLoginPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('login', { metadata });
+  res.render('login', { metadata, bundleName: 'login' });
 }
 
 export function getChangeEmailPage(req, res) {
