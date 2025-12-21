@@ -13,7 +13,7 @@ import {
   schema_URL,
   getZodError,
 } from '../utils/validations.js';
-import { generateOTP } from '../utils/otp.js';
+import { generateOTP } from '../utils/helpers.js';
 import { serializeResponse, serializeUser } from '../utils/serializers.js';
 import { removeRefreshTokenCookie } from '../utils/auth.utils.js';
 

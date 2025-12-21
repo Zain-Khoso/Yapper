@@ -2,6 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 
+// Lib Imports.
+import { generate } from 'otp-generator';
+
 // Middleware for getting assets' paths accordingly to the environment.
 function viteAssets() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -55,4 +58,13 @@ function viteAssets() {
   };
 }
 
-export { viteAssets };
+function generateOTP() {
+  return generate(6, {
+    digits: true,
+    upperCaseAlphabets: true,
+    specialChars: false,
+    lowerCaseAlphabets: false,
+  });
+}
+
+export { viteAssets, generateOTP };

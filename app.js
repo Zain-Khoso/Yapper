@@ -9,7 +9,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 
 // Local Imports.
-import { viteAssets } from './src/utils/middlewares.js';
+import { viteAssets } from './src/utils/helpers.js';
 import sequelize from './src/utils/database.js';
 import pageRouter from './src/routes/page.routes.js';
 import apiRouter from './src/routes/api.routes.js';
