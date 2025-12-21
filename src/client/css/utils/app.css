@@ -39,6 +39,7 @@
   color: var(--color-foreground-secondary);
 }
 
+.page .page-controls .controls .control:hover .material-icons,
 .page .page-controls .controls .control .material-icons.active {
   color: var(--color-foreground);
 }
