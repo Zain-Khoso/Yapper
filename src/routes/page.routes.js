@@ -13,6 +13,7 @@ import {
   getCallsPage,
 } from '../controllers/page.controller.js';
 import { getNotFoundPage, getServerErrorPage } from '../controllers/error.controller.js';
+import { protectRoute, redirectIfAuthenticated } from '../utils/auth.utils.js';
 
 const router = Router();
 
@@ -22,25 +23,25 @@ const router = Router();
 router.get('/', getLandingPage);
 
 // GET: Signup Page.
-router.get('/signup', getSignUpPage);
+router.get('/signup', redirectIfAuthenticated, getSignUpPage);
 
 // GET: Login Page.
-router.get('/login', getLoginPage);
+router.get('/login', redirectIfAuthenticated, getLoginPage);
 
 // GET: Change Email Page.
-router.get('/change-email', getChangeEmailPage);
+router.get('/change-email', protectRoute, getChangeEmailPage);
 
 // GET: Change Password Page.
 router.get('/change-password', getChangePasswordPage);
 
 // GET: Settings Page.
-router.get('/settings', getSettingsPage);
+router.get('/settings', protectRoute, getSettingsPage);
 
 // GET: Chatapp Page.
-router.get('/chat', getChatPage);
+router.get('/chat', protectRoute, getChatPage);
 
 // GET: Calls Page.
-router.get('/calls', getCallsPage);
+router.get('/calls', protectRoute, getCallsPage);
 
 // Handles invalid routes.
 router.use(getNotFoundPage);

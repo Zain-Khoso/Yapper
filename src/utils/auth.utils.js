@@ -84,6 +84,43 @@ async function allowNonAuthenticatedUserOnly(req, res, next) {
   }
 }
 
+async function protectRoute(req, res, next) {
+  try {
+    const refreshToken = req.cookies['yapper.refreshToken'];
+    if (!refreshToken) return res.redirect('/login');
+
+    try {
+      const decodedRefresh = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const user = await User.scope('full').findByPk(decodedRefresh.userId);
+
+      if (!user || user.refreshToken !== refreshToken) throw new Error();
+
+      return next();
+    } catch (err) {
+      return res.redirect('/login');
+    }
+  } catch (error) {
+    removeRefreshTokenCookie(res);
+    return res.redirect('/login');
+  }
+}
+
+async function redirectIfAuthenticated(req, res, next) {
+  const refreshToken = req.cookies['yapper.refreshToken'];
+  if (!refreshToken) return next();
+  console.log('Hello World');
+  try {
+    const decodedRefresh = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const user = await User.scope('full').findByPk(decodedRefresh.userId);
+
+    if (!user || user.refreshToken !== refreshToken) throw new Error();
+
+    return res.redirect('/chat');
+  } catch (error) {
+    return next();
+  }
+}
+
 export {
   generateAccessToken,
   generateRefreshToken,
@@ -91,4 +128,6 @@ export {
   removeRefreshTokenCookie,
   allowAuthenticatedUserOnly,
   allowNonAuthenticatedUserOnly,
+  protectRoute,
+  redirectIfAuthenticated,
 };
