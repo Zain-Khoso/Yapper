@@ -1,0 +1,63 @@
+.dropdown {
+  position: relative;
+
+  width: fit-content;
+  height: fit-content;
+}
+
+.dropdown .dropdown-list {
+  position: absolute;
+  top: 300%;
+  display: none;
+
+  width: fit-content;
+  height: fit-content;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-foreground);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    top 300ms ease-out,
+    opacity 300ms ease-out;
+}
+
+.dropdown .dropdown-list.show {
+  top: 120%;
+  opacity: 1;
+}
+
+.dropdown .dropdown-list.left {
+  left: 0;
+}
+
+.dropdown .dropdown-list.right {
+  right: 0;
+}
+
+.dropdown .dropdown-list .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  width: 100%;
+  background-color: var(--color-background);
+  padding: 0.8rem 1rem;
+}
+
+.dropdown .dropdown-list .dropdown-item .material-icons {
+  font-size: large;
+  color: var(--color-foreground-secondary);
+}
+
+.dropdown .dropdown-list .dropdown-item.active,
+.dropdown .dropdown-list .dropdown-item:hover {
+  background-color: var(--color-background-secondary);
+}
+
+.dropdown .dropdown-list .dropdown-item.active a,
+.dropdown .dropdown-list .dropdown-item.active .material-icons,
+.dropdown .dropdown-list .dropdown-item:hover a,
+.dropdown .dropdown-list .dropdown-item:hover .material-icons {
+  color: var(--color-foreground);
+}

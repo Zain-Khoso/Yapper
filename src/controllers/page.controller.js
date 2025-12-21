@@ -110,7 +110,7 @@ function getSettingsPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('settings', { metadata, user: {} }); // TODO: remove this user attribute.
+  res.render('settings', { metadata, bundleName: 'settings' });
 }
 
 function getChatPage(req, res) {

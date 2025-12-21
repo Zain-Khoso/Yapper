@@ -1,78 +1,80 @@
 extends layouts/app
 
-include svgs/video
-include svgs/more-vertical
-include svgs/plus
-include svgs/send
-include svgs/arrow-back
-
-block page-styles 
-  link(rel="stylesheet", href="/css/account.css")
-
-block page-scripts 
-  script(type="module", src="/js/account.js", defer) 
-
-block page-controls 
-  ul.page-list 
-    li.page-option.active 
-      a(href="/settings/account") Account
-    li.page-option 
-      a(href="/settings/preferences") Preferences 
-
 block content
-  .page-content 
-    header.page-head 
-      button#sidenav-btn 
-        +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-      
-      h2 Account 
+  main#app 
+    header.app-head 
+      h2 Settings 
 
-    section 
-      span.highlight Account 
+      .dropdown 
+        button 
+          span.material-icons more_vert
+        
+        ul.dropdown-list.right
+          li.dropdown-item
+            span.material-icons chat
+            a(href="/chat") Chat
+          
+          li.dropdown-item
+            span.material-icons call
+            a(href="/calls") Calls
+          
+          li.dropdown-item
+            span.material-icons settings
+            a(href="/settings") Settings
+
+    section.settings-group 
+      span.bold Account 
 
       ul.settings 
-        li.setting-item 
+        li#setting-email.setting-item 
           p.setting-label 
             span.setting-name Email: 
-            span#userData-email.setting-value #{user.email}
+            span.setting-value zainkhoso@gmail.com
 
-          a.btn.outline(href="/change-email") Change
+          button.btn.outline Change
 
-        li.setting-item 
+        li#setting-displayName.setting-item 
           p.setting-label 
             span.setting-name Name: 
-            span#userData-displayName.setting-value #{user.displayName}
+            span.setting-value Zain Khoso
 
-          button#btn-change-displayName.btn.outline Change
+          button.btn.outline Change
 
-        li.setting-item 
+        li#setting-password.setting-item 
           p.setting-label 
             span.setting-name Password: 
             span.setting-value ********
 
-          button#btn-change-password.btn.outline Change
+          button.btn.outline Change
 
-        li.setting-item 
+        li#setting-subscription.setting-item 
+          p.setting-label 
+            span.setting-name  
+            span.setting-value Subscription
+
+          button.btn.outline Manage 
+
+        li#setting-logout.setting-item 
           p.setting-label 
             span.setting-name 
             span.setting-value Logout
 
-          button#btn-logout.btn.danger Logout
+          button.btn.danger Logout
 
-        li.setting-item 
+        li#setting-delete.setting-item 
           p.setting-label 
             span.setting-name  
             span.setting-value Account Deletion
 
-          button#btn-account-delete.btn.danger Delete 
+          button.btn.danger Delete 
 
-    section 
-      span.highlight Subscription 
+    section.settings-group 
+      span.bold Personalization 
 
       ul.settings 
-        li.setting-item 
+        li#setting-theme.setting-item 
           p.setting-label 
-            span.setting-name  
-            span.setting-value Want to tweak your subscription? 
+            span.setting-name Theme: 
+            span.setting-value Light
 
-          button.btn.outline Manage
+          button.btn.outline Change
