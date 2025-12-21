@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 // Util Imports.
-import { schema_Email } from '../utils/validations.js';
+import { schema_Email, schema_String } from '../utils/validations.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -17,16 +17,13 @@ import { sanitizeEmail } from '../utils/sanitizers.js';
 import User from '../models/user.model.js';
 
 async function login(req, res) {
-  // Extracting Body Data.
+  // Working body.
   let { email, password } = req.body;
-
-  // Sanitizing body data.
   email = sanitizeEmail(email);
-
-  // Validating Body Data.
   const result_email = schema_Email.safeParse(email);
+  const result_password = schema_String.safeParse(password);
 
-  if (!result_email.success) {
+  if (!result_email.success || !result_password.success) {
     return res.status(409).json(serializeResponse({}, { root: 'Invalid Credentials' }));
   }
 
