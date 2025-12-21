@@ -121,7 +121,7 @@ function startCooldown(element, seconds = 60) {
     remaining--;
 
     if (remaining <= 0) {
-      clearInterval(timer);
+      clearInterval(cooldownTimer);
       element.disabled = false;
       element.textContent = originalText;
     } else {
