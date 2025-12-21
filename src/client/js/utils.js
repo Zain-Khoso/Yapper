@@ -7,6 +7,9 @@ import axios from 'axios';
 // Local Imports.
 import { getTheme } from './theme';
 
+// Variables.
+let cooldownTimer = null;
+
 // Constants.
 const PROTECTED_ROUTES = ['change-email', '/chat', '/calls', '/settings'];
 const Swal = BaseSwal.mixin({
@@ -112,7 +115,9 @@ function startCooldown(element, seconds = 60) {
   element.disabled = true;
   element.textContent = `Resend in ${remaining}s`;
 
-  const timer = setInterval(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer);
+
+  cooldownTimer = setInterval(() => {
     remaining--;
 
     if (remaining <= 0) {
@@ -126,4 +131,4 @@ function startCooldown(element, seconds = 60) {
   }, 1000);
 }
 
-export { Swal, showError, showSuccess, API, startCooldown };
+export { Swal, showInfo, showError, showSuccess, API, startCooldown };

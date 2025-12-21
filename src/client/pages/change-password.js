@@ -20,7 +20,7 @@ import { API, showError, startCooldown } from '../js/utils';
 
 // Components.
 import SteppedForm from '../js/SteppedForm';
-import { Entry, ConfirmPassword as ConfirmPasswordObj, Checkbox } from '../js/Inputs';
+import { Entry, ConfirmPassword as ConfirmPasswordObj } from '../js/Inputs';
 
 // Constants.
 const Form = new SteppedForm('change-password');
