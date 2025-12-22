@@ -6,6 +6,7 @@ import validator from 'validator';
 const ALLOWED_PICTURE_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2mb
+const MAX_FILE_NAME_LENGTH = 120;
 
 // Field Schemas.
 const schema_Email = z.email('The email you have provided is not valid.');
@@ -16,13 +17,13 @@ const schema_PictureFile = z
   .file('Invalid File')
   .mime(ALLOWED_PICTURE_FILE_TYPES, 'Only .jpg, .jpeg, .png and .webp formats are supported.')
   .max(MAX_FILE_SIZE, 'Max image size is 2MB.')
-  .refine((file) => file.name.length <= 32, 'File name is too big.')
+  .refine((file) => file.name.length <= MAX_FILE_NAME_LENGTH, 'File name is too big.')
   .optional()
   .or(z.literal(null));
 
 const schema_PictureObject = z
   .object({
-    name: z.string().max(32, 'File name is too big.'),
+    name: z.string().max(MAX_FILE_NAME_LENGTH, 'File name is too big.'),
     type: z.string().refine((val) => ALLOWED_PICTURE_FILE_TYPES.includes(val)),
     size: z.number().max(MAX_FILE_SIZE),
   })
