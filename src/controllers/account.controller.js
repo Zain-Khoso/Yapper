@@ -321,7 +321,9 @@ async function deleteUser(req, res) {
     );
   }
 
+  await deleteOldImage(user.picture);
   await user.destroy();
+
   removeRefreshTokenCookie(res);
   res.status(200).json(serializeResponse());
 }
