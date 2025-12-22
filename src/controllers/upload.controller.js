@@ -6,6 +6,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getZodError, schema_PictureObject } from '../utils/validations.js';
 import { serializeResponse } from '../utils/serializers.js';
 import storage from '../utils/storage.js';
+import { deleteOldImage } from '../utils/helpers.js';
 
 async function signPictureUpload(req, res) {
   // Working body data.
@@ -32,4 +33,14 @@ async function signPictureUpload(req, res) {
     );
 }
 
-export { signPictureUpload };
+async function deletePicture(req, res) {
+  const user = req.user;
+
+  await deleteOldImage(user.picture);
+
+  await user.update({ picture: null });
+
+  return res.status(200).json(serializeResponse());
+}
+
+export { signPictureUpload, deletePicture };

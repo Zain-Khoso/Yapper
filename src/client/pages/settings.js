@@ -28,6 +28,7 @@ class App {
     this.elem_PictureInput = this.elem_Picture.querySelector('#file-pfp');
     this.elem_PicturePlaceholder = this.elem_Picture.querySelector('.placeholder');
     this.elem_PicturePreview = this.elem_Picture.querySelector('.preview');
+    this.elem_PictureButton = this.elem_Picture.querySelector('button');
 
     // Email
     this.elem_Email = document.getElementById('setting-email');
@@ -52,6 +53,7 @@ class App {
     this.elem_PictureInput.addEventListener('change', ({ target }) =>
       this.handleImageChange(target?.files)
     );
+    this.elem_PictureButton.addEventListener('click', () => this.handlePictureButtonClick());
     this.elem_DisplayNameButton.addEventListener('click', () => this.handleDisplayNameChange());
     this.elem_LogoutButton.addEventListener('click', () => this.handleLogout());
     this.elem_DeleteButton.addEventListener('click', () => this.handleDelete());
@@ -83,6 +85,48 @@ class App {
 
   resetPictureInput() {
     this.elem_Input.value = null;
+  }
+
+  async handlePictureButtonClick() {
+    const currentPicture = window.currentUser.get('picture');
+
+    const confirmation = await Swal.fire({
+      title: 'Profile Picture',
+      text: 'What would you like to do?',
+      icon: 'question',
+      showCancelButton: true,
+      showDenyButton: currentPicture,
+      confirmButtonText: 'Upload New',
+      denyButtonText: 'Delete Current',
+      customClass: {
+        confirmButton: 'btn primary',
+        denyButton: 'btn danger',
+        cancelButton: 'btn outline',
+      },
+    });
+
+    if (confirmation.isConfirmed) return this.elem_PictureInput.click();
+    if (confirmation.isDenied) return this.deleteCurrentPicture();
+  }
+
+  async deleteCurrentPicture() {
+    Swal.fire({
+      title: 'Deleting...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      await API.delete('/upload/delete');
+
+      await new showSuccess({ title: 'Deleted', timer: 1000, showConfirmButton: false });
+
+      setTimeout(() => location.reload(), 100);
+    } catch (error) {
+      Swal.close();
+      new showError('Error', 'Failed to delete picture.');
+    }
   }
 
   async handleImageChange(files) {
@@ -136,8 +180,10 @@ class App {
 
       setTimeout(() => location.reload(), 100);
     } catch (error) {
+      Swal.close();
       URL.revokeObjectURL(localImageURL);
       this.hidePicturePreview();
+      this.resetPictureInput();
 
       if (error.isAxiosError) {
         const {
