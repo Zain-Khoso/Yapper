@@ -4,7 +4,7 @@ import { Router } from 'express';
 // Local Imports.
 import accountRouter from './account.routes.js';
 import authRouter from './auth.routes.js';
-import uploadRouter from './upload.routes.js';
+import fileRouter from './file.routes.js';
 import { notFoundError, serverError } from '../controllers/error.controller.js';
 
 // API Routes.
@@ -17,7 +17,7 @@ router.use('/account', accountRouter);
 router.use('/auth', authRouter);
 
 // File Upload Routes.
-router.use('/upload', uploadRouter);
+router.use('/file', fileRouter);
 
 // Handles invalid API Endpoints.
 router.use(notFoundError);

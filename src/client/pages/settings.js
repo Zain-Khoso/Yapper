@@ -118,9 +118,9 @@ class App {
     });
 
     try {
-      await API.delete('/upload/delete');
+      await API.delete('/file/picture');
 
-      await new showSuccess({ title: 'Deleted', timer: 1000, showConfirmButton: false });
+      await new showSuccess({ title: 'Deleted', timer: 2000, showConfirmButton: false });
 
       setTimeout(() => location.reload(), 100);
     } catch (error) {
@@ -158,7 +158,7 @@ class App {
         data: {
           data: { signature, url },
         },
-      } = await API.post('/upload/picture', {
+      } = await API.post('/file/picture', {
         name: file.name,
         size: file.size,
         type: file.type,

@@ -3,10 +3,10 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Local Imports.
-import { getZodError, schema_PictureObject } from '../utils/validations.js';
-import { serializeResponse } from '../utils/serializers.js';
 import storage from '../utils/storage.js';
 import { deleteOldImage } from '../utils/helpers.js';
+import { serializeResponse } from '../utils/serializers.js';
+import { getZodError, schema_PictureObject } from '../utils/validations.js';
 
 async function signPictureUpload(req, res) {
   // Working body data.
