@@ -4,6 +4,10 @@ import path from 'path';
 
 // Lib Imports.
 import { generate } from 'otp-generator';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+
+// Local Imports.
+import storage from './storage.js';
 
 // Middleware for getting assets' paths accordingly to the environment.
 function viteAssets() {
@@ -67,4 +71,20 @@ function generateOTP() {
   });
 }
 
-export { viteAssets, generateOTP };
+async function deleteOldImage(oldUrl) {
+  if (!oldUrl || !oldUrl.includes(process.env.CLOUDFLARE_R2_PUBLIC_URL)) return;
+
+  const fileKey = oldUrl.replace(`${process.env.CLOUDFLARE_R2_PUBLIC_URL}/`, '');
+  const deleteCommand = new DeleteObjectCommand({
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: fileKey,
+  });
+
+  try {
+    await storage.send(deleteCommand);
+  } catch (err) {
+    console.log('Failed to delete old image from R2:', err);
+  }
+}
+
+export { viteAssets, generateOTP, deleteOldImage };

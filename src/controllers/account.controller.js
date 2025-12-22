@@ -13,7 +13,7 @@ import {
   schema_URL,
   getZodError,
 } from '../utils/validations.js';
-import { generateOTP } from '../utils/helpers.js';
+import { deleteOldImage, generateOTP } from '../utils/helpers.js';
 import { serializeResponse, serializeUser } from '../utils/serializers.js';
 import { removeRefreshTokenCookie } from '../utils/auth.utils.js';
 
@@ -249,6 +249,9 @@ async function updateUser(req, res) {
       )
     );
   }
+
+  // If a new Image is provided, deletes the old image.
+  if (picture) await deleteOldImage(req.user.picture);
 
   // Updating current User's data.
   const updatedUser = {};

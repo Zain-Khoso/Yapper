@@ -92,7 +92,9 @@ class App {
     const result = schema_PictureFile.safeParse(file);
     if (!result.success) return new showError('Error', getZodError(result));
 
-    this.elem_PicturePreview.setAttribute('src', URL.createObjectURL(file));
+    const localImageURL = URL.createObjectURL(file);
+
+    this.elem_PicturePreview.setAttribute('src', localImageURL);
     this.elem_PicturePreview.setAttribute(
       'alt',
       `${window.currentUser.get('displayName')}'s Photo`
@@ -134,7 +136,9 @@ class App {
 
       setTimeout(() => location.reload(), 100);
     } catch (error) {
-      console.error(error);
+      URL.revokeObjectURL(localImageURL);
+      this.hidePicturePreview();
+
       if (error.isAxiosError) {
         const {
           response: {
