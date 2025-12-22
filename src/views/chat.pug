@@ -1,95 +1,88 @@
 extends layouts/app
 
-include svgs/video
-include svgs/more-vertical
-include svgs/plus
-include svgs/send
-include svgs/arrow-back
-include svgs/empty-chat-illustration
-include svgs/delete
-include svgs/block
-
-block page-styles 
-  link(rel="stylesheet", href="/css/chat.css")
-
-block page-scripts 
-  script(src="https://unpkg.com/validator@latest/validator.min.js")
-  script(src="https://cdn.jsdelivr.net/npm/autolinker/dist/Autolinker.min.js")
-  script(src="https://cdn.jsdelivr.net/npm/emoji-js@3.7.0/lib/emoji.min.js")
-
-  script(type="module", src="/js/chatapp.js", defer) 
-
-block page-controls 
-  ul#chatslist.chats-list 
+include svgs/empty-chat
 
 block content
-  .chatapp.hidden#chatapp-ui  
-    header.chat-head 
-      .user 
-        button.back#sidenav-btn 
-          +arrowBack('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-        
-        .user-icon
-          span.user-initial#chatapp-user-initial
-        
-        h2#chatapp-user-displayName
-      
-      .actions 
-        button.icon-btn#btn-call-voice 
-          +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-        
-        button.icon-btn#btn-call-video 
-          +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-        
-        div.dropdown#dropdown-chat-options
-          button.icon-btn 
-            +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
+  aside.chat-controls 
+    header.head 
+      h2 Chats
 
-          .dropdown-list.right
-            button.dropdown-item#btn-chat-block
-              +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-              span.label Block Chat 
-
-            button.dropdown-item.hidden#btn-chat-unblock
-              +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-              span.label Unblock Chat 
-      
-      div.dropdown#dropdown-chat-mobile-options
-        button
-          +moreVertical('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-
-        .dropdown-list.right 
-          button#mobile-btn-call-voice.dropdown-item 
-            +phone('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            span.label Voice Call
+      .dropdown 
+        button 
+          span.material-icons more_vert
+        
+        ul.dropdown-list.right
+          li.dropdown-item
+            span.material-icons chat
+            a(href="/chat") Chat
           
-          button#mobile-btn-call-video.dropdown-item 
-            +video('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            span.label Video Call
-
-          button#mobile-btn-chat-block.dropdown-item 
-            +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            span.label Block Chat 
+          li.dropdown-item
+            span.material-icons call
+            a(href="/calls") Calls
           
-          button#mobile-btn-chat-unblock.dropdown-item 
-            +block('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-            span.label Unblock Chat 
+          li.dropdown-item
+            span.material-icons settings
+            a(href="/settings") Settings
 
-    section.messages
+    .btn-group
+      button.btn.primary Add a Chat
 
-    form.controller#message-form
-      label.file-label
-        input#message-file-input(type="file")
-        +plus('icon', 'fill-foreground-secondary', 'stroke-foreground-secondary')
-      
-      textarea.text-input#message-text-input(placeholder="Type your message...", autocomplete="off", rows=1)
+    ul.chats-list 
+      li.chat.unread
+        div.avatar
+          span.initial Z
+        
+        div.user-content
+          div.title
+            span.bold Zain Khoso
+            span.last-spoke Yesterday
 
-      button.send#message-send-btn
-        +send('icon', 'fill-background', 'stroke-background')
+          div.subtitle
+            span.last-message Yo ho
+            span.new-message-count 56
+     
+      li.chat
+        div.avatar
+          span.initial Z
+        
+        div.user-content
+          div.title
+            span.bold Zain Khoso
+            span.last-spoke Yesterday
 
-  .chatapp-empty#chatapp-empty-ui
+          div.subtitle
+            span.last-message Yo ho
+            span.new-message-count 56
+    
+      li.chat.unread
+        div.avatar
+          span.initial Z
+        
+        div.user-content
+          div.title
+            span.bold Zain Khoso
+            span.last-spoke Yesterday
+
+          div.subtitle
+            span.last-message Yo ho
+            span.new-message-count 56
+    
+      li.chat.active
+        div.avatar
+          span.initial Z
+        
+        div.user-content
+          div.title
+            span.bold Zain Khoso
+            span.last-spoke Yesterday
+
+          div.subtitle
+            span.last-message Yo ho
+            span.new-message-count 56
+
+  .chatapp-empty
     h1 It's quiet here… 
 
     p Pick a user, say hello, and your conversation will show up here.
     
-    +emptyChatIllustration("illustration")
+    +emptyChat("illustration")

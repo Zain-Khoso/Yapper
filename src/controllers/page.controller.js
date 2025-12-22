@@ -123,7 +123,7 @@ function getChatPage(req, res) {
     pagePath: req.originalUrl,
   });
 
-  res.render('chat', { metadata });
+  res.render('chat', { metadata, bundleName: 'chat' });
 }
 
 function getCallsPage(_, res) {
