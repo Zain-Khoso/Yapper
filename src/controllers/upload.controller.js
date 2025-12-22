@@ -15,7 +15,8 @@ async function signPictureUpload(req, res) {
     return res.status(409).json(serializeResponse({}, { picture: getZodError(result) }));
   }
 
-  const fileKey = `pictures/${crypto.randomUUID()}`;
+  const fileName = picture.name.split('.');
+  const fileKey = `pictures/${crypto.randomUUID()}${fileName.length > 1 ? '.' + fileName.at(-1) : ''}`;
   const command = new PutObjectCommand({
     Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
     Key: fileKey,

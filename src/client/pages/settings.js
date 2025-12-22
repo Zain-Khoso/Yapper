@@ -92,6 +92,21 @@ class App {
     const result = schema_PictureFile.safeParse(file);
     if (!result.success) return new showError('Error', getZodError(result));
 
+    this.elem_PicturePreview.setAttribute('src', URL.createObjectURL(file));
+    this.elem_PicturePreview.setAttribute(
+      'alt',
+      `${window.currentUser.get('displayName')}'s Photo`
+    );
+    this.showPicturePreview();
+
+    Swal.fire({
+      title: 'Uploading...',
+      text: 'Please wait while we update your profile picture.',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
     try {
       const {
         data: {
@@ -110,9 +125,14 @@ class App {
         picture: url,
       });
 
-      await new showSuccess('Profile Update Successfull');
+      await new showSuccess({
+        title: 'Success!',
+        text: 'Profile Update Successful',
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
-      location.reload();
+      setTimeout(() => location.reload(), 100);
     } catch (error) {
       console.error(error);
       if (error.isAxiosError) {
