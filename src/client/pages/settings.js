@@ -12,7 +12,8 @@ import '../css/settings.css';
 import { getTheme } from '../js/theme';
 import { loadCurrentUser } from '../js/user';
 import { API, Swal, showError, showSuccess } from '../js/utils';
-import { getZodError, schema_DisplayName } from '../../utils/validations';
+import { getZodError, schema_DisplayName, schema_PictureFile } from '../../utils/validations';
+import axios from 'axios';
 
 // Object to handle the functionality of the entire page.
 class App {
@@ -21,6 +22,12 @@ class App {
     this.elem_Theme = document.getElementById('setting-theme');
     this.elem_ThemeValue = this.elem_Theme.querySelector('.setting-value');
     this.elem_ThemeButton = this.elem_Theme.querySelector('button');
+
+    // Picture
+    this.elem_Picture = document.getElementById('setting-picture');
+    this.elem_PictureInput = this.elem_Picture.querySelector('#file-pfp');
+    this.elem_PicturePlaceholder = this.elem_Picture.querySelector('.placeholder');
+    this.elem_PicturePreview = this.elem_Picture.querySelector('.preview');
 
     // Email
     this.elem_Email = document.getElementById('setting-email');
@@ -42,10 +49,13 @@ class App {
     loadCurrentUser(() => this.loadUserState());
 
     // Event Listeners.
-    this.elem_ThemeButton.addEventListener('click', () => this.setTheme(this.getNextTheme()));
+    this.elem_PictureInput.addEventListener('change', ({ target }) =>
+      this.handleImageChange(target?.files)
+    );
     this.elem_DisplayNameButton.addEventListener('click', () => this.handleDisplayNameChange());
     this.elem_LogoutButton.addEventListener('click', () => this.handleLogout());
     this.elem_DeleteButton.addEventListener('click', () => this.handleDelete());
+    this.elem_ThemeButton.addEventListener('click', () => this.setTheme(this.getNextTheme()));
   }
 
   getNextTheme() {
@@ -61,9 +71,77 @@ class App {
     this.elem_ThemeValue.textContent = theme.at(0).toUpperCase() + theme.slice(1);
   }
 
+  showPicturePreview() {
+    this.elem_PicturePreview.classList.remove('hidden');
+    this.elem_PicturePlaceholder.classList.add('hidden');
+  }
+
+  hidePicturePreview() {
+    this.elem_PicturePreview.classList.add('hidden');
+    this.elem_PicturePlaceholder.classList.remove('hidden');
+  }
+
+  resetPictureInput() {
+    this.elem_Input.value = null;
+  }
+
+  async handleImageChange(files) {
+    if (!files || files.length === 0) return this.setDefaultState();
+
+    const file = files[0];
+    const result = schema_PictureFile.safeParse(file);
+    if (!result.success) return new showError('Error', getZodError(result));
+
+    try {
+      const {
+        data: {
+          data: { signature, url },
+        },
+      } = await API.post('/upload/picture', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      });
+
+      await axios.put(signature, file, { headers: { 'Content-Type': file.type } });
+
+      await API.patch('/account/update', {
+        displayName: window.currentUser.get('displayName'),
+        picture: url,
+      });
+
+      await new showSuccess('Profile Update Successfull');
+
+      location.reload();
+    } catch (error) {
+      console.error(error);
+      if (error.isAxiosError) {
+        const {
+          response: {
+            data: { errors },
+          },
+        } = error;
+
+        if (errors?.picture) new showError('Picture Error', errors.picture);
+        if (errors?.root) new showError('Server Error', errors.root);
+
+        if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
+      } else new showError('Something went wrong.');
+    }
+  }
+
   async loadUserState() {
-    this.elem_EmailValue.textContent = window.currentUser.get('email');
-    this.elem_DisplayNameValue.textContent = window.currentUser.get('displayName');
+    const picture = window.currentUser.get('picture');
+    const email = window.currentUser.get('email');
+    const displayName = window.currentUser.get('displayName');
+
+    this.elem_PicturePreview.setAttribute('src', picture);
+    this.elem_PicturePreview.setAttribute('alt', `${displayName}'s Photo`);
+    this.elem_EmailValue.textContent = email;
+    this.elem_DisplayNameValue.textContent = displayName;
+
+    if (picture) this.showPicturePreview();
+    else this.hidePicturePreview();
   }
 
   async handleDisplayNameChange() {

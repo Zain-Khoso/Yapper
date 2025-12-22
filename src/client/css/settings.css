@@ -84,6 +84,47 @@
   text-overflow: ellipsis;
 }
 
+#app .settings-group .settings .setting-item #file-pfp {
+  position: fixed;
+  left: -9999px;
+}
+
+#app .settings-group .settings .setting-item .placeholder {
+  display: grid;
+  place-items: center;
+
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--color-foreground-secondary);
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#app .settings-group .settings .setting-item:focus-within .placeholder {
+  background-color: var(--color-foreground);
+}
+
+#app .settings-group .settings .setting-item .material-icons {
+  color: var(--color-background);
+  font-size: 2rem;
+}
+
+#app .settings-group .settings .setting-item .preview {
+  display: block;
+
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#app .settings-group .settings .setting-item .btn {
+  cursor: pointer;
+}
+
 @media screen and (max-width: 1024px) {
   #app .app-head h2 {
     font-size: 1.5rem;

@@ -26,6 +26,16 @@ block content
       span.bold Account 
 
       ul.settings 
+        li#setting-picture.setting-item 
+          input#file-pfp(type="file", accept="image/*")
+          
+          label.placeholder(for="file-pfp") 
+            span.material-icons person
+
+          img.preview.hidden
+
+          label.btn.outline(for="file-pfp") Change
+
         li#setting-email.setting-item 
           p.setting-label 
             span.setting-name Email: 

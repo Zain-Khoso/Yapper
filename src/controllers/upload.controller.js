@@ -5,6 +5,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 // Local Imports.
 import { getZodError, schema_PictureObject } from '../utils/validations.js';
 import { serializeResponse } from '../utils/serializers.js';
+import storage from '../utils/storage.js';
 
 async function signPictureUpload(req, res) {
   // Working body data.
