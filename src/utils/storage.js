@@ -1,5 +1,5 @@
 // Lib Imports.
-const { S3Client } = require('@aws-sdk/client-s3');
+import { S3Client } from '@aws-sdk/client-s3';
 
 // Storage Bucket Setup.
 const storage = new S3Client({
@@ -11,4 +11,4 @@ const storage = new S3Client({
   },
 });
 
-module.exports = storage;
+export default storage;
