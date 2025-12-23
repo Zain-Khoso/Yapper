@@ -105,12 +105,17 @@ async function readChatrooms(req, res) {
 async function blockRoom(req, res) {
   const { roomId, receiverId } = req.body;
 
-  await ChatroomMember.update(
-    { isBlocked: true },
-    { where: { ChatroomId: roomId, UserId: receiverId } }
-  );
+  await ChatroomMember.update({ isBlocked: true }, { where: { roomId, memberId: receiverId } });
 
   res.status(200).json(serializeResponse());
 }
 
-export { createChatroom, readChatrooms, blockRoom };
+async function unblockRoom(req, res) {
+  const { roomId, receiverId } = req.body;
+
+  await ChatroomMember.update({ isBlocked: false }, { where: { roomId, memberId: receiverId } });
+
+  res.status(200).json(serializeResponse());
+}
+
+export { createChatroom, readChatrooms, blockRoom, unblockRoom };
