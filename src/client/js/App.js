@@ -55,7 +55,10 @@ export default class App {
     this.elem_BtnAddChat.addEventListener('click', () => this.createRoom());
     this.elem_ChatsList.addEventListener('click', ({ target }) => this.toggleRoom(target));
     [this.elem_BlockChatButton, this.elem_MobileBlockChatButton].forEach((elem) => {
-      elem.addEventListener('click', () => this.blockRoom());
+      elem.addEventListener('click', () => this.toggleRoomBlock('block'));
+    });
+    [this.elem_UnblockChatButton, this.elem_MobileUnblockChatButton].forEach((elem) => {
+      elem.addEventListener('click', () => this.toggleRoomBlock('unblock'));
     });
   }
 
@@ -311,18 +314,18 @@ export default class App {
     }
   }
 
-  async blockRoom() {
+  async toggleRoomBlock(action) {
     let activeRoom = this.getActiveRoom();
 
     try {
-      await API.patch('/room/block', {
+      await API.patch(`/room/${action}`, {
         roomId: activeRoom.id,
         receiverId: activeRoom.receiver.id,
       });
 
       this.rooms.set(this.activeRoomId, {
         ...activeRoom,
-        receiver: { ...activeRoom.receiver, isBlocked: true },
+        receiver: { ...activeRoom.receiver, isBlocked: action === 'block' ? true : false },
       });
 
       this.loadActiveRoom();
