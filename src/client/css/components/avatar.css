@@ -49,7 +49,6 @@
 
     background-color: var(--color-foreground-secondary);
     border-radius: 50%;
-    overflow: hidden;
 
     .initial {
       font-size: 2rem;
