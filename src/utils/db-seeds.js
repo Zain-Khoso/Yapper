@@ -1,68 +1,59 @@
 // THIS FILE SHOULD NEVER BE IMPORTED INTO ANY MAIN PROJECT FILE.
 // AND ALWAYS SHOULD BE RUN SEPARATELY VIA NODE IN CMD.
-require('dotenv').config({ quiet: true });
+import 'dotenv/config';
 
 // Lib Imports.
-const { genSaltSync, hashSync } = require('bcrypt');
+import bcrypt from 'bcrypt';
 
 // Local Imports.
-const sequelize = require('./database');
-const User = require('../models/user.model');
-const Chatroom = require('../models/chatroom.model');
+import sequelize from './database.js';
+import User from '../models/user.model.js';
+import Chatroom from '../models/chatroom.model.js';
 
 // Constants.
 const USERS_TO_BE_CREATED = 100;
 
 const USER_EMAIL = 'testuser@gmail.com';
 const USER_NAME = 'Test User';
-const USER_PASSWORD = hashSync('aA#12345', genSaltSync(parseInt(process.env.PASSWORD_SALT)));
-const users = [{ email: USER_EMAIL, displayName: USER_NAME, password: USER_PASSWORD }];
-const messages = [];
+const USER_PASSWORD = bcrypt.hashSync(
+  'aA#12345',
+  bcrypt.genSaltSync(parseInt(process.env.PASSWORD_SALT))
+);
+const usersList = [{ email: USER_EMAIL, displayName: USER_NAME, password: USER_PASSWORD }];
 
 // DATA SEEDS.
 
 // User Data Seed.
 do {
-  const userNumber = users.length;
+  const userNumber = usersList.length;
   const email = `testuser${userNumber}@gmail.com`;
   const displayName = `Test User ${userNumber}`;
 
-  users.push({ email, displayName, password: USER_PASSWORD });
-  messages.push(userNumber.toString());
-} while (users.length < USERS_TO_BE_CREATED);
+  usersList.push({ email, displayName, password: USER_PASSWORD });
+} while (usersList.length < USERS_TO_BE_CREATED);
 
 // Associations.
-require('./associations');
+import './associations.js';
 
 // Data syncing.
-sequelize
-  .sync({ force: true })
-  .then(() => User.bulkCreate(users))
-  .then((users) => {
-    console.log(`\nUsers Created: ${users.length}.\n`);
+await sequelize.sync({ force: true });
 
-    return Promise.all([User.findOne({ where: { email: USER_EMAIL } }), users]);
+// Creating Users.
+const users = await User.bulkCreate(usersList);
+console.log(`\nUsers Created: ${users.length}.\n`);
+
+const user = await User.findOne({ where: { email: USER_EMAIL } });
+
+// Creating Chatrooms
+const chatrooms = await Promise.all(
+  users.map(async (u) => {
+    if (u.email === user.email) return null;
+
+    const chatroom = await Chatroom.create();
+    await chatroom.addMembers([user, u]);
   })
-  .then(([user, users]) =>
-    Promise.all(
-      users.map((u) => {
-        if (u.email === user.email) return null;
-        return Chatroom.create()
-          .then((chatroom) => Promise.all([chatroom, chatroom.addUsers([user, u])]))
-          .then(([chatroom, chatroomMembers]) =>
-            Promise.all(
-              messages.map((text) =>
-                chatroom.createMessage({
-                  senderId: user.id,
-                  content: text,
-                  chatroomMemberId: chatroomMembers.find((crm) => crm.UserId === user.id).id,
-                })
-              )
-            )
-          );
-      })
-    )
-  )
-  .then((chatrooms) => console.log(`\nChatrooms Created: ${chatrooms.length}.\n`))
-  .then(() => process.exit())
-  .catch((error) => console.log(error));
+);
+
+console.log(`\nChatrooms Created: ${chatrooms.length}.\n`);
+
+process.exit();
