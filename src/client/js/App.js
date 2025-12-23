@@ -54,6 +54,14 @@ export default class App {
     // Event Listeners.
     this.elem_BtnAddChat.addEventListener('click', () => this.createRoom());
     this.elem_ChatsList.addEventListener('click', ({ target }) => this.toggleRoom(target));
+    [this.elem_BlockChatButton, this.elem_MobileBlockChatButton].forEach((elem) => {
+      elem.addEventListener('click', () => this.blockRoom());
+    });
+  }
+
+  toggleAppUI(showUI) {
+    this.elem_App.classList.toggle('hidden', !showUI);
+    this.elem_AppEmpty.classList.toggle('hidden', showUI);
   }
 
   addRoom(room, mode = 'pagination') {
@@ -121,11 +129,6 @@ export default class App {
     if (!elem_ChatOption) return;
 
     this.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
-  }
-
-  toggleAppUI(showUI) {
-    this.elem_App.classList.toggle('hidden', !showUI);
-    this.elem_AppEmpty.classList.toggle('hidden', showUI);
   }
 
   getActiveRoom() {
@@ -305,6 +308,26 @@ export default class App {
       );
     } finally {
       this.isFetchingRooms = false;
+    }
+  }
+
+  async blockRoom() {
+    let activeRoom = this.getActiveRoom();
+
+    try {
+      await API.patch('/room/block', {
+        roomId: activeRoom.id,
+        receiverId: activeRoom.receiver.id,
+      });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        receiver: { ...activeRoom.receiver, isBlocked: true },
+      });
+
+      this.loadActiveRoom();
+    } catch (response) {
+      new showError('Error', response?.data?.errors?.root ?? 'Something went wrong');
     }
   }
 }
