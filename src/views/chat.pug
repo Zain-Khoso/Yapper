@@ -36,10 +36,13 @@ block content
         button#btn-open-sidenav
           span.material-icons arrow_back
         
-        .avatar.fallback
+        #header-avatar.avatar.fallback
           span.initial Y
+
+          .status
+            .dot
         
-        h2#app-user-displayName Yapper User
+        h2#header-displayName Yapper User
       
       section.right 
         button#btn-call-voice.icon-btn 
@@ -66,11 +69,11 @@ block content
           span.material-icons more_vert
 
         .dropdown-list.right
-          button#btn-mobile-chat-block.dropdown-item
+          button#btn-mobile-call-voice.dropdown-item
             span.material-icons call
             span.label Voice Call 
 
-          button#btn-mobile-chat-unblock.dropdown-item
+          button#btn-mobile-call-video.dropdown-item
             span.material-icons video_call
             span.label Video Call 
 

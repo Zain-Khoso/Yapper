@@ -12,6 +12,24 @@ export default class App {
 
     this.elem_App = document.getElementById('app');
     this.elem_AppEmpty = document.getElementById('app-empty');
+    this.elem_HeaderAvatar = document.getElementById('header-avatar');
+    this.elem_HeaderDisplayName = document.getElementById('header-displayName');
+
+    this.elem_VoiceCallButton = document.getElementById('btn-call-voice');
+    this.elem_VideoCallButton = document.getElementById('btn-call-video');
+    this.elem_BlockChatButton = document.getElementById('btn-chat-block');
+    this.elem_UnblockChatButton = document.getElementById('btn-chat-unblock');
+
+    this.elem_MobileVoiceCallButton = document.getElementById('btn-mobile-call-voice');
+    this.elem_MobileVideoCallButton = document.getElementById('btn-mobile-call-video');
+    this.elem_MobileBlockChatButton = document.getElementById('btn-mobile-chat-block');
+    this.elem_MobileUnblockChatButton = document.getElementById('btn-mobile-chat-unblock');
+
+    this.elem_MessageForm = document.getElementById('message-form');
+    this.elem_MessageFileInput = document.getElementById('message-file-input');
+    this.elem_MessageFileInputLabel = this.elem_MessageFileInput.closest('.file-label');
+    this.elem_MessageTextInput = document.getElementById('message-text-input');
+    this.elem_MessageSendBtn = document.getElementById('message-send-btn');
 
     // App State.
     this.rooms = new Map();
@@ -102,6 +120,94 @@ export default class App {
     this.elem_AppEmpty.classList.toggle('hidden', showUI);
   }
 
+  getActiveRoom() {
+    return this.rooms.get(this.activeRoomId);
+  }
+
+  setActiveRoom(roomId) {
+    if (roomId === this.activeRoomId) return;
+    this.activeRoomId = roomId;
+
+    this.loadActiveRoom();
+    this.elem_MessageTextInput.focus();
+  }
+
+  loadActiveRoom() {
+    const activeRoom = this.getActiveRoom();
+
+    this.elem_ChatsList.querySelectorAll('li.chat').forEach((elem) => {
+      elem.classList.toggle('active', elem.getAttribute('data-roomId') === activeRoom.id);
+    });
+
+    const {
+      receiver: { initial, picture, displayName, isOnline, isBlocked, isDeleted },
+    } = activeRoom;
+
+    // Updating Document Title.
+    document.title = `Your chat with ${displayName} | Yapper`;
+
+    // Update Header Copy.
+    this.elem_HeaderAvatar.outerHTML = picture
+      ? `
+        <div class="avatar image">
+          <img alt="${displayName}'s Image" src="${picture}" />
+
+          <div class="status${isOnline ? ' active' : ''}">
+            <div class="dot"></div>
+          </div>
+        </div>
+      `
+      : `
+        <div class="avatar fallback"> 
+          <span class="initial"> ${initial} </span>
+          
+          <div class="status${isOnline ? ' active' : ''}">
+            <div class="dot"></div>
+          </div>
+        </div>
+      `;
+    this.elem_HeaderDisplayName.textContent = displayName;
+
+    // Showing/Hiding controls.
+    this.elem_VoiceCallButton.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_VideoCallButton.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileVoiceCallButton.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileVideoCallButton.classList.toggle('hidden', isDeleted || isBlocked);
+
+    this.elem_BlockChatButton.closest('.dropdown').classList.toggle('hidden', isDeleted);
+    this.elem_MobileBlockChatButton.closest('.dropdown').classList.toggle('hidden', isDeleted);
+
+    this.elem_BlockChatButton.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_MobileBlockChatButton.classList.toggle('hidden', isDeleted || isBlocked);
+    this.elem_UnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
+    this.elem_MobileUnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
+
+    // Checking wether the form will should be disabled or not.
+    const isFormDisabled = isBlocked || isDeleted || activeRoom.sender.isBlocked;
+
+    // Resetting the Message Form's state.
+    this.elem_MessageFileInput.value = null;
+    this.elem_MessageTextInput.value = null;
+
+    this.elem_MessageFileInputLabel.classList.toggle('hidden', isFormDisabled);
+    this.elem_MessageSendBtn.classList.toggle('hidden', isFormDisabled);
+
+    isFormDisabled
+      ? this.elem_MessageTextInput.setAttribute('disabled', true)
+      : this.elem_MessageTextInput.removeAttribute('disabled');
+
+    this.elem_MessageTextInput.setAttribute(
+      'placeholder',
+      isDeleted
+        ? 'Deleted User'
+        : isBlocked
+          ? 'You have blocked this user'
+          : activeRoom.sender.isBlocked
+            ? 'This user has blocked You'
+            : 'Type your message...'
+    );
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -178,7 +284,12 @@ export default class App {
       data.rooms.forEach((room) => this.addRoom(room));
 
       this.toggleAppUI(this.rooms.size !== 0);
-    } catch {
+
+      if (data.offset === 25 && this.rooms.size !== 0) {
+        this.setActiveRoom(this.rooms.entries().next().value[0]);
+      }
+    } catch (error) {
+      console.log(error);
       new showError(
         'Something went wrong',
         'We were unable to fetch your Chats. Please try again letter.'
