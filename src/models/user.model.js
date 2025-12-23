@@ -97,6 +97,7 @@ const User = sequelize.define(
           'refreshToken',
           'newEmail',
           'newPassword',
+          'canChangePassword',
         ],
       },
     },
