@@ -97,6 +97,11 @@ export default class App {
     } else this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
+  toggleAppUI(showUI) {
+    this.elem_App.classList.toggle('hidden', !showUI);
+    this.elem_AppEmpty.classList.toggle('hidden', showUI);
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -171,6 +176,8 @@ export default class App {
 
       this.roomsOffset = data.offset;
       data.rooms.forEach((room) => this.addRoom(room));
+
+      this.toggleAppUI(this.rooms.size !== 0);
     } catch {
       new showError(
         'Something went wrong',

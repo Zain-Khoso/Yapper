@@ -9,6 +9,7 @@
   background-color: var(--color-background);
   border-left: 2px solid var(--color-foreground-secondary);
   border-right: 2px solid var(--color-foreground-secondary);
+  z-index: 10;
 
   .head {
     display: flex;
@@ -123,6 +124,157 @@
   }
 }
 
+.chatapp {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+  overflow-x: hidden;
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-foreground-secondary);
+
+    button {
+      display: grid;
+      place-items: center;
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      overflow-x: hidden;
+
+      #btn-open-sidenav {
+        display: none;
+      }
+
+      #app-user-displayName {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    > .right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      .icon-btn .material-icons {
+        font-size: xx-large;
+      }
+    }
+
+    #dropdown-mobile-chat-options {
+      display: none;
+    }
+  }
+
+  .messages {
+    width: 100%;
+    height: 100%;
+  }
+
+  .controller {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    width: 100%;
+    max-width: 768px;
+    margin-inline: auto;
+
+    .file-label {
+      display: grid;
+      place-items: center;
+
+      width: 1.5rem;
+      height: 1.5rem;
+      overflow: hidden;
+      cursor: pointer;
+
+      .material-icons {
+        color: var(--color-foreground-secondary);
+
+        &:hover,
+        &:focus {
+          color: var(--color-foreground);
+        }
+      }
+
+      #message-file-input {
+        position: fixed;
+        left: -9999px;
+      }
+    }
+
+    .text-input {
+      flex: 1;
+
+      resize: none;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--color-foreground-secondary);
+      border-radius: 0.5rem;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--color-background);
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-foreground-secondary);
+        border-radius: 10px;
+        border: 2px solid var(--color-background-secondary);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--color-foreground);
+      }
+
+      &:focus {
+        border: 2px solid var(--color-foreground);
+      }
+    }
+
+    .send {
+      display: grid;
+      place-items: center;
+
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background-color: var(--color-foreground-secondary);
+
+      &:hover,
+      &:focus {
+        background-color: var(--color-foreground);
+      }
+
+      .material-icons {
+        color: var(--color-background);
+      }
+    }
+  }
+}
+
 .chatapp-empty {
   display: flex;
   flex-direction: column;
@@ -150,6 +302,16 @@
   .chat-controls {
     max-width: 320px;
   }
+
+  .chatapp .head {
+    .right {
+      display: none;
+    }
+
+    #dropdown-mobile-chat-options {
+      display: block;
+    }
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -167,6 +329,24 @@
       .dropdown {
         display: block;
       }
+    }
+  }
+
+  .chatapp {
+    gap: 1rem;
+
+    .head {
+      padding-inline: 1rem;
+      padding-bottom: 1rem;
+
+      .left #btn-open-sidenav {
+        display: grid;
+      }
+    }
+
+    .messages,
+    .controller {
+      padding-inline: 1rem;
     }
   }
 }

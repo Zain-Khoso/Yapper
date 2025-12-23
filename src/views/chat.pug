@@ -30,7 +30,71 @@ block content
     ul#chats-list.chats-list 
       .observed
 
-  main#app-empty.chatapp-empty
+  main#app.chatapp  
+    header.head 
+      section.left 
+        button#btn-open-sidenav
+          span.material-icons arrow_back
+        
+        .avatar.fallback
+          span.initial Y
+        
+        h2#app-user-displayName Yapper User
+      
+      section.right 
+        button#btn-call-voice.icon-btn 
+          span.material-icons call
+        
+        button#btn-call-video.icon-btn
+          span.material-icons video_call
+        
+        div#dropdown-chat-options.dropdown
+          button.icon-btn 
+            span.material-icons more_vert
+
+          .dropdown-list.right
+            button#btn-chat-block.dropdown-item
+              span.material-icons block
+              span.label Block Chat 
+
+            button#btn-chat-unblock.dropdown-item
+              span.material-icons do_not_disturb_on
+              span.label Unblock Chat 
+
+      section#dropdown-mobile-chat-options.dropdown
+        button.icon-btn 
+          span.material-icons more_vert
+
+        .dropdown-list.right
+          button#btn-mobile-chat-block.dropdown-item
+            span.material-icons call
+            span.label Voice Call 
+
+          button#btn-mobile-chat-unblock.dropdown-item
+            span.material-icons video_call
+            span.label Video Call 
+
+          button#btn-mobile-chat-block.dropdown-item
+            span.material-icons block
+            span.label Block Chat 
+
+          button#btn-mobile-chat-unblock.dropdown-item.hidden
+            span.material-icons do_not_disturb_on
+            span.label Unblock Chat 
+
+    section.messages
+
+    form#message-form.controller
+      label.file-label
+        input#message-file-input(type="file")
+        span.material-icons attach_file
+      
+      textarea#message-text-input.text-input(placeholder="Type your message...", autocomplete="off", rows=1)
+
+      button#message-send-btn.send
+        span.material-icons send
+
+  main#app-empty.hidden.chatapp-empty
     h1 It's quiet here… 
 
     p Pick a user, say hello, and your conversation will show up here.
