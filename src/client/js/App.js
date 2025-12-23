@@ -54,12 +54,20 @@ export default class App {
           picture
             ? `
           <div class="avatar image">
-            <img alt="${displayName}'s Image" src="${picture}"  />
+            <img alt="${displayName}'s Image" src="${picture}" />
+
+            <div class="status${isOnline ? ' active' : ''}">
+              <div class="dot"></div>
+            </div>
           </div>
           `
             : `
           <div class="avatar fallback"> 
             <span class="initial"> ${initial} </span>
+            
+            <div class="status${isOnline ? ' active' : ''}">
+              <div class="dot"></div>
+            </div>
           </div>
         `
         }
@@ -161,9 +169,3 @@ export default class App {
     data.rooms.forEach((room) => this.addRoom(room));
   }
 }
-
-`
-<div class="status">
-  <div class="dot"></div>
-</div>
-`;

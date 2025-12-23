@@ -1,30 +1,61 @@
 .avatar {
+  position: relative;
+
   width: 3rem;
   height: 3rem;
-  border-radius: 50%;
-  overflow: hidden;
-}
 
-.avatar.image img {
-  display: block;
+  .status {
+    position: absolute;
+    bottom: 0.1rem;
+    right: 0.1rem;
 
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
+    width: 1rem;
+    height: 1rem;
+    aspect-ratio: 1/1;
+    background-color: var(--color-background);
+    border-radius: 50%;
 
-.avatar.fallback {
-  display: grid;
-  place-items: center;
+    .dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
 
-  background-color: var(--color-foreground-secondary);
-  overflow: hidden;
-}
+      width: 0.6rem;
+      height: 0.6rem;
+      aspect-ratio: 1/1;
+      background-color: var(--color-background-secondary);
+      border-radius: 50%;
+      translate: -50% -50%;
+    }
 
-.avatar.fallback .initial {
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--color-background);
-  user-select: none;
+    &.active .dot {
+      background-color: var(--color-success);
+    }
+  }
+
+  &.image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+  }
+
+  &.fallback {
+    display: grid;
+    place-items: center;
+
+    background-color: var(--color-foreground-secondary);
+    border-radius: 50%;
+    overflow: hidden;
+
+    .initial {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--color-background);
+      user-select: none;
+    }
+  }
 }
