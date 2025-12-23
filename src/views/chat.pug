@@ -3,7 +3,7 @@ extends layouts/app
 include svgs/empty-chat
 
 block content
-  aside.chat-controls 
+  aside#app-controls.chat-controls 
     header.head 
       h2 Chats
 
@@ -25,9 +25,9 @@ block content
             a(href="/settings") Settings
 
     .btn-group
-      button.btn.primary Add a Chat
+      button#btn-add-chat.btn.primary Add a Chat
 
-    ul.chats-list 
+    ul#chats-list.chats-list 
       li.chat.unread
         div.avatar
           span.initial Z
@@ -80,7 +80,9 @@ block content
             span.last-message Yo ho
             span.new-message-count 56
 
-  .chatapp-empty
+      .observed
+
+  main#app-empty.chatapp-empty
     h1 It's quiet here… 
 
     p Pick a user, say hello, and your conversation will show up here.

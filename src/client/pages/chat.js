@@ -12,3 +12,6 @@ import '../css/chat.css';
 // Page Scripts.
 import { getTheme } from '../js/theme';
 import { loadCurrentUser } from '../js/user';
+import App from '../js/App';
+
+new App();
