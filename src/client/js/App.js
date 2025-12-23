@@ -53,6 +53,7 @@ export default class App {
 
     // Event Listeners.
     this.elem_BtnAddChat.addEventListener('click', () => this.createRoom());
+    this.elem_ChatsList.addEventListener('click', ({ target }) => this.toggleRoom(target));
   }
 
   addRoom(room, mode = 'pagination') {
@@ -115,6 +116,13 @@ export default class App {
     } else this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
+  toggleRoom(target) {
+    const elem_ChatOption = target.closest('.chat');
+    if (!elem_ChatOption) return;
+
+    this.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
+  }
+
   toggleAppUI(showUI) {
     this.elem_App.classList.toggle('hidden', !showUI);
     this.elem_AppEmpty.classList.toggle('hidden', showUI);
@@ -149,7 +157,7 @@ export default class App {
     // Update Header Copy.
     this.elem_HeaderAvatar.outerHTML = picture
       ? `
-        <div class="avatar image">
+        <div id="header-avatar" class="avatar image">
           <img alt="${displayName}'s Image" src="${picture}" />
 
           <div class="status${isOnline ? ' active' : ''}">
@@ -158,7 +166,7 @@ export default class App {
         </div>
       `
       : `
-        <div class="avatar fallback"> 
+        <div id="header-avatar" class="avatar fallback"> 
           <span class="initial"> ${initial} </span>
           
           <div class="status${isOnline ? ' active' : ''}">
@@ -166,6 +174,7 @@ export default class App {
           </div>
         </div>
       `;
+    this.elem_HeaderAvatar = document.getElementById('header-avatar');
     this.elem_HeaderDisplayName.textContent = displayName;
 
     // Showing/Hiding controls.
