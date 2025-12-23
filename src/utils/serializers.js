@@ -78,27 +78,6 @@
 //   return output;
 // }
 
-// function formatChatroom(chatroom, senderId) {
-//   const sender = formatUser(chatroom?.Users?.find((user) => user.id === senderId) ?? {});
-//   const receiver = formatUser(chatroom?.Users?.find((user) => user.id !== senderId) ?? {});
-//   const lastMessage = chatroom?.Messages?.at(0);
-
-//   return {
-//     id: chatroom.id,
-//     lastSpoke: formatLastSeen(chatroom.lastMessageAt),
-//     lastMessage:
-//       lastMessage === undefined
-//         ? ''
-//         : lastMessage.isFile
-//           ? lastMessage.fileName
-//           : lastMessage.content,
-//     unreadCount: chatroom?.unreadCount ?? 0,
-//     messages: [],
-//     sender,
-//     receiver,
-//   };
-// }
-
 function formatLastSeen(inputDate) {
   if (!inputDate) return null;
 
@@ -155,10 +134,31 @@ function serializeUser(user) {
     displayName: user?.displayName ?? 'Yapper User',
     isOnline: user?.isOnline ?? false,
     lastSeen: formatLastSeen(user?.lastSeen),
-    // lastReadAt: user?.ChatroomMember?.lastReadAt,
-    // isBlocked: user?.ChatroomMember?.isBlocked === true ? true : false,
+    lastReadAt: user?.chatroomMember?.lastReadAt,
+    isBlocked: user?.chatroomMember?.isBlocked === true ? true : false,
     isDeleted,
   };
 }
 
-export { serializeResponse, serializeUser };
+function serializeRoom(room, senderId) {
+  const sender = serializeUser(room?.members?.find((member) => member.id === senderId) ?? {});
+  const receiver = serializeUser(room?.members?.find((member) => member.id !== senderId) ?? {});
+  const lastMessageObj = room?.messages?.at(0);
+  const lastMessage =
+    lastMessageObj === undefined
+      ? ''
+      : lastMessageObj.isFile
+        ? lastMessageObj.fileName
+        : lastMessageObj.content;
+
+  return {
+    id: room.id,
+    lastSpoke: formatLastSeen(room.lastMessageAt),
+    unreadCount: room?.unreadCount ?? 0,
+    lastMessage,
+    sender,
+    receiver,
+  };
+}
+
+export { serializeResponse, serializeUser, serializeRoom };
