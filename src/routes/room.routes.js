@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // Local Imports.
-import { createChatroom, readChatrooms } from '../controllers/room.controller.js';
+import { blockRoom, createChatroom, readChatrooms } from '../controllers/room.controller.js';
 import { allowAuthenticatedUserOnly } from '../utils/auth.utils.js';
 
 // Authentication Routes.
@@ -13,5 +13,8 @@ router.post('/add', allowAuthenticatedUserOnly, createChatroom);
 
 // GET : Fetches chatrooms of the current user.
 router.get('/get-all/:offset', allowAuthenticatedUserOnly, readChatrooms);
+
+// PATCH : Blocks the other user for the current user.
+router.patch('/block', allowAuthenticatedUserOnly, blockRoom);
 
 export default router;

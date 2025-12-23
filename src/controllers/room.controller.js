@@ -102,4 +102,15 @@ async function readChatrooms(req, res) {
   );
 }
 
-export { createChatroom, readChatrooms };
+async function blockRoom(req, res) {
+  const { roomId, receiverId } = req.body;
+
+  await ChatroomMember.update(
+    { isBlocked: true },
+    { where: { ChatroomId: roomId, UserId: receiverId } }
+  );
+
+  res.status(200).json(serializeResponse());
+}
+
+export { createChatroom, readChatrooms, blockRoom };
