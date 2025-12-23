@@ -5,6 +5,7 @@ import { Router } from 'express';
 import accountRouter from './account.routes.js';
 import authRouter from './auth.routes.js';
 import fileRouter from './file.routes.js';
+import roomRouter from './room.routes.js';
 import { notFoundError, serverError } from '../controllers/error.controller.js';
 
 // API Routes.
@@ -18,6 +19,9 @@ router.use('/auth', authRouter);
 
 // File Upload Routes.
 router.use('/file', fileRouter);
+
+// Chatroom Routes.
+router.use('/room', roomRouter);
 
 // Handles invalid API Endpoints.
 router.use(notFoundError);
