@@ -16,12 +16,13 @@ export default class App {
     // App State.
     this.rooms = new Map();
     this.activeRoomId = '';
+    this.roomsOffset = 0;
 
     // Observer Configuration.
     const handleIntersection = ([entry]) => {
       if (!entry || !entry.isIntersecting) return;
 
-      console.log('Fetch Chats: ');
+      this.fetchRooms();
     };
 
     const observer = new IntersectionObserver(handleIntersection, {
@@ -53,20 +54,12 @@ export default class App {
           picture
             ? `
           <div class="avatar image">
-            <img alt="${displayName}'s Image" src="${picture}"  /> 
-            
-            <div class="status">
-              <div class="dot"></div>
-            </div>
+            <img alt="${displayName}'s Image" src="${picture}"  />
           </div>
           `
             : `
           <div class="avatar fallback"> 
             <span class="initial"> ${initial} </span>
-            
-            <div class="status">
-              <div class="dot"></div>
-            </div>
           </div>
         `
         }
@@ -158,4 +151,19 @@ export default class App {
       },
     });
   }
+
+  async fetchRooms() {
+    const {
+      data: { data },
+    } = await API.get(`/room/get-all/${this.roomsOffset}`);
+
+    this.roomsOffset = data.offset;
+    data.rooms.forEach((room) => this.addRoom(room));
+  }
 }
+
+`
+<div class="status">
+  <div class="dot"></div>
+</div>
+`;

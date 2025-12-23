@@ -3,9 +3,13 @@ import sequelize from '../utils/database.js';
 import User from '../models/user.model.js';
 import Chatroom from '../models/chatroom.model.js';
 import ChatroomMember from '../models/chatroomMember.model.js';
+import Message from '../models/message.model.js';
 import { schema_Email } from '../utils/validations.js';
 import { sanitizeEmail } from '../utils/sanitizers.js';
 import { serializeResponse, serializeRoom } from '../utils/serializers.js';
+
+// Constants.
+const ROOMS_PER_PAGE = 25;
 
 async function createChatroom(req, res, next) {
   const user = req.user;
@@ -63,4 +67,38 @@ async function createChatroom(req, res, next) {
   }
 }
 
-export { createChatroom };
+async function readChatrooms(req, res) {
+  const user = req.user;
+  const offset = parseInt(req.params.offset);
+
+  const chatrooms = await user.getRooms({
+    attributes: ['id', 'lastMessageAt'],
+    through: { attributes: [] },
+    include: [
+      {
+        model: User,
+        as: 'members',
+        through: { attributes: ['id', 'isBlocked', 'lastReadAt'] },
+      },
+      {
+        model: Message,
+        attributes: ['id', 'isFile', 'content', 'fileName', 'createdAt'],
+        order: [['createdAt', 'DESC']],
+        limit: 1,
+        separate: true,
+      },
+    ],
+    order: [['lastMessageAt', 'DESC']],
+    limit: ROOMS_PER_PAGE,
+    offset,
+  });
+
+  res.status(200).json(
+    serializeResponse({
+      rooms: chatrooms.map((room) => serializeRoom(room)),
+      offset: offset + ROOMS_PER_PAGE,
+    })
+  );
+}
+
+export { createChatroom, readChatrooms };
