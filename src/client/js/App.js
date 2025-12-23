@@ -14,6 +14,7 @@ export default class App {
     this.elem_AppEmpty = document.getElementById('app-empty');
     this.elem_HeaderAvatar = document.getElementById('header-avatar');
     this.elem_HeaderDisplayName = document.getElementById('header-displayName');
+    this.elem_OpenNavButton = document.getElementById('btn-open-sidenav');
 
     this.elem_VoiceCallButton = document.getElementById('btn-call-voice');
     this.elem_VideoCallButton = document.getElementById('btn-call-video');
@@ -60,6 +61,7 @@ export default class App {
     [this.elem_UnblockChatButton, this.elem_MobileUnblockChatButton].forEach((elem) => {
       elem.addEventListener('click', () => this.toggleRoomBlock('unblock'));
     });
+    this.elem_OpenNavButton.addEventListener('click', () => this.toggleNavigation(false));
   }
 
   toggleAppUI(showUI) {
@@ -132,6 +134,7 @@ export default class App {
     if (!elem_ChatOption) return;
 
     this.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
+    this.toggleNavigation(true);
   }
 
   getActiveRoom() {
@@ -221,6 +224,10 @@ export default class App {
             ? 'This user has blocked You'
             : 'Type your message...'
     );
+  }
+
+  toggleNavigation(close) {
+    this.elem_AppControls.classList.toggle('hide', close);
   }
 
   async createRoom() {

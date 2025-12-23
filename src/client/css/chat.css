@@ -10,6 +10,7 @@
   border-left: 2px solid var(--color-foreground-secondary);
   border-right: 2px solid var(--color-foreground-secondary);
   z-index: 10;
+  transition: left 300ms ease-in;
 
   .head {
     display: flex;
@@ -322,6 +323,10 @@
 
     max-width: none;
     border: none;
+
+    &.hide {
+      left: -100%;
+    }
 
     .head {
       margin-top: 1rem;
