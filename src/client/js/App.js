@@ -1,5 +1,5 @@
 // Local Imports.
-import { API, showSuccess, Swal } from './utils';
+import { API, showError, showSuccess, Swal } from './utils';
 import { getZodError, schema_Email } from '../../utils/validations';
 
 export default class App {
@@ -17,20 +17,21 @@ export default class App {
     this.rooms = new Map();
     this.activeRoomId = '';
     this.roomsOffset = 0;
+    this.isFetchingRooms = false;
 
     // Observer Configuration.
     const handleIntersection = ([entry]) => {
-      if (!entry || !entry.isIntersecting) return;
+      if (!entry || !entry.isIntersecting || this.isFetchingRooms) return;
 
       this.fetchRooms();
     };
 
-    const observer = new IntersectionObserver(handleIntersection, {
+    this.observer = new IntersectionObserver(handleIntersection, {
       root: this.elem_ChatsList,
       rootMargin: '200px',
     });
 
-    observer.observe(elem_Observed);
+    this.observer.observe(elem_Observed);
 
     // Event Listeners.
     this.elem_BtnAddChat.addEventListener('click', () => this.createRoom());
@@ -91,7 +92,7 @@ export default class App {
       if (this.elem_ChatsList.children.length === 1) {
         this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
       } else {
-        this.elem_ChatsList.children.item(-2).insertAdjacentHTML('afterend', roomHTML);
+        Array.from(this.elem_ChatsList.children).at(-1).insertAdjacentHTML('beforebegin', roomHTML);
       }
     } else this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
@@ -161,11 +162,22 @@ export default class App {
   }
 
   async fetchRooms() {
-    const {
-      data: { data },
-    } = await API.get(`/room/get-all/${this.roomsOffset}`);
+    try {
+      const {
+        data: { data },
+      } = await API.get(`/room/get-all/${this.roomsOffset}`);
 
-    this.roomsOffset = data.offset;
-    data.rooms.forEach((room) => this.addRoom(room));
+      if (data.finished) this.observer.disconnect();
+
+      this.roomsOffset = data.offset;
+      data.rooms.forEach((room) => this.addRoom(room));
+    } catch {
+      new showError(
+        'Something went wrong',
+        'We were unable to fetch your Chats. Please try again letter.'
+      );
+    } finally {
+      this.isFetchingRooms = false;
+    }
   }
 }
