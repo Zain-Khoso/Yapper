@@ -50,18 +50,33 @@ export default class App {
       input: 'text',
       inputLabel: 'Email Address',
       inputPlaceholder: 'johndoe@example.com',
+      inputAttributes: {
+        autocomplete: 'off',
+      },
       inputValidator: (value) => {
         const result = schema_Email.safeParse(value);
         if (!result.success) return getZodError(result);
       },
-      preConfirm: async function (email) {
+      preConfirm: async function (receiverEmail) {
         try {
           Swal.disableInput();
           Swal.disableButtons();
 
-          const { data: room } = await API.post('/room/add', { email });
+          const {
+            data: { data: room },
+          } = await API.post('/room/add', { receiverEmail });
 
-          await new showSuccess({ title: 'Friend Added Successfully', timer: 2000 });
+          if (room.exists) {
+            return await new showSuccess({
+              title: 'Friend Already Exists',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          }
+
+          await new showSuccess({ title: 'New Friend Added', timer: 1500 });
+
+          console.log(room);
         } catch (error) {
           Swal.enableInput();
           Swal.enableButtons();
@@ -73,8 +88,8 @@ export default class App {
               },
             } = error;
 
-            if (errors?.email) Swal.showValidationMessage('Error', errors.email);
-            if (errors?.root) Swal.showValidationMessage('Server Error', errors.root);
+            if (errors?.receiverEmail) Swal.showValidationMessage(errors.receiverEmail);
+            if (errors?.root) Swal.showValidationMessage(errors.root);
 
             if (!Object.keys(errors ?? {}).length)
               Swal.showValidationMessage('Something went wrong.');
