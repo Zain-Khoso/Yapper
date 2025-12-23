@@ -61,3 +61,7 @@
 .dropdown .dropdown-list .dropdown-item:hover .material-icons {
   color: var(--color-foreground);
 }
+
+.dropdown .dropdown-list .dropdown-item .label {
+  text-wrap: nowrap;
+}
