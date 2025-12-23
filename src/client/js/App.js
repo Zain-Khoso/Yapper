@@ -126,7 +126,11 @@ export default class App {
       } else {
         Array.from(this.elem_ChatsList.children).at(-1).insertAdjacentHTML('beforebegin', roomHTML);
       }
-    } else this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
+    } else {
+      this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
+      this.setActiveRoom(roomId);
+      this.toggleAppUI(true);
+    }
   }
 
   toggleRoom(target) {
@@ -262,7 +266,9 @@ export default class App {
           } = await API.post('/room/add', { receiverEmail });
 
           if (room.exists) {
-            return await new showSuccess({
+            this.setActiveRoom(room.id);
+
+            return new showSuccess({
               title: 'Friend Already Exists',
               timer: 1500,
               showConfirmButton: false,
