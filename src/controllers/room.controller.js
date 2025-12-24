@@ -95,7 +95,7 @@ async function readChatrooms(req, res) {
 
   res.status(200).json(
     serializeResponse({
-      rooms: chatrooms.map((room) => serializeRoom(room)),
+      rooms: chatrooms.map((room) => serializeRoom(room, user.id)),
       offset: offset + ROOMS_PER_PAGE,
       finished: chatrooms.length < ROOMS_PER_PAGE,
     })
