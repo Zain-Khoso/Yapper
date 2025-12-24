@@ -32,7 +32,7 @@ const formOptions = [
       try {
         await API.patch('/auth/login', { email: Email.getValue(), password: Password.getValue() });
 
-        location.assign('/');
+        location.assign('/chat');
       } catch (error) {
         if (error.isAxiosError) {
           const {
