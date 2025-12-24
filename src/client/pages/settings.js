@@ -120,9 +120,12 @@ class App {
     try {
       await API.delete('/file/picture');
 
-      await new showSuccess({ title: 'Deleted', timer: 2000, showConfirmButton: false });
+      new showSuccess({ title: 'Deleted', timer: 1500, showConfirmButton: false });
 
-      setTimeout(() => location.reload(), 100);
+      window.currentUser.set('picture', '');
+      this.hidePicturePreview();
+      this.elem_PicturePreview.setAttribute('alt', '');
+      this.elem_PicturePreview.setAttribute('src', '');
     } catch (error) {
       Swal.close();
       new showError('Error', 'Failed to delete picture.');
@@ -166,24 +169,26 @@ class App {
 
       await axios.put(signature, file, { headers: { 'Content-Type': file.type } });
 
-      await API.patch('/account/update', {
+      const {
+        data: { data: user },
+      } = await API.patch('/account/update', {
         displayName: window.currentUser.get('displayName'),
         picture: url,
       });
 
-      await new showSuccess({
+      new showSuccess({
         title: 'Success!',
         text: 'Profile Update Successful',
         timer: 1500,
         showConfirmButton: false,
       });
 
-      setTimeout(() => location.reload(), 100);
+      window.currentUser.set('picture', user.picture);
+      this.elem_PicturePreview.setAttribute('alt', `${user.displayName}'s Photo`);
+      this.elem_PicturePreview.setAttribute('src', user.picture);
     } catch (error) {
       Swal.close();
-      URL.revokeObjectURL(localImageURL);
       this.hidePicturePreview();
-      this.resetPictureInput();
 
       if (error.isAxiosError) {
         const {
@@ -197,6 +202,9 @@ class App {
 
         if (!Object.keys(errors ?? {}).length) new showError('Something went wrong.');
       } else new showError('Something went wrong.');
+    } finally {
+      URL.revokeObjectURL(localImageURL);
+      this.resetPictureInput();
     }
   }
 
@@ -233,23 +241,23 @@ class App {
         const result = schema_DisplayName.safeParse(value);
         if (!result.success) return getZodError(result);
       },
-      preConfirm: async function (newName) {
+      preConfirm: async (newName) => {
         try {
           Swal.disableInput();
           Swal.disableButtons();
 
-          await API.patch('/account/update', { displayName: newName, picture: null });
+          const {
+            data: { data: user },
+          } = await API.patch('/account/update', { displayName: newName, picture: undefined });
 
           await new showSuccess(
             'Name Changed',
             `Your name has been changed from ${window.currentUser.get('displayName')} to ${newName}`
           );
 
-          location.reload();
+          window.currentUser.set('displayName', user.displayName);
+          this.elem_DisplayNameValue.textContent = user.displayName;
         } catch (error) {
-          Swal.enableInput();
-          Swal.enableButtons();
-
           if (error.isAxiosError) {
             const {
               response: {
@@ -264,6 +272,9 @@ class App {
             if (!Object.keys(errors ?? {}).length)
               Swal.showValidationMessage('Something went wrong.');
           } else Swal.showValidationMessage('Something went wrong.');
+        } finally {
+          Swal.enableInput();
+          Swal.enableButtons();
         }
       },
     });
