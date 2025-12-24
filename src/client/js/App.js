@@ -279,7 +279,6 @@ export default class App {
 
           this.addRoom(room, 'new');
         } catch (error) {
-          console.log(error);
           Swal.enableInput();
           Swal.enableButtons();
 
