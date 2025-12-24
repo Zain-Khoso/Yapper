@@ -43,7 +43,7 @@ async function createChatroom(req, res, next) {
     });
     if (existingRoom) {
       await t.rollback();
-      return res.status(200).json(serializeResponse({ id: existingRoom.id, exists: true }));
+      return res.status(200).json(serializeResponse({ id: existingRoom.roomId, exists: true }));
     }
 
     const newChatroom = await Chatroom.create({}, { transaction: t });
