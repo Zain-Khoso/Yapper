@@ -240,46 +240,6 @@ export default class App {
   }
 
   addMessage(message, mode = 'pagination') {
-    // Updating Local State.
-    const activeRoom = this.getActiveRoom();
-    const newMessages = [...activeRoom.messages];
-    const currentCreatedAt = new Date(message.createdAt);
-
-    if (newMessages.length === 0) newMessages.push([message]);
-    else {
-      if (mode === 'pagination') {
-        const lastEntry = newMessages.at(-1);
-
-        if (Array.isArray(lastEntry)) {
-          const lastCreatedAt = new Date(lastEntry.at(-1).createdAt);
-
-          if (isSameDate(lastCreatedAt, currentCreatedAt)) {
-            if (lastEntry.at(-1).isSender === message.isSender) newMessages.at(-1).push(message);
-            else newMessages.push([message]);
-          } else {
-            newMessages.push(formatDateString(lastCreatedAt));
-            newMessages.push([message]);
-          }
-        } else newMessages.push([message]);
-      } else {
-        const lastEntry = newMessages.at(0);
-
-        if (Array.isArray(lastEntry)) {
-          const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
-
-          if (isSameDate(lastCreatedAt, currentCreatedAt)) {
-            if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
-            else newMessages.unshift([message]);
-          } else {
-            newMessages.unshift(formatDateString(lastCreatedAt));
-            newMessages.unshift([message]);
-          }
-        } else newMessages.unshift([message]);
-      }
-    }
-
-    this.rooms.set(activeRoom.id, { ...activeRoom, messages: newMessages });
-    console.log(this.getActiveRoom());
     message.content = message.isFile
       ? message.content
       : Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
@@ -507,8 +467,27 @@ export default class App {
         data: { data: message },
       } = await API.post(`/room/${activeRoom.id}/message/add`, { content });
 
+      // Updating Local State.
+      const newMessages = [...activeRoom.messages];
+      const currentCreatedAt = new Date(message.createdAt);
+
+      if (newMessages.length === 0) newMessages.unshift([message]);
+      else {
+        const lastEntry = newMessages.at(0);
+        const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
+
+        if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+          if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
+          else newMessages.unshift([message]);
+        } else {
+          newMessages.unshift(formatDateString(lastCreatedAt));
+          newMessages.unshift([message]);
+        }
+      }
+
       this.rooms.set(activeRoom.id, {
         ...activeRoom,
+        messages: newMessages,
         lastMessage: message.isFile ? message.fileName : message.content,
         lastSpoke: message.sentAt,
       });
