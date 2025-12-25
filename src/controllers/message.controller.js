@@ -63,6 +63,8 @@ async function createMessage(req, res, next) {
       sender.update({ lastReadAt: timestamp }, { transaction: t }),
     ]);
 
+    await t.commit();
+
     res.status(201).json(serializeResponse(serializeMessage(message)));
   } catch (error) {
     t.rollback();

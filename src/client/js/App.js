@@ -350,8 +350,14 @@ export default class App {
   }
 
   async sendMessage(content, onSuccess) {
+    const activeRoom = this.getActiveRoom();
+
     try {
-      console.log('Message: ', content);
+      const {
+        data: { data: message },
+      } = await API.post(`/room/${activeRoom.id}/message/add`, { content });
+
+      console.log(message);
 
       onSuccess?.();
     } catch (error) {
