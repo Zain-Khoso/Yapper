@@ -6,41 +6,6 @@
 //   });
 // }
 
-// function formatFileType(type) {
-//   let output = type.split('/').at(-1).toUpperCase();
-
-//   if (output === 'PLAIN') output = 'TXT';
-
-//   return output;
-// }
-
-// function formatFileSize(bytes) {
-//   if (bytes === 0) return '0 B';
-
-//   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-//   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-//   const formatted = (bytes / Math.pow(1024, i)).toFixed(2);
-
-//   return `${formatted} ${sizes[i]}`;
-// }
-
-// function formatMessage(message, senderId) {
-//   const createdAt = message.createdAt;
-//   const sentAt = `${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
-
-//   return {
-//     id: message.id,
-//     isSender: senderId === message.senderId,
-//     content: message.content,
-//     isFile: message.isFile,
-//     fileType: message.isFile ? formatFileType(message.fileType) : null,
-//     fileName: message.isFile ? message.fileName : null,
-//     fileSize: message.isFile ? formatFileSize(message.fileSize) : null,
-//     sentAt,
-//     createdAt,
-//   };
-// }
-
 // function formatMessagesList(messages, senderId = '') {
 //   if (messages.length === 0) return [];
 //   if (senderId === '') throw new Error('senderId is required.');
@@ -115,6 +80,24 @@ function formatLastSeen(inputDate) {
   return `${day}/${month}/${year}`;
 }
 
+function formatFileType(type) {
+  let output = type.split('/').at(-1).toUpperCase();
+
+  if (output === 'PLAIN') output = 'TXT';
+
+  return output;
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 B';
+
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const formatted = (bytes / Math.pow(1024, i)).toFixed(2);
+
+  return `${formatted} ${sizes[i]}`;
+}
+
 function serializeResponse(data = {}, errors = {}) {
   return {
     success: Object.keys(errors).length === 0,
@@ -161,4 +144,21 @@ function serializeRoom(room, senderId) {
   };
 }
 
-export { serializeResponse, serializeUser, serializeRoom };
+function serializeMessage(message, senderId) {
+  const createdAt = message.createdAt;
+  const sentAt = `${createdAt.getHours().toString().padStart(2, '0')}:${createdAt.getMinutes().toString().padStart(2, '0')}`;
+
+  return {
+    id: message.id,
+    isSender: senderId === message.userId,
+    content: message.content,
+    isFile: message.isFile,
+    fileType: message.isFile ? formatFileType(message.fileType) : null,
+    fileName: message.isFile ? message.fileName : null,
+    fileSize: message.isFile ? formatFileSize(message.fileSize) : null,
+    sentAt,
+    createdAt,
+  };
+}
+
+export { serializeResponse, serializeUser, serializeRoom, serializeMessage };
