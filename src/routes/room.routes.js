@@ -9,6 +9,7 @@ import {
   unblockRoom,
 } from '../controllers/room.controller.js';
 import { allowAuthenticatedUserOnly } from '../utils/auth.utils.js';
+import messageRouter from './message.routes.js';
 
 // Authentication Routes.
 const router = Router();
@@ -24,5 +25,8 @@ router.patch('/block', allowAuthenticatedUserOnly, blockRoom);
 
 // PATCH : Blocks the other user for the current user.
 router.patch('/unblock', allowAuthenticatedUserOnly, unblockRoom);
+
+// Forwards message routes.
+router.use('/:roomId/message', allowAuthenticatedUserOnly, messageRouter);
 
 export default router;
