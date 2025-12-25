@@ -1,6 +1,6 @@
 // Local Imports.
 import { API, showError, showSuccess, Swal } from './utils';
-import { getZodError, schema_Email } from '../../utils/validations';
+import { getZodError, schema_Email, schema_String } from '../../utils/validations';
 
 export default class App {
   constructor() {
@@ -29,6 +29,8 @@ export default class App {
     this.elem_MobileVideoCallButton = document.getElementById('btn-mobile-call-video');
     this.elem_MobileBlockChatButton = document.getElementById('btn-mobile-chat-block');
     this.elem_MobileUnblockChatButton = document.getElementById('btn-mobile-chat-unblock');
+
+    this.elem_Messages = document.getElementById('messages');
 
     this.elem_MessageForm = document.getElementById('message-form');
     this.elem_MessageFileInput = document.getElementById('message-file-input');
@@ -66,6 +68,17 @@ export default class App {
       elem.addEventListener('click', () => this.toggleRoomBlock('unblock'));
     });
     this.elem_OpenNavButton.addEventListener('click', () => this.toggleNavigation(false));
+    this.elem_MessageForm.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || e.shiftKey) return;
+
+      e.preventDefault();
+      this.handleSendTextMessage();
+    });
+    this.elem_MessageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      this.handleSendTextMessage();
+    });
   }
 
   toggleAppUI(showUI) {
@@ -215,6 +228,14 @@ export default class App {
     this.elem_AppControls.classList.toggle('hide', close);
   }
 
+  handleSendTextMessage() {
+    const content = this.elem_MessageTextInput.value;
+    const result = schema_String.safeParse(content);
+    if (!result.success) return;
+
+    this.sendMessage(content, () => (this.elem_MessageTextInput.value = null));
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -325,6 +346,17 @@ export default class App {
       this.loadActiveRoom();
     } catch (response) {
       new showError('Error', response?.data?.errors?.root ?? 'Something went wrong');
+    }
+  }
+
+  async sendMessage(content, onSuccess) {
+    try {
+      console.log('Message: ', content);
+
+      onSuccess?.();
+    } catch (error) {
+      console.error(error);
+      new showError('Something went wrong.');
     }
   }
 }
