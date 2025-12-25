@@ -353,6 +353,39 @@ export default class App {
     });
   }
 
+  updateRoom(id) {
+    const {
+      id: roomId,
+      receiver: { picture, initial, displayName },
+      lastSpoke,
+      lastMessage,
+      unreadCount,
+    } = this.rooms.get(id);
+
+    const elem_Room = this.elem_ChatsList.querySelector(`li.chat[data-roomId="${roomId}"]`);
+    const elem_RoomImage = elem_Room.querySelector('img');
+    const elem_RoomInitial = elem_Room.querySelector('.initial');
+    const elem_RoomName = elem_Room.querySelector('.bold');
+    const elem_RoomLastSpoke = elem_Room.querySelector('.last-spoke');
+    const elem_RoomLastMessage = elem_Room.querySelector('.last-message');
+    const elem_UnreadMessageCount = elem_Room.querySelector('.new-message-count');
+
+    elem_RoomImage.setAttribute('src', picture);
+    elem_RoomInitial.textContent = initial;
+    elem_RoomName.textContent = displayName;
+    elem_RoomLastSpoke.textContent = lastSpoke;
+    elem_RoomLastMessage.textContent = lastMessage;
+    elem_UnreadMessageCount.textContent = unreadCount > 99 ? '99+' : unreadCount;
+  }
+
+  moveRoomToTop(id) {
+    const elem_Room = this.elem_ChatsList.querySelector(`li.chat[data-roomId="${id}"]`);
+
+    const roomHTML = elem_Room.outerHTML;
+    elem_Room.remove();
+    this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -474,7 +507,15 @@ export default class App {
         data: { data: message },
       } = await API.post(`/room/${activeRoom.id}/message/add`, { content });
 
+      this.rooms.set(activeRoom.id, {
+        ...activeRoom,
+        lastMessage: message.isFile ? message.fileName : message.content,
+        lastSpoke: message.sentAt,
+      });
+
       this.addMessage(message, 'new');
+      this.updateRoom(activeRoom.id);
+      this.moveRoomToTop(activeRoom.id);
 
       onSuccess?.();
     } catch (error) {
