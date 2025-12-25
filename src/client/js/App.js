@@ -10,7 +10,7 @@ export default class App {
     this.elem_AppControls = document.getElementById('app-controls');
     this.elem_BtnAddChat = document.getElementById('btn-add-chat');
     this.elem_ChatsList = document.getElementById('chats-list');
-    const elem_Observed = this.elem_ChatsList.querySelector('.observed');
+    const elem_RoomsObserved = this.elem_ChatsList.querySelector('.observed');
 
     this.elem_App = document.getElementById('app');
     this.elem_AppEmpty = document.getElementById('app-empty');
@@ -47,18 +47,18 @@ export default class App {
     this.isFetchingRooms = false;
 
     // Observer Configuration.
-    const handleIntersection = ([entry]) => {
+    const handleRoomsIntersaction = ([entry]) => {
       if (!entry || !entry.isIntersecting || this.isFetchingRooms) return;
 
       this.fetchRooms();
     };
 
-    this.observer = new IntersectionObserver(handleIntersection, {
+    this.roomsObserver = new IntersectionObserver(handleRoomsIntersaction, {
       root: this.elem_ChatsList,
       rootMargin: '200px',
     });
 
-    this.observer.observe(elem_Observed);
+    this.roomsObserver.observe(elem_RoomsObserved);
 
     // Event Listeners.
     this.elem_BtnAddChat.addEventListener('click', () => this.createRoom());
@@ -437,7 +437,7 @@ export default class App {
         data: { data },
       } = await API.get(`/room/get-all/${this.roomsOffset}`);
 
-      if (data.finished) this.observer.disconnect();
+      if (data.finished) this.roomsObserver.disconnect();
 
       this.roomsOffset = data.offset;
       data.rooms.forEach((room) => this.addRoom(room));
