@@ -1,11 +1,3 @@
-// function formatDateString(date) {
-//   return date.toLocaleDateString('en-US', {
-//     year: 'numeric',
-//     month: 'long',
-//     day: 'numeric',
-//   });
-// }
-
 // function formatMessagesList(messages, senderId = '') {
 //   if (messages.length === 0) return [];
 //   if (senderId === '') throw new Error('senderId is required.');
@@ -98,6 +90,14 @@ function formatFileSize(bytes) {
   return `${formatted} ${sizes[i]}`;
 }
 
+function formatDateString(date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 function serializeResponse(data = {}, errors = {}) {
   return {
     success: Object.keys(errors).length === 0,
@@ -161,4 +161,4 @@ function serializeMessage(message, senderId) {
   };
 }
 
-export { serializeResponse, serializeUser, serializeRoom, serializeMessage };
+export { serializeResponse, serializeUser, serializeRoom, serializeMessage, formatDateString };

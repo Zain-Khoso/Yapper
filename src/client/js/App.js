@@ -1,6 +1,8 @@
 // Local Imports.
-import { API, showError, showSuccess, Swal } from './utils';
+import { API, isSameDate, showError, showSuccess, Swal } from './utils';
 import { getZodError, schema_Email, schema_String } from '../../utils/validations';
+import { formatDateString } from '../../utils/serializers';
+import Autolinker from 'autolinker';
 
 export default class App {
   constructor() {
@@ -88,7 +90,7 @@ export default class App {
 
   addRoom(room, mode = 'pagination') {
     if (this.rooms.has(room.id)) return;
-    else this.rooms.set(room.id, room);
+    else this.rooms.set(room.id, { ...room, messages: [] });
 
     const {
       id: roomId,
@@ -142,6 +144,7 @@ export default class App {
     const elem_ChatOption = target.closest('.chat');
     if (!elem_ChatOption) return;
 
+    this.elem_Messages.innerHTML = '';
     this.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
     this.toggleNavigation(true);
   }
@@ -234,6 +237,120 @@ export default class App {
     if (!result.success) return;
 
     this.sendMessage(content, () => (this.elem_MessageTextInput.value = null));
+  }
+
+  addMessage(message, mode = 'pagination') {
+    // Updating Local State.
+    const activeRoom = this.getActiveRoom();
+    const newMessages = [...activeRoom.messages];
+    const currentCreatedAt = new Date(message.createdAt);
+
+    if (newMessages.length === 0) newMessages.push([message]);
+    else {
+      if (mode === 'pagination') {
+        const lastEntry = newMessages.at(-1);
+
+        if (Array.isArray(lastEntry)) {
+          const lastCreatedAt = new Date(lastEntry.at(-1).createdAt);
+
+          if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+            if (lastEntry.at(-1).isSender === message.isSender) newMessages.at(-1).push(message);
+            else newMessages.push([message]);
+          } else {
+            newMessages.push(formatDateString(lastCreatedAt));
+            newMessages.push([message]);
+          }
+        } else newMessages.push([message]);
+      } else {
+        const lastEntry = newMessages.at(0);
+
+        if (Array.isArray(lastEntry)) {
+          const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
+
+          if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+            if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
+            else newMessages.unshift([message]);
+          } else {
+            newMessages.unshift(formatDateString(lastCreatedAt));
+            newMessages.unshift([message]);
+          }
+        } else newMessages.unshift([message]);
+      }
+    }
+
+    this.rooms.set(activeRoom.id, { ...activeRoom, messages: newMessages });
+    console.log(this.getActiveRoom());
+    message.content = message.isFile
+      ? message.content
+      : Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
+
+    const elem_LastMessageChild = Array.from(this.elem_Messages.children).at(
+      mode === 'pagination' ? 0 : -1
+    );
+
+    let fileIcon = null;
+    if (message.fileType) {
+      switch (message.fileType) {
+        case 'PNG':
+          fileIcon = 'photo';
+          break;
+        case 'JPEG':
+          fileIcon = 'photo';
+          break;
+        case 'PDF':
+          fileIcon = 'picture_as_pdf';
+          break;
+        default:
+          fileIcon = 'article';
+          break;
+      }
+    }
+
+    const messageBox = message.isFile
+      ? `
+      <div class="message-box" data-messageId="${message.id}"> 
+        <div class="file">
+          <span class="material-icons">${fileIcon}</span>
+          
+          <div class="details">
+            <span class="title">${message.fileName}</span>
+            <span class="subtitle">${message.fileType} &middot; ${message.fileSize}</span>
+          </div>
+        </div>
+        <span class="time-text">${message.sentAt}</span>
+      </div>
+      `
+      : `
+      <div class="message-box" data-messageId="${message.id}"> 
+        <p class="message-text">${message.content}</p>
+        <span class="time-text">${message.sentAt}</span>
+      </div>
+      `;
+
+    const at = mode === 'pagination' ? 'afterbegin' : 'beforeend';
+
+    if (elem_LastMessageChild?.classList?.contains('right') && message?.isSender) {
+      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
+    } else if (elem_LastMessageChild?.classList?.contains('left') && !message?.isSender) {
+      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
+    } else {
+      this.elem_Messages.insertAdjacentHTML(
+        at,
+        `
+          <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+            ${messageBox}
+          </div>
+        `
+      );
+    }
+
+    this.scrollToEnd();
+  }
+
+  scrollToEnd() {
+    this.elem_Messages.scrollTo({
+      top: this.elem_Messages.scrollHeight,
+    });
   }
 
   async createRoom() {
@@ -357,7 +474,7 @@ export default class App {
         data: { data: message },
       } = await API.post(`/room/${activeRoom.id}/message/add`, { content });
 
-      console.log(message);
+      this.addMessage(message, 'new');
 
       onSuccess?.();
     } catch (error) {

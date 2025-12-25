@@ -65,7 +65,7 @@ async function createMessage(req, res, next) {
 
     await t.commit();
 
-    res.status(201).json(serializeResponse(serializeMessage(message)));
+    res.status(201).json(serializeResponse(serializeMessage(message, user.id)));
   } catch (error) {
     t.rollback();
 
