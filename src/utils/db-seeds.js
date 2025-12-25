@@ -43,16 +43,17 @@ const users = await User.bulkCreate(usersList);
 console.log(`\nUsers Created: ${users.length}.\n`);
 
 const user = await User.findOne({ where: { email: USER_EMAIL } });
+const chatrooms = [];
 
-// Creating Chatrooms
-const chatrooms = await Promise.all(
-  users.map(async (u) => {
-    if (u.email === user.email) return null;
+// Creating Chatrooms.
+for (const u of users) {
+  if (u.id === user.id) continue;
 
-    const chatroom = await Chatroom.create();
-    await chatroom.addMembers([user, u]);
-  })
-);
+  const chatroom = await Chatroom.create();
+  await chatroom.addMembers([user, u]);
+
+  chatrooms.push(chatroom);
+}
 
 console.log(`\nChatrooms Created: ${chatrooms.length}.\n`);
 
