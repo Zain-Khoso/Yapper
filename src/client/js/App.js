@@ -144,7 +144,6 @@ export default class App {
     const elem_ChatOption = target.closest('.chat');
     if (!elem_ChatOption) return;
 
-    this.elem_Messages.innerHTML = '';
     this.setActiveRoom(elem_ChatOption.getAttribute('data-roomId'));
     this.toggleNavigation(true);
   }
@@ -179,6 +178,7 @@ export default class App {
 
     const {
       receiver: { initial, picture, displayName, isOnline, isBlocked, isDeleted },
+      messages,
     } = activeRoom;
 
     // Updating Document Title.
@@ -200,6 +200,12 @@ export default class App {
     this.elem_MobileBlockChatButton.classList.toggle('hidden', isDeleted || isBlocked);
     this.elem_UnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
     this.elem_MobileUnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
+
+    this.elem_Messages.innerHTML = '';
+    messages.forEach((entry) => {
+      if (typeof entry === 'string') this.addDateSeparator(entry);
+      else entry.forEach((message) => this.addMessage(message, 'pagination'));
+    });
 
     // Checking wether the form will should be disabled or not.
     const isFormDisabled = isBlocked || isDeleted || activeRoom.sender.isBlocked;
@@ -346,6 +352,19 @@ export default class App {
     this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
+  addDateSeparator(dateString, at = 'afterbegin') {
+    this.elem_Messages.insertAdjacentHTML(
+      at,
+      `
+        <div class="message-wrapper center" data-dateString="${dateString}">
+            <span class="date-separator">${dateString}</span>
+        </div>
+      `
+    );
+
+    this.scrollToEnd();
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -471,8 +490,14 @@ export default class App {
       const newMessages = [...activeRoom.messages];
       const currentCreatedAt = new Date(message.createdAt);
 
-      if (newMessages.length === 0) newMessages.unshift([message]);
-      else {
+      if (newMessages.length === 0) {
+        const dateString = formatDateString(currentCreatedAt);
+
+        newMessages.unshift(dateString);
+        newMessages.unshift([message]);
+
+        this.addDateSeparator(dateString, 'beforeend');
+      } else {
         const lastEntry = newMessages.at(0);
         const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
 
@@ -480,8 +505,12 @@ export default class App {
           if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
           else newMessages.unshift([message]);
         } else {
-          newMessages.unshift(formatDateString(lastCreatedAt));
+          const dateString = formatDateString(lastCreatedAt);
+
+          newMessages.unshift(dateString);
           newMessages.unshift([message]);
+
+          this.addDateSeparator(dateString, 'beforeend');
         }
       }
 
