@@ -12,7 +12,11 @@ export default class App {
 
     this.elem_App = document.getElementById('app');
     this.elem_AppEmpty = document.getElementById('app-empty');
+
     this.elem_HeaderAvatar = document.getElementById('header-avatar');
+    this.elem_HeaderPicture = this.elem_HeaderAvatar.querySelector('img');
+    this.elem_HeaderPictureFallback = this.elem_HeaderAvatar.querySelector('.initial');
+    this.elem_HeaderOnlineStatus = this.elem_HeaderAvatar.querySelector('.status');
     this.elem_HeaderDisplayName = document.getElementById('header-displayName');
     this.elem_OpenNavButton = document.getElementById('btn-open-sidenav');
 
@@ -83,27 +87,15 @@ export default class App {
 
     const roomHTML = `
       <li class="chat${unreadCount === 0 ? '' : ' unread'}" data-roomId=${roomId}>
-        ${
-          picture
-            ? `
-          <div class="avatar image">
-            <img alt="${displayName}'s Image" src="${picture}" />
+        <div class="avatar${picture ? '' : ' fallback'}">
+          <img alt="${displayName}'s Image" src="${picture}" />
 
-            <div class="status${isOnline ? ' active' : ''}">
-              <div class="dot"></div>
-            </div>
+          <span class="initial"> ${initial} </span>
+
+          <div class="status${isOnline ? ' active' : ''}">
+            <div class="dot"></div>
           </div>
-          `
-            : `
-          <div class="avatar fallback"> 
-            <span class="initial"> ${initial} </span>
-            
-            <div class="status${isOnline ? ' active' : ''}">
-              <div class="dot"></div>
-            </div>
-          </div>
-        `
-        }
+        </div>
         
         <div class="user-content">
           <div class="title">
@@ -153,6 +145,15 @@ export default class App {
     this.elem_MessageTextInput.focus();
   }
 
+  updateChatHeader(initial, picture, displayName, isOnline) {
+    this.elem_HeaderPicture.setAttribute('src', picture);
+    this.elem_HeaderPictureFallback.textContent = initial;
+    this.elem_HeaderAvatar.classList.toggle('fallback', !picture);
+
+    this.elem_HeaderDisplayName.textContent = displayName;
+    this.elem_HeaderOnlineStatus.classList.toggle('active', isOnline);
+  }
+
   loadActiveRoom() {
     const activeRoom = this.getActiveRoom();
 
@@ -168,27 +169,7 @@ export default class App {
     document.title = `Your chat with ${displayName} | Yapper`;
 
     // Update Header Copy.
-    this.elem_HeaderAvatar.outerHTML = picture
-      ? `
-        <div id="header-avatar" class="avatar image">
-          <img alt="${displayName}'s Image" src="${picture}" />
-
-          <div class="status${isOnline ? ' active' : ''}">
-            <div class="dot"></div>
-          </div>
-        </div>
-      `
-      : `
-        <div id="header-avatar" class="avatar fallback"> 
-          <span class="initial"> ${initial} </span>
-          
-          <div class="status${isOnline ? ' active' : ''}">
-            <div class="dot"></div>
-          </div>
-        </div>
-      `;
-    this.elem_HeaderAvatar = document.getElementById('header-avatar');
-    this.elem_HeaderDisplayName.textContent = displayName;
+    this.updateChatHeader(initial, picture, displayName, isOnline);
 
     // Showing/Hiding controls.
     this.elem_VoiceCallButton.classList.toggle('hidden', isDeleted || isBlocked);

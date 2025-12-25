@@ -1,10 +1,25 @@
 .avatar {
   position: relative;
+  display: grid;
+  place-items: center;
 
   width: 3rem;
   height: 3rem;
   min-width: 3rem;
   min-height: 3rem;
+  background-color: var(--color-foreground-secondary);
+  border-radius: 50%;
+  user-select: none;
+
+  &.fallback {
+    img {
+      display: none;
+    }
+
+    .initial {
+      display: block;
+    }
+  }
 
   .status {
     position: absolute;
@@ -35,28 +50,20 @@
     }
   }
 
-  &.image img {
+  img {
     display: block;
 
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    border-radius: 50%;
   }
 
-  &.fallback {
-    display: grid;
-    place-items: center;
+  .initial {
+    display: none;
 
-    background-color: var(--color-foreground-secondary);
-    border-radius: 50%;
-
-    .initial {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--color-background);
-      user-select: none;
-    }
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-background);
   }
 }
