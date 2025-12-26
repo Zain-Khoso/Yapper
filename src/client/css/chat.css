@@ -249,7 +249,6 @@
           }
 
           .time-text {
-            font-size: 0.75rem;
             color: var(--color-foreground);
           }
         }
@@ -292,7 +291,6 @@
           }
 
           .time-text {
-            font-size: 0.75rem;
             color: var(--color-background);
           }
         }
@@ -302,6 +300,7 @@
         display: grid;
         place-items: center;
 
+        font-weight: 400;
         color: var(--color-background);
         background-color: var(--color-foreground-secondary);
         padding: 0.5rem 0.75rem;
@@ -324,6 +323,11 @@
           overflow-x: hidden;
           overflow-wrap: anywhere;
           hyphens: auto;
+        }
+
+        .time-text {
+          font-size: 0.75rem;
+          font-weight: 400;
         }
 
         .file {
