@@ -431,6 +431,19 @@ export default class App {
     }
   }
 
+  updateRoomsOffet(by = 1) {
+    this.roomsOffset += by;
+  }
+
+  updateMessagesOffet(roomId, by = 1) {
+    const room = this.rooms.get(roomId);
+
+    this.rooms.set(room.id, {
+      ...room,
+      messagesOffset: (room.messagesOffset += by),
+    });
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -475,6 +488,7 @@ export default class App {
           new showSuccess({ title: 'New Friend Added', timer: 1500 });
 
           this.addRoom(room, 'new');
+          this.updateRoomsOffet();
         } catch (error) {
           Swal.enableInput();
           Swal.enableButtons();
@@ -592,6 +606,7 @@ export default class App {
       this.scrollToEnd();
       this.updateRoom(activeRoom.id);
       this.moveRoomToTop(activeRoom.id);
+      this.updateMessagesOffet(activeRoom.id);
 
       onSuccess?.();
     } catch (error) {
