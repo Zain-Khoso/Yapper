@@ -33,6 +33,7 @@ export default class App {
     this.elem_MobileUnblockChatButton = document.getElementById('btn-mobile-chat-unblock');
 
     this.elem_Messages = document.getElementById('messages');
+    this.elem_MessagesObserved = this.elem_Messages.querySelector('.observed');
 
     this.elem_MessageForm = document.getElementById('message-form');
     this.elem_MessageFileInput = document.getElementById('message-file-input');
@@ -53,8 +54,20 @@ export default class App {
       this.fetchRooms();
     };
 
+    // Observer Configuration.
+    const handleMessagesIntersaction = ([entry]) => {
+      if (!entry || !entry.isIntersecting || this.getActiveRoom().isFetchingMessages) return;
+
+      this.fetchMessages();
+    };
+
     this.roomsObserver = new IntersectionObserver(handleRoomsIntersaction, {
       root: this.elem_ChatsList,
+      rootMargin: '200px',
+    });
+
+    this.messagesObserver = new IntersectionObserver(handleMessagesIntersaction, {
+      root: this.elem_Messages,
       rootMargin: '200px',
     });
 
@@ -201,11 +214,12 @@ export default class App {
     this.elem_UnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
     this.elem_MobileUnblockChatButton.classList.toggle('hidden', isDeleted || !isBlocked);
 
-    this.elem_Messages.innerHTML = '';
+    this.elem_Messages.querySelectorAll('.message-wrapper').forEach((elem) => elem.remove());
     messages.forEach((entry) => {
       if (typeof entry === 'string') this.addDateSeparator(entry);
       else entry.forEach((message) => this.addMessage(message, 'pagination'));
     });
+    this.scrollToEnd();
 
     // Checking wether the form will should be disabled or not.
     const isFormDisabled = isBlocked || isDeleted || activeRoom.sender.isBlocked;
@@ -250,10 +264,6 @@ export default class App {
       ? message.content
       : Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
 
-    const elem_LastMessageChild = Array.from(this.elem_Messages.children).at(
-      mode === 'pagination' ? 0 : -1
-    );
-
     let fileIcon = null;
     if (message.fileType) {
       switch (message.fileType) {
@@ -293,24 +303,65 @@ export default class App {
       </div>
       `;
 
-    const at = mode === 'pagination' ? 'afterbegin' : 'beforeend';
+    if (mode === 'pagination') {
+      const elem_LastMessageChild = Array.from(this.elem_Messages.children).at(1);
 
-    if (elem_LastMessageChild?.classList?.contains('right') && message?.isSender) {
-      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
-    } else if (elem_LastMessageChild?.classList?.contains('left') && !message?.isSender) {
-      elem_LastMessageChild.insertAdjacentHTML(at, messageBox);
+      if (elem_LastMessageChild) {
+        if (
+          (elem_LastMessageChild.classList.contains('right') && message.isSender) ||
+          (elem_LastMessageChild.classList.contains('left') && !message.isSender)
+        ) {
+          elem_LastMessageChild.insertAdjacentHTML('afterbegin', messageBox);
+        } else {
+          elem_LastMessageChild.insertAdjacentHTML(
+            'beforebegin',
+            `
+              <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+                ${messageBox}
+              </div>
+            `
+          );
+        }
+      } else {
+        this.elem_Messages.insertAdjacentHTML(
+          'beforeend',
+          `
+            <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+              ${messageBox}
+            </div>
+          `
+        );
+      }
     } else {
-      this.elem_Messages.insertAdjacentHTML(
-        at,
-        `
-          <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
-            ${messageBox}
-          </div>
-        `
-      );
-    }
+      const elem_LastMessageChild = Array.from(this.elem_Messages.children).at(-1);
 
-    this.scrollToEnd();
+      if (elem_LastMessageChild) {
+        if (
+          (elem_LastMessageChild.classList.contains('right') && message.isSender) ||
+          (elem_LastMessageChild.classList.contains('left') && !message.isSender)
+        ) {
+          elem_LastMessageChild.insertAdjacentHTML('beforeend', messageBox);
+        } else {
+          elem_LastMessageChild.insertAdjacentHTML(
+            'afterend',
+            `
+              <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+                ${messageBox}
+              </div>
+            `
+          );
+        }
+      } else {
+        this.elem_Messages.insertAdjacentHTML(
+          'beforeend',
+          `
+            <div class="message-wrapper ${message.isSender ? 'right' : 'left'}"> 
+              ${messageBox}
+            </div>
+          `
+        );
+      }
+    }
   }
 
   scrollToEnd() {
@@ -352,17 +403,20 @@ export default class App {
     this.elem_ChatsList.insertAdjacentHTML('afterbegin', roomHTML);
   }
 
-  addDateSeparator(dateString, at = 'afterbegin') {
-    this.elem_Messages.insertAdjacentHTML(
-      at,
-      `
-        <div class="message-wrapper center" data-dateString="${dateString}">
-            <span class="date-separator">${dateString}</span>
-        </div>
-      `
-    );
+  addDateSeparator(dateString, mode = 'pagination') {
+    const separatorHTML = `
+      <div class="message-wrapper center" data-dateString="${dateString}">
+        <span class="date-separator">${dateString}</span>
+      </div>
+    `;
 
-    this.scrollToEnd();
+    if (mode === 'pagination') {
+      this.elem_MessagesObserved.insertAdjacentHTML('afterend', separatorHTML);
+    } else {
+      const elem_LastMessageChild = Array.from(this.elem_Messages.children).at(-1);
+
+      elem_LastMessageChild.insertAdjacentHTML('afterend', separatorHTML);
+    }
   }
 
   async createRoom() {
@@ -522,6 +576,7 @@ export default class App {
       });
 
       this.addMessage(message, 'new');
+      this.scrollToEnd();
       this.updateRoom(activeRoom.id);
       this.moveRoomToTop(activeRoom.id);
 
