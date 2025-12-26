@@ -1,4 +1,5 @@
 // Local Imports.
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import Message from '../models/message.model.js';
 import User from '../models/user.model.js';
 import sequelize from '../utils/database.js';
@@ -7,8 +8,10 @@ import {
   serializeMessage,
   serializeMessagesList,
   serializeResponse,
+  serializeRoom,
 } from '../utils/serializers.js';
 import { schema_String } from '../utils/validations.js';
+import { deleteOldImage } from '../utils/helpers.js';
 
 // Constants.
 const MESSAGES_PER_PAGE = 25;
@@ -138,4 +141,56 @@ async function getChat(req, res) {
   );
 }
 
-export { createMessage, getChat };
+async function deleteMessage(req, res, next) {
+  const user = req.user;
+  const { roomId, messageId } = req.params;
+
+  const t = await sequelize.transaction();
+
+  try {
+    const [chatroom] = await user.getRooms({
+      where: { id: roomId },
+      attributes: ['id', 'lastMessageAt', 'createdAt'],
+      joinTableAttributes: [],
+      include: [
+        {
+          model: Message,
+          where: { id: messageId, userId: user.id },
+        },
+      ],
+      transaction: t,
+    });
+    if (!chatroom || chatroom.messages.length === 0) {
+      await t.rollback();
+
+      return res.status(400).json(serializeResponse({}, { root: 'Invalid Request.' }));
+    }
+
+    const deletedMessage = await chatroom.messages.at(0).destroy({ transaction: t });
+    if (deletedMessage.isFile) await deleteOldImage(deletedMessage.content);
+
+    const [message] = await Message.findAll({
+      where: { roomId },
+      order: [['createdAt', 'DESC']],
+      limit: 1,
+      transaction: t,
+    });
+
+    const updatedChatroom = await chatroom.update(
+      { lastMessageAt: message?.createdAt ?? chatroom.createdAt },
+      { transaction: t }
+    );
+    updatedChatroom.messages.unshift(message);
+
+    await t.commit();
+    return res.status(200).json(serializeResponse(serializeRoom(updatedChatroom, user.id)));
+  } catch (error) {
+    await t.rollback();
+
+    next(error);
+  }
+
+  res.status(200).json(serializeResponse(chatroom));
+}
+
+export { createMessage, getChat, deleteMessage };

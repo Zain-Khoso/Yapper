@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // Local Imports.
-import { createMessage, getChat } from '../controllers/message.controller.js';
+import { createMessage, getChat, deleteMessage } from '../controllers/message.controller.js';
 
 // Authentication Routes.
 const router = Router({ mergeParams: true });
@@ -12,5 +12,8 @@ router.post('/add', createMessage);
 
 // GET : Get the entire chat of the given chatroom.
 router.get('/get-all/:offset', getChat);
+
+// DELETE : Deletes a message from chatroom.
+router.delete('/delete/:messageId', deleteMessage);
 
 export default router;

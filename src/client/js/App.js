@@ -3,6 +3,7 @@ import { API, showError, showSuccess, Swal } from './utils';
 import { getZodError, schema_Email, schema_String } from '../../utils/validations';
 import { formatDateString, isSameDate } from '../../utils/serializers';
 import Autolinker from 'autolinker';
+import { getTheme } from './theme';
 
 export default class App {
   constructor() {
@@ -93,6 +94,30 @@ export default class App {
       e.preventDefault();
 
       this.handleSendTextMessage();
+    });
+    this.elem_Messages.addEventListener('contextmenu', (e) => {
+      const target = e.target.closest('.message-box');
+      if (!target) return;
+
+      const messageId = target.getAttribute('data-messageId');
+      if (!this.canDeleteMessage(messageId)) return;
+
+      e.preventDefault();
+
+      Swal.fire({
+        icon: 'question',
+        iconColor: 'var(--color-foreground)',
+        title: 'Delete Message?',
+        theme: getTheme(),
+        showCancelButton: true,
+        confirmButtonText: 'DELETE',
+        cancelButtonText: 'CANCEL',
+        customClass: {
+          confirmButton: 'btn danger',
+          cancelButton: 'btn primary',
+        },
+        preConfirm: () => this.deleteMessage(messageId),
+      });
     });
   }
 
@@ -401,9 +426,9 @@ export default class App {
 
     elem_RoomImage.setAttribute('src', picture);
     elem_RoomInitial.textContent = initial;
-    elem_RoomName.textContent = displayName;
+    elem_RoomName.innerHTML = displayName;
     elem_RoomLastSpoke.textContent = lastSpoke;
-    elem_RoomLastMessage.textContent = lastMessage;
+    elem_RoomLastMessage.innerHTML = lastMessage;
     elem_UnreadMessageCount.textContent = unreadCount > 99 ? '99+' : unreadCount;
   }
 
@@ -442,6 +467,18 @@ export default class App {
       ...room,
       messagesOffset: (room.messagesOffset += by),
     });
+  }
+
+  removeMessage(id) {
+    this.elem_Messages.querySelector(`div.message-box[data-messageId="${id}"]`).remove();
+  }
+
+  canDeleteMessage(id) {
+    return (
+      this.getActiveRoom()
+        ?.messages?.flat()
+        ?.find((message) => message.id === id)?.isSender ?? false
+    );
   }
 
   async createRoom() {
@@ -682,6 +719,54 @@ export default class App {
       );
     } finally {
       this.isFetchingRooms = false;
+    }
+  }
+
+  async deleteMessage(messageId) {
+    const activeRoom = this.getActiveRoom();
+
+    try {
+      const {
+        data: { data: chatroom },
+      } = await API.delete(`/room/${activeRoom.id}/message/delete/${messageId}`);
+
+      // Deleting the deleted message from local state.
+      const newMessages = activeRoom.messages
+        .map((entry) => {
+          if (typeof entry !== 'string') {
+            entry.splice(
+              entry.findIndex((message) => message.id === messageId),
+              1
+            );
+          }
+
+          return entry;
+        })
+        .filter((entry) => entry.length > 0)
+        .filter((entry, index, entries) => {
+          if (index === 0 && typeof entry === 'string') return false;
+
+          const lastEntry = entries.at(index - 1);
+
+          if (typeof lastEntry === 'string' && typeof entry === 'string') return false;
+
+          return true;
+        });
+
+      this.rooms.set(this.activeRoomId, {
+        ...activeRoom,
+        lastSpoke: chatroom.lastSpoke,
+        lastMessage: chatroom.lastMessage,
+        messages: newMessages,
+      });
+
+      this.updateMessagesOffet(chatroom.id, -1);
+      this.removeMessage(messageId);
+      this.updateRoom(activeRoom.id);
+    } catch (error) {
+      console.error(error);
+
+      new showError('Something went wrong.');
     }
   }
 }
