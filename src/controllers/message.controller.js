@@ -1,9 +1,17 @@
 // Local Imports.
+import Message from '../models/message.model.js';
 import User from '../models/user.model.js';
 import sequelize from '../utils/database.js';
 import { sanitizeText } from '../utils/sanitizers.js';
-import { serializeMessage, serializeResponse } from '../utils/serializers.js';
+import {
+  serializeMessage,
+  serializeMessagesList,
+  serializeResponse,
+} from '../utils/serializers.js';
 import { schema_String } from '../utils/validations.js';
+
+// Constants.
+const MESSAGES_PER_PAGE = 25;
 
 async function createMessage(req, res, next) {
   const user = req.user;
@@ -73,4 +81,61 @@ async function createMessage(req, res, next) {
   }
 }
 
-export { createMessage };
+async function getChat(req, res) {
+  const user = req.user;
+  const roomId = req.params.roomId;
+  const offset = parseInt(req.params.offset);
+
+  const [chatroom] = await user.getRooms({
+    attributes: ['id'],
+    where: { id: roomId },
+    joinTableAttributes: [],
+    include: [
+      {
+        model: User,
+        as: 'members',
+        attributes: ['id'],
+        through: { attributes: [] },
+      },
+      {
+        model: Message,
+        attributes: [
+          'id',
+          'isFile',
+          'content',
+          'fileType',
+          'fileName',
+          'fileSize',
+          'userId',
+          'senderId',
+          'createdAt',
+        ],
+        order: [['createdAt', 'DESC']],
+        separate: true,
+        limit: MESSAGES_PER_PAGE,
+        offset,
+      },
+    ],
+  });
+  if (!chatroom) {
+    return res.status(200).json(
+      serializeResponse({
+        messages: [],
+        offset,
+        isFirstPage: offset === 0,
+        isLastPage: true,
+      })
+    );
+  }
+
+  res.status(200).json(
+    serializeResponse({
+      messages: serializeMessagesList(chatroom.messages, user.id),
+      offset: offset + chatroom.messages.length,
+      isFirstPage: offset === 0,
+      isLastPage: chatroom.messages.length < MESSAGES_PER_PAGE,
+    })
+  );
+}
+
+export { createMessage, getChat };

@@ -1,7 +1,7 @@
 // Local Imports.
-import { API, isSameDate, showError, showSuccess, Swal } from './utils';
+import { API, showError, showSuccess, Swal } from './utils';
 import { getZodError, schema_Email, schema_String } from '../../utils/validations';
-import { formatDateString } from '../../utils/serializers';
+import { formatDateString, isSameDate } from '../../utils/serializers';
 import Autolinker from 'autolinker';
 
 export default class App {
@@ -58,7 +58,7 @@ export default class App {
     const handleMessagesIntersaction = ([entry]) => {
       if (!entry || !entry.isIntersecting || this.getActiveRoom().isFetchingMessages) return;
 
-      console.log('Fetching Messages For: ', this.getActiveRoom());
+      this.fetchMessages();
     };
 
     this.roomsObserver = new IntersectionObserver(handleRoomsIntersaction, {
@@ -107,6 +107,7 @@ export default class App {
       this.rooms.set(room.id, {
         ...room,
         messages: [],
+        messagesOffset: 0,
         isFetchingMessages: false,
         isMessagesFinished: false,
       });
@@ -178,7 +179,8 @@ export default class App {
 
     this.messagesObserver.unobserve(this.elem_MessagesObserved);
     this.loadActiveRoom();
-    this.messagesObserver.observe(this.elem_MessagesObserved);
+    if (!this.getActiveRoom().isMessagesFinished)
+      this.messagesObserver.observe(this.elem_MessagesObserved);
     this.elem_MessageTextInput.focus();
   }
 
@@ -508,6 +510,7 @@ export default class App {
 
       this.toggleAppUI(this.rooms.size !== 0);
 
+      // TODO: send isFirstPage and isLastPage from backend and act accordingly.
       if (data.offset === 25 && this.rooms.size !== 0) {
         this.setActiveRoom(this.rooms.entries().next().value[0]);
       }
@@ -594,6 +597,76 @@ export default class App {
     } catch (error) {
       console.error(error);
       new showError('Something went wrong.');
+    }
+  }
+
+  async fetchMessages() {
+    const activeRoom = this.getActiveRoom();
+    this.rooms.set(activeRoom.id, {
+      ...activeRoom,
+      isFetchingMessages: true,
+    });
+
+    try {
+      const {
+        data: {
+          data: { messages, offset: newOffset, isFirstPage, isLastPage },
+        },
+      } = await API.get(`/room/${activeRoom.id}/message/get-all/${activeRoom.messagesOffset}`);
+
+      let oldMessages = [...activeRoom.messages];
+      let newMessages = [...messages];
+
+      if (oldMessages.length === 0) {
+        this.rooms.set(activeRoom.id, {
+          ...activeRoom,
+          messages: newMessages,
+          messagesOffset: newOffset,
+          isFetchingMessages: false,
+          isMessagesFinished: isLastPage,
+        });
+      } else {
+        if (
+          isSameDate(
+            new Date(oldMessages.at(-1)),
+            new Date(newMessages.find((entry) => typeof entry === 'string'))
+          )
+        ) {
+          oldMessages.pop();
+          this.elem_Messages.querySelector('.message-wrapper.center').remove();
+
+          if (oldMessages.at(-1).at(-1).isSender === newMessages.at(0).at(0).isSender) {
+            const firstBatch = newMessages.shift();
+            const lastBatch = oldMessages.pop();
+
+            oldMessages = [...oldMessages, [...lastBatch, ...firstBatch]];
+          }
+        }
+
+        this.rooms.set(activeRoom.id, {
+          ...activeRoom,
+          messages: [...oldMessages, ...newMessages],
+          messagesOffset: newOffset,
+          isFetchingMessages: false,
+          isMessagesFinished: isLastPage,
+        });
+      }
+
+      messages.forEach((entry) => {
+        if (typeof entry === 'string') this.addDateSeparator(entry);
+        else entry.forEach((message) => this.addMessage(message));
+      });
+
+      if (isFirstPage) this.scrollToEnd('instant');
+      if (isLastPage) this.messagesObserver.unobserve(this.elem_MessagesObserved);
+    } catch (error) {
+      console.log(error);
+      new showError(
+        'Something went wrong',
+        'We were unable to fetch your Chat. Please try again letter.'
+      );
+    } finally {
+      this.isFetchingRooms = false;
     }
   }
 }

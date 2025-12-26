@@ -119,18 +119,6 @@ const closeAllDropdowns = () => {
   document.querySelectorAll('.dropdown-list.show').forEach(closeDropdown);
 };
 
-const isSameDate = function (one, two) {
-  if (!one || !two) return false;
-
-  if (
-    one.getFullYear() === two.getFullYear() &&
-    one.getMonth() === two.getMonth() &&
-    one.getDate() === two.getDate()
-  )
-    return true;
-  else return false;
-};
-
 // Event Listeners.
 elem_Dropdowns.forEach((dropdown) => {
   const control = dropdown.querySelector('button');
@@ -186,4 +174,4 @@ API.interceptors.response.use(
   }
 );
 
-export { Swal, showInfo, showError, showSuccess, API, startCooldown, isSameDate };
+export { Swal, showInfo, showError, showSuccess, API, startCooldown };

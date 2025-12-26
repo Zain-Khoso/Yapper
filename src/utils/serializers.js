@@ -1,40 +1,3 @@
-// function formatMessagesList(messages, senderId = '') {
-//   if (messages.length === 0) return [];
-//   if (senderId === '') throw new Error('senderId is required.');
-
-//   const output = [];
-
-//   for (let message of messages) {
-//     message = formatMessage(message, senderId);
-//     const currentCreatedAt = message.createdAt;
-
-//     if (output.length === 0) output.push([message]);
-//     else {
-//       const lastEntry = output.at(-1);
-
-//       if (Array.isArray(lastEntry)) {
-//         const lastCreatedAt = lastEntry.at(-1).createdAt;
-
-//         if (
-//           lastCreatedAt.getFullYear() === currentCreatedAt.getFullYear() &&
-//           lastCreatedAt.getMonth() === currentCreatedAt.getMonth() &&
-//           lastCreatedAt.getDate() === currentCreatedAt.getDate()
-//         ) {
-//           if (lastEntry.at(-1).isSender === message.isSender) output.at(-1).push(message);
-//           else output.push([message]);
-//         } else {
-//           output.push(formatDateString(lastCreatedAt));
-//           output.push([message]);
-//         }
-//       } else output.push([message]);
-//     }
-//   }
-
-//   if (output.length !== 0) output.push(formatDateString(output.at(-1).at(-1).createdAt));
-
-//   return output;
-// }
-
 function formatLastSeen(inputDate) {
   if (!inputDate) return null;
 
@@ -96,6 +59,18 @@ function formatDateString(date) {
     month: 'long',
     day: 'numeric',
   });
+}
+
+function isSameDate(one, two) {
+  if (!one || !two) return false;
+
+  if (
+    one.getFullYear() === two.getFullYear() &&
+    one.getMonth() === two.getMonth() &&
+    one.getDate() === two.getDate()
+  )
+    return true;
+  else return false;
 }
 
 function serializeResponse(data = {}, errors = {}) {
@@ -161,4 +136,44 @@ function serializeMessage(message, senderId) {
   };
 }
 
-export { serializeResponse, serializeUser, serializeRoom, serializeMessage, formatDateString };
+function serializeMessagesList(messages, senderId) {
+  if (messages.length === 0) return [];
+
+  const output = [];
+
+  for (let message of messages) {
+    message = serializeMessage(message, senderId);
+    const currentCreatedAt = message.createdAt;
+
+    if (output.length === 0) output.push([message]);
+    else {
+      const lastEntry = output.at(-1);
+
+      if (Array.isArray(lastEntry)) {
+        const lastCreatedAt = lastEntry.at(-1).createdAt;
+
+        if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+          if (lastEntry.at(-1).isSender === message.isSender) output.at(-1).push(message);
+          else output.push([message]);
+        } else {
+          output.push(formatDateString(lastCreatedAt));
+          output.push([message]);
+        }
+      } else output.push([message]);
+    }
+  }
+
+  if (output.length !== 0) output.push(formatDateString(output.at(-1).at(-1).createdAt));
+
+  return output;
+}
+
+export {
+  serializeResponse,
+  serializeUser,
+  serializeRoom,
+  serializeMessage,
+  serializeMessagesList,
+  formatDateString,
+  isSameDate,
+};
