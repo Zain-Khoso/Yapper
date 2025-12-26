@@ -194,19 +194,18 @@
     overflow-y: auto;
     scroll-behavior: smooth;
 
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+    }
+
     &::-webkit-scrollbar-track {
       background: var(--color-background);
-      border-radius: 10px;
+      border-radius: 0.25rem;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--color-foreground-secondary);
-      border-radius: 10px;
-      border: 2px solid var(--color-background-secondary);
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
       background: var(--color-foreground);
+      border-radius: 0.25rem;
     }
 
     .message-wrapper {
