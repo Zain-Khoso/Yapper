@@ -58,7 +58,7 @@ export default class App {
     const handleMessagesIntersaction = ([entry]) => {
       if (!entry || !entry.isIntersecting || this.getActiveRoom().isFetchingMessages) return;
 
-      this.fetchMessages();
+      console.log('Fetching Messages For: ', this.getActiveRoom());
     };
 
     this.roomsObserver = new IntersectionObserver(handleRoomsIntersaction, {
@@ -103,7 +103,14 @@ export default class App {
 
   addRoom(room, mode = 'pagination') {
     if (this.rooms.has(room.id)) return;
-    else this.rooms.set(room.id, { ...room, messages: [] });
+    else {
+      this.rooms.set(room.id, {
+        ...room,
+        messages: [],
+        isFetchingMessages: false,
+        isMessagesFinished: false,
+      });
+    }
 
     const {
       id: roomId,
@@ -169,7 +176,9 @@ export default class App {
     if (roomId === this.activeRoomId) return;
     this.activeRoomId = roomId;
 
+    this.messagesObserver.unobserve(this.elem_MessagesObserved);
     this.loadActiveRoom();
+    this.messagesObserver.observe(this.elem_MessagesObserved);
     this.elem_MessageTextInput.focus();
   }
 
@@ -219,7 +228,7 @@ export default class App {
       if (typeof entry === 'string') this.addDateSeparator(entry);
       else entry.forEach((message) => this.addMessage(message, 'pagination'));
     });
-    this.scrollToEnd();
+    this.scrollToEnd('instant');
 
     // Checking wether the form will should be disabled or not.
     const isFormDisabled = isBlocked || isDeleted || activeRoom.sender.isBlocked;
@@ -364,9 +373,10 @@ export default class App {
     }
   }
 
-  scrollToEnd() {
+  scrollToEnd(behavior = 'smooth') {
     this.elem_Messages.scrollTo({
       top: this.elem_Messages.scrollHeight,
+      behavior,
     });
   }
 
