@@ -16,7 +16,7 @@ function sanitizeEmail(email) {
 }
 
 function sanitizeText(text) {
-  return typeof text === 'string' ? he.encode(text.trim(), { allowUnsafeSymbols: true }) : text;
+  return typeof text === 'string' ? he.encode(text.trim()) : text;
 }
 
 export { sanitizeEmail, sanitizeText };
