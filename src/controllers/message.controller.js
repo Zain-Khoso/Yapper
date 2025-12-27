@@ -21,8 +21,9 @@ async function createMessage(req, res, next) {
   const roomId = req.params.roomId;
 
   // Working body date.
-  let { content, isFile = false } = req.body;
+  let { content, isFile = false, fileName = null, fileType = null, fileSize = null } = req.body;
   content = sanitizeText(content);
+  fileName = sanitizeText(fileName);
 
   const result = schema_String.safeParse(content);
   if (!result.success) {
@@ -67,7 +68,7 @@ async function createMessage(req, res, next) {
 
     const [message] = await Promise.all([
       chatroom.createMessage(
-        { content, isFile, userId: user.id, senderId: sender.id },
+        { content, isFile, fileName, fileSize, fileType, userId: user.id, senderId: sender.id },
         { transaction: t }
       ),
       chatroom.update({ lastMessageAt: timestamp }, { transaction: t }),
