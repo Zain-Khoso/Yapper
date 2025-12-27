@@ -17,6 +17,13 @@ const Chatroom = sequelize.define('chatroom', {
     type: DataTypes.DATE,
     defaultValue: () => new Date(),
   },
+
+  unreadCount: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.getDataValue('unreadCount');
+    },
+  },
 });
 
 export default Chatroom;
