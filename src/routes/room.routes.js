@@ -7,6 +7,7 @@ import {
   createChatroom,
   readChatrooms,
   unblockRoom,
+  updateReadReceipt,
 } from '../controllers/room.controller.js';
 import { allowAuthenticatedUserOnly } from '../utils/auth.utils.js';
 import messageRouter from './message.routes.js';
@@ -25,6 +26,9 @@ router.patch('/block', allowAuthenticatedUserOnly, blockRoom);
 
 // PATCH : Blocks the other user for the current user.
 router.patch('/unblock', allowAuthenticatedUserOnly, unblockRoom);
+
+// PATCH : Updates read reciept of the current user in the given chatroom.
+router.patch('/read-receipt', allowAuthenticatedUserOnly, updateReadReceipt);
 
 // Forwards message routes.
 router.use('/:roomId/message', allowAuthenticatedUserOnly, messageRouter);

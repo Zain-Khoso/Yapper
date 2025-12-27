@@ -133,4 +133,13 @@ async function unblockRoom(req, res) {
   res.status(200).json(serializeResponse());
 }
 
-export { createChatroom, readChatrooms, blockRoom, unblockRoom };
+async function updateReadReceipt(req, res) {
+  const user = req.user;
+  const { roomId, lastReadAt } = req.body;
+
+  await ChatroomMember.update({ lastReadAt }, { where: { roomId, memberId: user.id } });
+
+  return res.status(200).json(serializeResponse());
+}
+
+export { createChatroom, readChatrooms, blockRoom, unblockRoom, updateReadReceipt };
