@@ -125,6 +125,7 @@ export default class App {
         preConfirm: () => this.deleteMessage(messageId),
       });
     });
+    this.elem_Messages.addEventListener('click', (e) => this.handleDownloadFile(e));
     this.elem_MessageFileInput.addEventListener('change', (e) => this.handleSendFileMessage(e));
   }
 
@@ -494,6 +495,18 @@ export default class App {
     this.sendMessage(file, () => (this.elem_MessageFileInput.value = null));
   }
 
+  handleDownloadFile(event) {
+    const target = event.target.closest('.file .details .title');
+
+    if (target) event.preventDefault();
+    else return;
+
+    const url = target.getAttribute('href');
+    const name = target.getAttribute('download');
+
+    this.downloadFile(url, name);
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -806,6 +819,26 @@ export default class App {
       console.error(error);
 
       new showError('Something went wrong.');
+    }
+  }
+
+  async downloadFile(url, name) {
+    try {
+      const response = await axios.get(url, { responseType: 'blob' });
+      const blobUrl = URL.createObjectURL(new Blob([response.data]));
+
+      const tempLink = document.createElement('a');
+      tempLink.setAttribute('href', blobUrl);
+      tempLink.setAttribute('download', name);
+
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      window.open(url, '_blank');
     }
   }
 }
