@@ -6,6 +6,10 @@ import crypto from 'crypto';
 // Lib Imports.
 import { generate } from 'otp-generator';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+import SendGrid from '@sendgrid/mail';
+
+// Configs
+SendGrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Local Imports.
 import storage from './storage.js';
@@ -94,4 +98,23 @@ function generateFileKey(fileName, prefix) {
   return `${prefix}/${crypto.randomUUID()}${fileNameArr.length > 1 ? '.' + fileNameArr.at(-1) : ''}`;
 }
 
-export { viteAssets, generateOTP, deleteOldImage, generateFileKey };
+function sendEmail(to, subject, otp, message) {
+  const email = {
+    to,
+    from: process.env.YAPPER_EMAIL,
+    templateId: process.env.SENDGRID_TEMPLATE_ID,
+    dynamicTemplateData: {
+      subject,
+      otp_code: otp,
+      otp_message: message,
+    },
+  };
+
+  try {
+    SendGrid.send(email);
+  } catch (error) {
+    console.log('Unable to send email: ', email);
+  }
+}
+
+export { viteAssets, generateOTP, deleteOldImage, generateFileKey, sendEmail };
