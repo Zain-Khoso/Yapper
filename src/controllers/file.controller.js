@@ -4,9 +4,13 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Local Imports.
 import storage from '../utils/storage.js';
-import { deleteOldImage } from '../utils/helpers.js';
+import { deleteOldImage, generateFileKey } from '../utils/helpers.js';
 import { serializeResponse } from '../utils/serializers.js';
-import { getZodError, schema_PictureObject } from '../utils/validations.js';
+import {
+  getZodError,
+  schema_MessageFileObject,
+  schema_PictureObject,
+} from '../utils/validations.js';
 
 async function signPictureUpload(req, res) {
   // Working body data.
@@ -16,8 +20,7 @@ async function signPictureUpload(req, res) {
     return res.status(409).json(serializeResponse({}, { picture: getZodError(result) }));
   }
 
-  const fileName = picture.name.split('.');
-  const fileKey = `pictures/${crypto.randomUUID()}${fileName.length > 1 ? '.' + fileName.at(-1) : ''}`;
+  const fileKey = generateFileKey(picture.name, 'pictures');
   const command = new PutObjectCommand({
     Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
     Key: fileKey,
@@ -43,4 +46,29 @@ async function deletePicture(req, res) {
   return res.status(200).json(serializeResponse());
 }
 
-export { signPictureUpload, deletePicture };
+async function signMessageFileUpload(req, res) {
+  // Working body data.
+  const file = req.body;
+
+  const result = schema_MessageFileObject.safeParse(file);
+  if (!result.success) {
+    return res.status(409).json(serializeResponse({}, { file: getZodError(result) }));
+  }
+
+  const fileKey = generateFileKey(file.name, 'messages');
+  const command = new PutObjectCommand({
+    Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: fileKey,
+    ContentType: file.type,
+    ContentLength: file.size,
+  });
+
+  const signature = await getSignedUrl(storage, command, { expiresIn: 60 });
+  res
+    .status(200)
+    .json(
+      serializeResponse({ signature, url: process.env.CLOUDFLARE_R2_PUBLIC_URL + '/' + fileKey })
+    );
+}
+
+export { signPictureUpload, deletePicture, signMessageFileUpload };
