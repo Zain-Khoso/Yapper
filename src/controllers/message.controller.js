@@ -23,6 +23,7 @@ async function createMessage(req, res, next) {
   let { content, isFile = false, fileName = null, fileType = null, fileSize = null } = req.body;
   content = sanitizeText(content);
   fileName = sanitizeText(fileName);
+  fileType = isFile ? (fileType?.split('/')?.at(-1)?.toUpperCase() ?? 'TXT') : null;
 
   const result = schema_String.safeParse(content);
   if (!result.success) {
