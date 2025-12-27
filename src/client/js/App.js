@@ -1,9 +1,15 @@
 // Local Imports.
 import { API, showError, showSuccess, Swal } from './utils';
-import { getZodError, schema_Email, schema_String } from '../../utils/validations';
+import {
+  getZodError,
+  schema_Email,
+  schema_MessageFile,
+  schema_String,
+} from '../../utils/validations';
 import { formatDateString, isSameDate } from '../../utils/serializers';
 import Autolinker from 'autolinker';
 import { getTheme } from './theme';
+import axios from 'axios';
 
 export default class App {
   constructor() {
@@ -119,6 +125,7 @@ export default class App {
         preConfirm: () => this.deleteMessage(messageId),
       });
     });
+    this.elem_MessageFileInput.addEventListener('change', (e) => this.handleSendFileMessage(e));
   }
 
   toggleAppUI(showUI) {
@@ -302,8 +309,14 @@ export default class App {
 
     let fileIcon = null;
     if (message.isFile) {
-      if (message.fileType.startsWith('image/')) fileIcon = 'image';
-      else if (message.fileType === 'application/pfd') fileIcon = 'picture_as_pdf';
+      if (
+        message.fileType === 'PNG' ||
+        message.fileType === 'JPEG' ||
+        message.fileType === 'JPG' ||
+        message.fileType === 'WEBP'
+      )
+        fileIcon = 'image';
+      else if (message.fileType === 'PDF') fileIcon = 'picture_as_pdf';
       else fileIcon = 'article';
     }
 
@@ -314,7 +327,7 @@ export default class App {
           <span class="material-icons">${fileIcon}</span>
           
           <div class="details">
-            <span class="title">${message.fileName}</span>
+            <a href="${message.content}" download="${message.fileName}" class="title">${message.fileName}</a>
             <span class="subtitle">${message.fileType} &middot; ${message.fileSize}</span>
           </div>
         </div>
@@ -470,6 +483,17 @@ export default class App {
     );
   }
 
+  handleSendFileMessage({ target }) {
+    const [file] = target.files;
+
+    const result = schema_MessageFile.safeParse(file);
+    if (!result.success) {
+      return new showError('File Error', getZodError(result));
+    }
+
+    this.sendMessage(file, () => (this.elem_MessageFileInput.value = null));
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -587,11 +611,37 @@ export default class App {
 
   async sendMessage(content, onSuccess) {
     const activeRoom = this.getActiveRoom();
+    const isFile = content instanceof File;
+    const fileName = isFile ? content.name : null;
+    const fileType = isFile ? content.type : null;
+    const fileSize = isFile ? content.size : null;
 
     try {
+      if (isFile) {
+        const {
+          data: {
+            data: { signature, url },
+          },
+        } = await API.post(`/file/message`, { name: fileName, type: fileType, size: fileSize });
+
+        await axios.put(signature, content, {
+          headers: {
+            'Content-Type': fileType,
+          },
+        });
+
+        content = url;
+      }
+
       const {
         data: { data: message },
-      } = await API.post(`/room/${activeRoom.id}/message/add`, { content });
+      } = await API.post(`/room/${activeRoom.id}/message/add`, {
+        content,
+        isFile,
+        fileName,
+        fileType,
+        fileSize,
+      });
 
       // Updating Local State.
       const newMessages = [...activeRoom.messages];

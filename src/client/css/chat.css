@@ -244,8 +244,12 @@
             }
           }
 
-          .file .details {
-            color: var(--color-foreground);
+          .file {
+            .material-icons,
+            .title,
+            .subtitle {
+              color: var(--color-foreground);
+            }
           }
 
           .time-text {
@@ -283,9 +287,9 @@
           }
 
           .file {
-            color: var(--color-background);
-
-            .details {
+            .material-icons,
+            .title,
+            .subtitle {
               color: var(--color-background);
             }
           }
@@ -349,7 +353,7 @@
             .title {
               width: 100%;
 
-              font-weight: 800;
+              font-weight: 600;
               white-space: nowrap;
               overflow-x: hidden;
               text-overflow: ellipsis;
@@ -358,6 +362,7 @@
 
             .subtitle {
               font-size: 14px;
+              font-weight: 300;
             }
           }
         }
