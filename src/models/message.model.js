@@ -3,6 +3,7 @@ import { DataTypes } from 'sequelize';
 
 // Local Imports.
 import sequelize from '../utils/database.js';
+import { MAX_FILE_NAME_LENGTH } from '../utils/validations.js';
 
 // This model is used to store the information related to a specific message.
 const Message = sequelize.define('message', {
@@ -23,7 +24,7 @@ const Message = sequelize.define('message', {
   },
 
   fileName: {
-    type: DataTypes.STRING(32),
+    type: DataTypes.STRING(MAX_FILE_NAME_LENGTH),
     allowNull: true,
   },
 
