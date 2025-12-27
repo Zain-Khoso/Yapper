@@ -1,5 +1,4 @@
 // Local Imports.
-import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import Message from '../models/message.model.js';
 import User from '../models/user.model.js';
 import sequelize from '../utils/database.js';
