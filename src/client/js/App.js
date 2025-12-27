@@ -255,7 +255,7 @@ export default class App {
       if (typeof entry === 'string') this.addDateSeparator(entry);
       else entry.forEach((message) => this.addMessage(message, 'pagination'));
     });
-    this.scrollToEnd('instant');
+    this.scrollToEnd();
 
     // Checking wether the form will should be disabled or not.
     const isFormDisabled = isBlocked || isDeleted || activeRoom.sender.isBlocked;
@@ -400,10 +400,10 @@ export default class App {
     }
   }
 
-  scrollToEnd(behavior = 'smooth') {
+  scrollToEnd() {
     this.elem_Messages.scrollTo({
       top: this.elem_Messages.scrollHeight,
-      behavior,
+      behavior: 'instant',
     });
   }
 
@@ -623,7 +623,7 @@ export default class App {
           if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
           else newMessages.unshift([message]);
         } else {
-          const dateString = formatDateString(lastCreatedAt);
+          const dateString = formatDateString(currentCreatedAt);
 
           newMessages.unshift(dateString);
           newMessages.unshift([message]);
@@ -709,7 +709,7 @@ export default class App {
         else entry.forEach((message) => this.addMessage(message));
       });
 
-      if (isFirstPage) this.scrollToEnd('instant');
+      if (isFirstPage) this.scrollToEnd();
       if (isLastPage) this.messagesObserver.unobserve(this.elem_MessagesObserved);
     } catch (error) {
       console.log(error);
