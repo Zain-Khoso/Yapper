@@ -7,6 +7,7 @@ import path from 'path';
 // Lib Imports.
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import CORS from 'cors';
 
 // Local Imports.
 import { viteAssets } from './src/utils/helpers.js';
@@ -38,6 +39,14 @@ else {
 }
 
 // Integrating Middlewares.
+app.use(
+  CORS({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(viteAssets());
