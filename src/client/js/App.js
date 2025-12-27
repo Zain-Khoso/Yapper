@@ -212,9 +212,13 @@ export default class App {
 
     this.messagesObserver.unobserve(this.elem_MessagesObserved);
     this.loadActiveRoom();
-    if (!this.getActiveRoom().isMessagesFinished)
+
+    if (!this.getActiveRoom().isMessagesFinished) {
       this.messagesObserver.observe(this.elem_MessagesObserved);
+    }
+
     this.elem_MessageTextInput.focus();
+    this.updateLastRead(roomId);
   }
 
   updateChatHeader(initial, picture, displayName, isOnline) {
@@ -433,6 +437,8 @@ export default class App {
     elem_RoomLastSpoke.textContent = lastSpoke;
     elem_RoomLastMessage.innerHTML = lastMessage;
     elem_UnreadMessageCount.textContent = unreadCount > 99 ? '99+' : unreadCount;
+
+    elem_UnreadMessageCount.classList.toggle('unread', unreadCount !== 0);
   }
 
   moveRoomToTop(id) {
@@ -689,6 +695,7 @@ export default class App {
         messages: newMessages,
         lastMessage: message.isFile ? message.fileName : message.content,
         lastSpoke: message.sentAt,
+        unreadCount: 0,
       });
 
       this.addMessage(message, 'new');
@@ -696,6 +703,7 @@ export default class App {
       this.updateRoom(activeRoom.id);
       this.moveRoomToTop(activeRoom.id);
       this.updateMessagesOffet(activeRoom.id);
+      this.updateLastRead(activeRoom.id);
 
       onSuccess?.();
     } catch (error) {
@@ -839,6 +847,34 @@ export default class App {
     } catch (error) {
       console.error('Download failed:', error);
       window.open(url, '_blank');
+    }
+  }
+
+  async updateLastRead(roomId) {
+    const activeRoom = this.rooms.get(roomId);
+
+    if (
+      new Date(activeRoom.sender.lastReadAt) >= new Date(activeRoom.messages.at(0)?.at(0).createdAt)
+    )
+      return;
+
+    try {
+      const newLastReadAt = activeRoom.messages.at(0)?.at(0).createdAt;
+
+      await axios.patch('/room/read-receipt', {
+        roomId: activeRoom.id,
+        lastReadAt: newLastReadAt,
+      });
+
+      this.rooms.set(activeRoom.id, {
+        ...activeRoom,
+        sender: { ...activeRoom.sender, lastReadAt: newLastReadAt },
+        unreadCount: 0,
+      });
+
+      this.updateRoom(activeRoom.id);
+    } catch {
+      console.error('Unable to update read-receipt for Room: ', activeRoom.id);
     }
   }
 }
