@@ -114,12 +114,12 @@
             background-color: var(--color-foreground-secondary);
             padding: 0.25rem 0.5rem;
             border-radius: 50%;
+
+            &.unread {
+              display: grid;
+            }
           }
         }
-      }
-
-      &.unread .user-content .subtitle .new-message-count {
-        display: grid;
       }
     }
   }
