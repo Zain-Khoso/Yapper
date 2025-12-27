@@ -7,6 +7,7 @@ import Message from '../models/message.model.js';
 import { schema_Email } from '../utils/validations.js';
 import { sanitizeEmail } from '../utils/sanitizers.js';
 import { serializeResponse, serializeRoom } from '../utils/serializers.js';
+import { literal } from 'sequelize';
 
 // Constants.
 const ROOMS_PER_PAGE = 25;
@@ -72,7 +73,21 @@ async function readChatrooms(req, res) {
   const offset = parseInt(req.params.offset);
 
   const chatrooms = await user.getRooms({
-    attributes: ['id', 'lastMessageAt'],
+    attributes: [
+      'id',
+      'lastMessageAt',
+      [
+        literal(`(
+        SELECT COUNT(*)
+        FROM Messages AS m
+        INNER JOIN ChatroomMembers AS cm ON cm.roomId = chatroom.id
+        WHERE cm.memberId = '${user.id}' 
+        AND m.roomId = chatroom.id
+        AND m.createdAt > cm.lastReadAt
+      )`),
+        'unreadCount',
+      ],
+    ],
     through: { attributes: [] },
     include: [
       {
