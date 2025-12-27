@@ -26,7 +26,7 @@ app.locals.isProd = app.get('env') === 'production';
 
 // If the app is in PRODUCTION then serve the public dir statically.
 if (app.locals.isProd) app.use(express.static(path.join(import.meta.dirname, 'public')));
-// If not, handle the static assets logic over to Vite.
+// If not, hand the static assets logic over to Vite.
 else {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
