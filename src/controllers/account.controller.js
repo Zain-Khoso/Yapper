@@ -85,7 +85,7 @@ async function registerTempUser(req, res, next) {
       email,
       'Email Confirmation',
       otp,
-      'To verify your email address at Yapper, use the following code.'
+      'Use the following code to verify your email address at Yapper.'
     );
 
     await t.commit();
@@ -549,7 +549,7 @@ async function changePassword(req, res, next) {
   const t = await sequelize.transaction();
 
   try {
-    const user = await User.findOne({ where: { email }, transaction: t });
+    const user = await User.scope('full').findOne({ where: { email }, transaction: t });
 
     if (!user || !user.canChangePassword) {
       await t.rollback();
