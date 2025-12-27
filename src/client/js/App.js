@@ -582,20 +582,19 @@ export default class App {
   async fetchRooms() {
     try {
       const {
-        data: { data },
+        data: {
+          data: { rooms, offset, isFirstPage, isLastPage },
+        },
       } = await API.get(`/room/get-all/${this.roomsOffset}`);
 
-      if (data.finished) this.roomsObserver.disconnect();
+      this.roomsOffset = offset;
+      rooms.forEach((room) => this.addRoom(room));
 
-      this.roomsOffset = data.offset;
-      data.rooms.forEach((room) => this.addRoom(room));
-
-      this.toggleAppUI(this.rooms.size !== 0);
-
-      // TODO: send isFirstPage and isLastPage from backend and act accordingly.
-      if (data.offset === 25 && this.rooms.size !== 0) {
+      if (isFirstPage && rooms.length !== 0) {
+        this.toggleAppUI(true);
         this.setActiveRoom(this.rooms.entries().next().value[0]);
       }
+      if (isLastPage) this.roomsObserver.disconnect();
     } catch (error) {
       console.log(error);
       new showError(

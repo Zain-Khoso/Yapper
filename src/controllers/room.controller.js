@@ -112,7 +112,8 @@ async function readChatrooms(req, res) {
     serializeResponse({
       rooms: chatrooms.map((room) => serializeRoom(room, user.id)),
       offset: offset + ROOMS_PER_PAGE,
-      finished: chatrooms.length < ROOMS_PER_PAGE,
+      isFirstPage: offset === 0,
+      isLastPage: chatrooms.length < ROOMS_PER_PAGE,
     })
   );
 }
