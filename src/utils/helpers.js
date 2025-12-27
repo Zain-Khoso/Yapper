@@ -1,6 +1,7 @@
 // Node Imports.
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 // Lib Imports.
 import { generate } from 'otp-generator';
@@ -87,4 +88,10 @@ async function deleteOldImage(oldUrl) {
   }
 }
 
-export { viteAssets, generateOTP, deleteOldImage };
+function generateFileKey(fileName, prefix) {
+  const fileNameArr = fileName.split('.');
+
+  return `${prefix}/${crypto.randomUUID()}${fileNameArr.length > 1 ? '.' + fileNameArr.at(-1) : ''}`;
+}
+
+export { viteAssets, generateOTP, deleteOldImage, generateFileKey };
