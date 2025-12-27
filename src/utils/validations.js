@@ -4,7 +4,7 @@ import validator from 'validator';
 
 // Constants.
 const ALLOWED_PICTURE_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+const ALLOWED_MESSAGE_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2mb
 const MAX_FILE_NAME_LENGTH = 120;
 
@@ -24,8 +24,13 @@ const schema_PictureFile = z
 const schema_PictureObject = z
   .object({
     name: z.string().max(MAX_FILE_NAME_LENGTH, 'File name is too big.'),
-    type: z.string().refine((val) => ALLOWED_PICTURE_FILE_TYPES.includes(val)),
-    size: z.number().max(MAX_FILE_SIZE),
+    type: z
+      .string()
+      .refine(
+        (val) => ALLOWED_MESSAGE_FILE_TYPES.includes(val),
+        'Only .jpg, .jpeg, .png, .webp, .pdf & .txt formats are supported.'
+      ),
+    size: z.number().max(MAX_FILE_SIZE, 'Max file size is 2MB.'),
   })
   .optional()
   .or(z.literal(null));
@@ -62,6 +67,29 @@ const schema_URL = z.url('Invalid URL').optional().or(z.literal(null));
 
 const schema_String = z.string().min(1, 'Required');
 
+const schema_MessageFile = z
+  .file('Invalid File')
+  .mime(
+    ALLOWED_MESSAGE_FILE_TYPES,
+    'Only .jpg, .jpeg, .png, .webp, .pdf & .txt formats are supported.'
+  )
+  .max(MAX_FILE_SIZE, 'Max file size is 2MB.')
+  .refine((file) => file.name.length <= MAX_FILE_NAME_LENGTH, 'File name is too big.');
+
+const schema_MessageFileObject = z
+  .object({
+    name: z.string().max(MAX_FILE_NAME_LENGTH, 'File name is too big.'),
+    type: z
+      .string()
+      .refine(
+        (val) => ALLOWED_MESSAGE_FILE_TYPES.includes(val),
+        'Only .jpg, .jpeg, .png, .webp, .pdf & .txt formats are supported.'
+      ),
+    size: z.number().max(MAX_FILE_SIZE, 'Max file size is 2MB.'),
+  })
+  .optional()
+  .or(z.literal(null));
+
 // Function to get the first error message of any given schema.
 function getZodError(result) {
   if (result.success) return '';
@@ -72,6 +100,7 @@ function getZodError(result) {
 }
 
 export {
+  MAX_FILE_NAME_LENGTH,
   schema_Email,
   schema_OTP,
   schema_PictureFile,
@@ -82,5 +111,7 @@ export {
   schema_Checkbox,
   schema_URL,
   schema_String,
+  schema_MessageFile,
+  schema_MessageFileObject,
   getZodError,
 };
