@@ -58,6 +58,9 @@ app.use(pageRouter);
 // Defining Model Associations.
 import './src/utils/associations.js';
 
+// Cron Jobs.
+import './src/utils/cron-jobs.js';
+
 // Connecting to Database.
 await sequelize.sync({ force: false });
 
