@@ -301,21 +301,10 @@ export default class App {
       : Autolinker.link(message.content, { target: '_blank', stripPrefix: false });
 
     let fileIcon = null;
-    if (message.fileType) {
-      switch (message.fileType) {
-        case 'PNG':
-          fileIcon = 'photo';
-          break;
-        case 'JPEG':
-          fileIcon = 'photo';
-          break;
-        case 'PDF':
-          fileIcon = 'picture_as_pdf';
-          break;
-        default:
-          fileIcon = 'article';
-          break;
-      }
+    if (message.isFile) {
+      if (message.fileType.startsWith('image/')) fileIcon = 'image';
+      else if (message.fileType === 'application/pfd') fileIcon = 'picture_as_pdf';
+      else fileIcon = 'article';
     }
 
     const messageBox = message.isFile
