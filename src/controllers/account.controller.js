@@ -13,7 +13,7 @@ import {
   schema_URL,
   getZodError,
 } from '../utils/validations.js';
-import { deleteOldImage, generateOTP } from '../utils/helpers.js';
+import { deleteOldImage, generateOTP, sendEmail } from '../utils/helpers.js';
 import { serializeResponse, serializeUser } from '../utils/serializers.js';
 import { removeRefreshTokenCookie } from '../utils/auth.utils.js';
 
@@ -81,8 +81,12 @@ async function registerTempUser(req, res, next) {
       );
     }
 
-    // TODO: Send the actual email.
-    console.log('\n', 'OTP: ' + otp, '\n');
+    sendEmail(
+      email,
+      'Email Confirmation',
+      otp,
+      'To verify your email address at Yapper, use the following code.'
+    );
 
     await t.commit();
 
@@ -281,8 +285,12 @@ async function requestDeletion(req, res) {
   // Storing otp in db.
   await user.update({ otp, otpExpires, otpAction });
 
-  // TODO: Send otp through an actual email.
-  console.log('\n', otp, '\n');
+  sendEmail(
+    user.email,
+    'Delete Account Confirmation',
+    otp,
+    'Use the following code to confirm your Yapper account deletion.'
+  );
 
   return res.status(200).json(serializeResponse());
 }
@@ -372,8 +380,12 @@ async function requestEmailChange(req, res, next) {
     // Storing otp in db.
     await user.update({ otp, otpExpires, otpAction, newEmail: email });
 
-    // TODO: Send otp through an actual email.
-    console.log('\n', otp, '\n');
+    sendEmail(
+      email,
+      'Email Change Confirmation',
+      otp,
+      'Use the following code to confirm this new email for your Yapper Account.'
+    );
 
     await t.commit();
     return res.status(200).json(serializeResponse());
@@ -457,8 +469,12 @@ async function requestPasswordChange(req, res, next) {
       { transaction: t }
     );
 
-    // TODO: Send Email
-    console.log('\nPassword Reset OTP:', otp, '\n');
+    sendEmail(
+      user.email,
+      'Password Reset Confirmation',
+      otp,
+      "Use the following code to change your Yapper account's password."
+    );
 
     await t.commit();
     return res.status(200).json(serializeResponse());
