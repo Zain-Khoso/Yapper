@@ -155,7 +155,7 @@ export default class App {
     } = room;
 
     const roomHTML = `
-      <li class="chat${unreadCount === 0 ? '' : ' unread'}" data-roomId=${roomId}>
+      <li class="chat" data-roomId=${roomId}>
         <div class="avatar${picture ? '' : ' fallback'}">
           <img alt="${displayName}'s Image" src="${picture}" />
 
@@ -175,7 +175,7 @@ export default class App {
           
           <div class="subtitle">
             <span class="last-message"> ${lastMessage} </span>
-            <span class="new-message-count"> ${unreadCount > 99 ? '99+' : unreadCount} </span>
+            <span class="new-message-count${unreadCount === 0 ? '' : ' unread'}"> ${unreadCount > 99 ? '99+' : unreadCount} </span>
           </div>
         </div>
       </li>
@@ -218,7 +218,6 @@ export default class App {
     }
 
     this.elem_MessageTextInput.focus();
-    this.updateLastRead(roomId);
   }
 
   updateChatHeader(initial, picture, displayName, isOnline) {
@@ -769,7 +768,10 @@ export default class App {
         else entry.forEach((message) => this.addMessage(message));
       });
 
-      if (isFirstPage) this.scrollToEnd();
+      if (isFirstPage) {
+        this.updateLastRead(activeRoom.id);
+        this.scrollToEnd();
+      }
       if (isLastPage) this.messagesObserver.unobserve(this.elem_MessagesObserved);
     } catch (error) {
       console.log(error);
@@ -854,6 +856,7 @@ export default class App {
     const activeRoom = this.rooms.get(roomId);
 
     if (
+      activeRoom.messages.length === 0 ||
       new Date(activeRoom.sender.lastReadAt) >= new Date(activeRoom.messages.at(0)?.at(0).createdAt)
     )
       return;
@@ -861,7 +864,7 @@ export default class App {
     try {
       const newLastReadAt = activeRoom.messages.at(0)?.at(0).createdAt;
 
-      await axios.patch('/room/read-receipt', {
+      await API.patch('/room/read-receipt', {
         roomId: activeRoom.id,
         lastReadAt: newLastReadAt,
       });
