@@ -47,6 +47,24 @@ async function createChatroom(req, res, next) {
       return res.status(200).json(serializeResponse({ id: existingRoom.roomId, exists: true }));
     }
 
+    // Paywall.
+    if (user.plan !== 'gold') {
+      const chatroomMembersCount = await ChatroomMember.count({
+        where: { memberId: user.id },
+        transaction: t,
+      });
+
+      if (chatroomMembersCount >= 5) {
+        await t.rollback();
+
+        return res
+          .status(402)
+          .json(
+            serializeResponse({}, { root: 'Upgrade to Gold plan to have unlimited chatrooms.' })
+          );
+      }
+    }
+
     const newChatroom = await Chatroom.create({}, { transaction: t });
     await newChatroom.addMembers([receiver.id, user.id], { transaction: t });
 
