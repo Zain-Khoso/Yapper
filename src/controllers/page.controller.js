@@ -130,6 +130,31 @@ function getCallsPage(_, res) {
   res.redirect('/chat');
 }
 
+function getPaymentSuccessPage(req, res) {
+  const metadata = getMetadata({
+    title: 'Payment Successful',
+    description:
+      'Thank you for your support! Your payment was processed successfully. You can now return to Yapper to enjoy your new features.',
+    keywords: ['payment success', 'thank you', 'yapper upgrade', 'yapper'],
+    baseURL: req.protocol + '://' + req.get('host'),
+    pagePath: req.originalUrl,
+  });
+
+  res.render('payment-success', { metadata, bundleName: 'payment-success' });
+}
+
+function getPaymentCancelPage(req, res) {
+  const metadata = getMetadata({
+    title: 'Payment Cancelled',
+    description:
+      'Your payment process was cancelled and no charges were made. If you had trouble with the checkout, feel free to try again or return to Yapper.',
+    keywords: ['payment cancelled', 'checkout cancelled', 'yapper'],
+    baseURL: req.protocol + '://' + req.get('host'),
+    pagePath: req.originalUrl,
+  });
+
+  res.render('payment-cancel', { metadata, bundleName: 'payment-cancel' });
+}
 export {
   getLandingPage,
   getSignUpPage,
@@ -140,4 +165,6 @@ export {
   getSettingsPage,
   getChatPage,
   getCallsPage,
+  getPaymentSuccessPage,
+  getPaymentCancelPage,
 };

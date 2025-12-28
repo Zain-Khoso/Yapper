@@ -12,6 +12,8 @@ import {
   getChatPage,
   getCallsPage,
   getAccountDeletePage,
+  getPaymentSuccessPage,
+  getPaymentCancelPage,
 } from '../controllers/page.controller.js';
 import { getNotFoundPage, getServerErrorPage } from '../controllers/error.controller.js';
 import { protectRoute, redirectIfAuthenticated } from '../utils/auth.utils.js';
@@ -46,6 +48,12 @@ router.get('/chat', protectRoute, getChatPage);
 
 // GET: Calls Page.
 router.get('/calls', protectRoute, getCallsPage);
+
+// GET: Calls Page.
+router.get('/payment-success', getPaymentSuccessPage);
+
+// GET: Calls Page.
+router.get('/payment-cancel', getPaymentCancelPage);
 
 // Handles invalid routes.
 router.use(getNotFoundPage);
