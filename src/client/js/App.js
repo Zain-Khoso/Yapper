@@ -1,5 +1,5 @@
 // Local Imports.
-import { API, showError, showSuccess, Swal } from './utils';
+import { API, showError, showInfo, showSuccess, Swal } from './utils';
 import {
   getZodError,
   schema_Email,
@@ -639,7 +639,12 @@ export default class App {
           data: {
             data: { signature, url },
           },
-        } = await API.post(`/file/message`, { name: fileName, type: fileType, size: fileSize });
+        } = await API.post(`/file/message`, {
+          fileName,
+          fileType,
+          fileSize,
+          roomId: activeRoom.id,
+        });
 
         await axios.put(signature, content, {
           headers: {
@@ -705,8 +710,22 @@ export default class App {
 
       onSuccess?.();
     } catch (error) {
-      console.error(error);
-      new showError('Something went wrong.');
+      if (error.isAxiosError && error.status === 402) {
+        showInfo.fire({
+          title: 'Upgrade Required',
+          text: error?.response?.data?.errors?.root,
+          showCancelButton: true,
+          confirmButtonText: 'Upgrade',
+          cancelButtonText: 'No thanks',
+          focusConfirm: true,
+          reverseButtons: true,
+          customClass: {
+            confirmButton: 'btn outline',
+            cancelButton: 'btn outline',
+          },
+          preConfirm: () => location.assign('/#pricing'),
+        });
+      } else new showError('Something went wrong.');
     }
   }
 
