@@ -6,6 +6,7 @@ import accountRouter from './account.routes.js';
 import authRouter from './auth.routes.js';
 import fileRouter from './file.routes.js';
 import roomRouter from './room.routes.js';
+import paymentRouter from './payment.routes.js';
 import { notFoundError, serverError } from '../controllers/error.controller.js';
 
 // API Routes.
@@ -22,6 +23,9 @@ router.use('/file', fileRouter);
 
 // Chatroom Routes.
 router.use('/room', roomRouter);
+
+// Payment Routes.
+router.use('/payment', paymentRouter);
 
 // Handles invalid API Endpoints.
 router.use(notFoundError);
