@@ -177,18 +177,12 @@
 .page-contents .section .cards-list .price-card .header {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
 .page-contents .section .cards-list .price-card .header > span {
   width: 100%;
-}
-
-.page-contents .section .cards-list .price-card .header div {
-  display: flex;
-  gap: 0.25rem;
-  align-items: end;
 }
 
 .page-contents .section .cards-list .price-card .perks-list {
