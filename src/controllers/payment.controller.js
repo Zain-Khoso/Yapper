@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 // Local Imports.
 import { schema_URL } from '../utils/validations.js';
 import { serializeResponse } from '../utils/serializers.js';
+import User from '../models/user.model.js';
 
 // Constants.
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -51,4 +52,30 @@ async function checkout(req, res) {
   res.status(200).json(serializeResponse({ url: session.url }));
 }
 
-export { checkout };
+// STRIPE WEBHOOKS USE RAW REQUESTS. SO AVIOD USING EXPRESS SPECIFIC SYNTAX (on "req").
+async function stripeWebhook(req, res) {
+  const signature = req.headers['stripe-signature'];
+  let event;
+
+  // Extracting Stripe Event.
+  try {
+    event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.log('\nStripe Webhook Error: ', err, '\n');
+
+    return res.status(400).json(serializeResponse({}, { root: 'Something went wrong.' }));
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const userId = session.metadata.userId;
+
+    await User.update({ plan: 'gold' }, { where: { id: userId } });
+
+    console.log(`\nUser ${userId}: Upgraded to Gold Plan.\n`);
+  }
+
+  res.status(200).json();
+}
+
+export { checkout, stripeWebhook };

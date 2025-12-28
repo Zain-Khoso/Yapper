@@ -14,6 +14,7 @@ import { viteAssets } from './src/utils/helpers.js';
 import sequelize from './src/utils/database.js';
 import pageRouter from './src/routes/page.routes.js';
 import apiRouter from './src/routes/api.routes.js';
+import { stripeWebhook } from './src/controllers/payment.controller.js';
 
 // Initializing Express.
 const app = express();
@@ -47,6 +48,7 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+app.post('/stripe-webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 app.use(cookieParser());
 app.use(express.json());
 app.use(viteAssets());
