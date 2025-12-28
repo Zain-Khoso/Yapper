@@ -7,7 +7,19 @@ import { serializeResponse } from '../utils/serializers.js';
 
 // Constants.
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const checkout_items = [];
+const checkout_items = [
+  {
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: 'Yapper Gold',
+        description: 'One-time payment for lifetime access to yapper Gold features.',
+      },
+      unit_amount: 500,
+    },
+    quantity: 1,
+  },
+];
 
 async function checkout(req, res) {
   const user = req.user;
@@ -33,19 +45,7 @@ async function checkout(req, res) {
     success_url,
     cancel_url,
     customer_email: user.email,
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'Yapper Gold',
-            description: 'One-time payment for lifetime access to yapper Gold features.',
-          },
-          unit_amount: 500,
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: checkout_items,
   });
 
   res.status(200).json(serializeResponse({ url: session.url }));
