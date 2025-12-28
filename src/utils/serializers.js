@@ -94,6 +94,7 @@ function serializeUser(user) {
     lastSeen: formatLastSeen(user?.lastSeen),
     lastReadAt: user?.chatroomMember?.lastReadAt,
     isBlocked: user?.chatroomMember?.isBlocked === true ? true : false,
+    plan: user.plan ?? null,
     isDeleted,
   };
 }
