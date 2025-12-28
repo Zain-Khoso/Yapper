@@ -85,6 +85,13 @@ const User = sequelize.define(
       allowNull: true,
       unique: false,
     },
+
+    plan: {
+      type: DataTypes.ENUM('silver', 'gold'),
+      allowNull: false,
+      unique: false,
+      defaultValue: 'silver',
+    },
   },
   {
     defaultScope: {
@@ -98,6 +105,7 @@ const User = sequelize.define(
           'newEmail',
           'newPassword',
           'canChangePassword',
+          'plan',
         ],
       },
     },
