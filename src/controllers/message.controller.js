@@ -64,6 +64,24 @@ async function createMessage(req, res, next) {
       return res.status(400).json(serializeResponse({}, { root: 'You have blocked this user.' }));
     }
 
+    // Paywall.
+    if (user.plan !== 'gold') {
+      const messagesCount = await chatroom.countMessages({
+        where: { userId: user.id },
+        transaction: t,
+      });
+
+      if (messagesCount >= 25) {
+        await t.rollback();
+
+        return res
+          .status(402)
+          .json(
+            serializeResponse({}, { root: 'Upgrade to Gold plan to send unlimited messages.' })
+          );
+      }
+    }
+
     const timestamp = new Date();
 
     const [message] = await Promise.all([
