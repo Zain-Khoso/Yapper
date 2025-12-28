@@ -11,7 +11,7 @@ import '../css/landing.css';
 
 // Page Scripts.
 import '../js/theme';
-import '../js/user';
+import { loadCurrentUser } from '../js/user';
 import { API, showError } from '../js/utils';
 
 // CAROUSEL SETUP.
@@ -67,14 +67,19 @@ prevBtn.addEventListener('click', () => {
   }
 });
 
-// Initialize button states
 updateCarousel();
 
 // PAYMENTS SETUP.
 const elem_GoldButton = document.getElementById('checkout-gold');
+const elem_SilverButton = document.getElementById('checkout-silver');
 
-async function handleCheckout(event) {
-  if (!window?.currentUser) return location.assign('/login');
+async function handleCheckout(_) {
+  if (!window?.currentUser) {
+    const params = new URLSearchParams();
+    params.set('redirect_to', '/#pricing');
+
+    return location.assign(`/login?${params.toString()}`);
+  }
 
   try {
     const {
@@ -95,3 +100,19 @@ async function handleCheckout(event) {
 }
 
 elem_GoldButton.addEventListener('click', handleCheckout);
+
+// Paywall.
+loadCurrentUser(() => {
+  const user = window.currentUser;
+  if (!user) return;
+
+  if (user.get('plan') === 'gold') {
+    elem_GoldButton.textContent = "You're already Golden";
+    elem_GoldButton.classList.replace('primary', 'outline');
+    elem_GoldButton.setAttribute('style', 'pointer-events: none;');
+    elem_GoldButton.removeEventListener('click', handleCheckout);
+
+    elem_SilverButton.textContent = 'Continue Your Chats';
+    elem_SilverButton.classList.replace('outline', 'primary');
+  }
+});
