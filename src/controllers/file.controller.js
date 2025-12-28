@@ -11,6 +11,7 @@ import {
   schema_MessageFileObject,
   schema_PictureObject,
 } from '../utils/validations.js';
+import Message from '../models/message.model.js';
 
 async function signPictureUpload(req, res) {
   // Working body data.
@@ -47,20 +48,59 @@ async function deletePicture(req, res) {
 }
 
 async function signMessageFileUpload(req, res) {
-  // Working body data.
-  const file = req.body;
+  const user = req.user;
 
-  const result = schema_MessageFileObject.safeParse(file);
+  // Working body data.
+  const { roomId, fileName, fileType, fileSize } = req.body;
+
+  const result = schema_MessageFileObject.safeParse({
+    name: fileName,
+    type: fileType,
+    size: fileSize,
+  });
   if (!result.success) {
     return res.status(409).json(serializeResponse({}, { file: getZodError(result) }));
   }
 
-  const fileKey = generateFileKey(file.name, 'messages');
+  // Paywall.
+  const filesCount = await Message.count({
+    where: {
+      roomId,
+      userId: user.id,
+      isFile: true,
+    },
+  });
+  if (user.plan === 'silver') {
+    if (filesCount >= 2) {
+      return res
+        .status(402)
+        .json(serializeResponse({}, { root: 'Upgrade to Gold plan to send upto 50 files.' }));
+    }
+
+    const messagesCount = await Message.count({
+      where: {
+        roomId,
+        userId: user.id,
+      },
+    });
+    if (messagesCount >= 25) {
+      return res
+        .status(402)
+        .json(serializeResponse({}, { root: 'Upgrade to Gold plan to send unlimited messages.' }));
+    }
+  }
+  if (user.plan === 'gold' && filesCount >= 50) {
+    return res
+      .status(402)
+      .json(serializeResponse({}, { root: 'Cannot send anymore files in this chatroom.' }));
+  }
+
+  const fileKey = generateFileKey(fileName, 'messages');
   const command = new PutObjectCommand({
     Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME,
     Key: fileKey,
-    ContentType: file.type,
-    ContentLength: file.size,
+    ContentType: fileType,
+    ContentLength: fileSize,
   });
 
   const signature = await getSignedUrl(storage, command, { expiresIn: 60 });
