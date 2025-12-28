@@ -11,6 +11,12 @@ block body
           span(class=`material-icons ${bundleName==="calls" ? "active" : ""}`) call
        
       .controls  
+        a.control(href="/")
+          span(class='material-icons') home
+
+        a.control.premium-icon-button.hidden(href="/#pricing")
+          span(class='material-icons') workspace_premium
+
         a.control(href="/settings")
           span(class=`material-icons ${bundleName==="settings" ? "active" : ""}`) settings
 

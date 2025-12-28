@@ -26,6 +26,12 @@ async function loadCurrentUser(callback = undefined) {
       window.currentUser.set(key, data[key]);
     });
 
+    document
+      .querySelectorAll('.premium-icon-button')
+      .forEach((elem) =>
+        elem.classList.toggle('hidden', window.currentUser.get('plan') === 'gold')
+      );
+
     await Promise.all(callbacks.map(async (cb) => await cb?.()));
     callbacks = [];
   } catch {
