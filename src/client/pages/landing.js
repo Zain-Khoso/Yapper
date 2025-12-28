@@ -12,6 +12,9 @@ import '../css/landing.css';
 // Page Scripts.
 import '../js/theme';
 import '../js/user';
+import { API, showError } from '../js/utils';
+
+// CAROUSEL SETUP.
 
 const carousel = document.querySelector('.carousel');
 const slidesContainer = carousel.querySelector('.slides');
@@ -66,3 +69,29 @@ prevBtn.addEventListener('click', () => {
 
 // Initialize button states
 updateCarousel();
+
+// PAYMENTS SETUP.
+const elem_GoldButton = document.getElementById('checkout-gold');
+
+async function handleCheckout(event) {
+  if (!window?.currentUser) return location.assign('/login');
+
+  try {
+    const {
+      data: {
+        data: { url },
+      },
+    } = await API.post('/payment/checkout', {
+      success_url: 'http://localhost:8000/payment-success', // TODO: When hosting make sure to change logic here.
+      cancel_url: 'http://localhost:8000/payment-cancel', // TODO: When hosting make sure to change logic here.
+    });
+
+    location.assign(url);
+  } catch (error) {
+    console.error(error);
+
+    new showError('Something went wrong.');
+  }
+}
+
+elem_GoldButton.addEventListener('click', handleCheckout);
