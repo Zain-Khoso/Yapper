@@ -18,6 +18,7 @@ import SteppedForm from '../js/SteppedForm';
 import { Entry } from '../js/Inputs';
 
 // Constants.
+const Params = new URLSearchParams(location.search);
 const Form = new SteppedForm('login-form');
 const Email = new Entry('email', schema_Email, Form);
 const Password = new Entry('password', schema_String, Form);
@@ -32,7 +33,7 @@ const formOptions = [
       try {
         await API.patch('/auth/login', { email: Email.getValue(), password: Password.getValue() });
 
-        location.assign('/chat');
+        location.assign(Params.get('redirect_to') ? Params.get('redirect_to') : '/chat');
       } catch (error) {
         if (error.isAxiosError) {
           const {
