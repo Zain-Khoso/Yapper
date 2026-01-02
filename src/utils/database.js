@@ -8,9 +8,9 @@ const DATABASE_USER = process.env.DATABASE_USER;
 const DATABASE_PASSWORD = process.env.DATABASE_PASSWORD;
 const DATABASE_NAME = process.env.DATABASE_NAME;
 
-// Initializing Sequelize as the ORM for MySQL Database.
+// Initializing Sequelize as the ORM for MariaDB Database.
 const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, {
-  dialect: 'mysql',
+  dialect: 'mariadb',
   host: DATABASE_HOST,
   port: DATABASE_PORT,
   logging: false,

@@ -97,8 +97,8 @@ async function readChatrooms(req, res) {
       [
         literal(`(
         SELECT COUNT(*)
-        FROM Messages AS m
-        INNER JOIN ChatroomMembers AS cm ON cm.roomId = chatroom.id
+        FROM messages AS m
+        INNER JOIN chatroomMembers AS cm ON cm.roomId = chatroom.id
         WHERE cm.memberId = '${user.id}' 
         AND m.roomId = chatroom.id
         AND m.createdAt > cm.lastReadAt
