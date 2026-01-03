@@ -1,3 +1,7 @@
+// Lib Imports.
+import axios from 'axios';
+import Autolinker from 'autolinker';
+
 // Local Imports.
 import { API, showError, showInfo, showSuccess, Swal } from './utils';
 import {
@@ -7,9 +11,8 @@ import {
   schema_String,
 } from '../../utils/validations';
 import { formatDateString, isSameDate } from '../../utils/serializers';
-import Autolinker from 'autolinker';
 import { getTheme } from './theme';
-import axios from 'axios';
+import { loadCurrentUser } from './user';
 
 export default class App {
   constructor() {
@@ -127,6 +130,28 @@ export default class App {
     });
     this.elem_Messages.addEventListener('click', (e) => this.handleDownloadFile(e));
     this.elem_MessageFileInput.addEventListener('change', (e) => this.handleSendFileMessage(e));
+
+    // Socket Events.
+    window.socket.on('user-presence', ({ userId, isOnline }) => {
+      const room = Array.from(this.rooms.values()).find((r) => r.receiver.id === userId);
+      if (!room) return;
+
+      this.rooms.set(room.id, {
+        ...room,
+        receiver: { ...room.receiver, isOnline },
+      });
+      console.log(room);
+
+      this.updateRoom(room.id);
+      if (room.id === this.activeRoomId) {
+        this.updateChatHeader(
+          room.receiver.initial,
+          room.receiver.picture,
+          room.receiver.displayName,
+          isOnline
+        );
+      }
+    });
   }
 
   toggleAppUI(showUI) {
@@ -144,6 +169,8 @@ export default class App {
         isFetchingMessages: false,
         isMessagesFinished: false,
       });
+
+      window.socket.emit('subscribe', room.receiver.id);
     }
 
     const {
@@ -416,7 +443,7 @@ export default class App {
   updateRoom(id) {
     const {
       id: roomId,
-      receiver: { picture, initial, displayName },
+      receiver: { picture, initial, displayName, isOnline },
       lastSpoke,
       lastMessage,
       unreadCount,
@@ -425,6 +452,7 @@ export default class App {
     const elem_Room = this.elem_ChatsList.querySelector(`li.chat[data-roomId="${roomId}"]`);
     const elem_RoomImage = elem_Room.querySelector('img');
     const elem_RoomInitial = elem_Room.querySelector('.initial');
+    const elem_RoomStatus = elem_Room.querySelector('.status');
     const elem_RoomName = elem_Room.querySelector('.bold');
     const elem_RoomLastSpoke = elem_Room.querySelector('.last-spoke');
     const elem_RoomLastMessage = elem_Room.querySelector('.last-message');
@@ -432,6 +460,7 @@ export default class App {
 
     elem_RoomImage.setAttribute('src', picture);
     elem_RoomInitial.textContent = initial;
+    elem_RoomStatus.classList.toggle('active', isOnline);
     elem_RoomName.innerHTML = displayName;
     elem_RoomLastSpoke.textContent = lastSpoke;
     elem_RoomLastMessage.innerHTML = lastMessage;

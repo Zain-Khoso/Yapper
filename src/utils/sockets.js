@@ -17,13 +17,7 @@ export default class Sockets {
     this.io.use(this.allowAuthenticatedUserOnly);
 
     // Events.
-    this.io.on('connection', (socket) => {
-      console.log('\nUser Connected: ', socket.id, socket.user.id, socket.user.email);
-
-      socket.on('disconnect', () => {
-        console.log('\nUser Disconnected: ', socket.id);
-      });
-    });
+    this.io.on('connection', this.onSocketConnect.bind(this));
   }
 
   async allowAuthenticatedUserOnly(socket, next) {
@@ -44,5 +38,25 @@ export default class Sockets {
 
     socket.user = user;
     return next();
+  }
+
+  async onSocketConnect(socket) {
+    const user = socket.user;
+    if (!user) return;
+
+    await user.update({ isOnline: true });
+
+    socket.join(user.id);
+    this.io.to(user.id).emit('user-presence', { userId: user.id, isOnline: true });
+
+    // Socket specific events.
+    socket.on('subscribe', (uid) => socket.join(uid));
+    socket.on('disconnect', () => this.onSocketDisconnect(user));
+  }
+
+  async onSocketDisconnect(user) {
+    await user.update({ isOnline: false });
+
+    this.io.to(user.id).emit('user-presence', { userId: user.id, isOnline: false });
   }
 }

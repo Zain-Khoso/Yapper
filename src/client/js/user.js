@@ -35,9 +35,6 @@ async function loadCurrentUser(callback = undefined) {
         elem.classList.toggle('hidden', window.currentUser.get('plan') === 'gold')
       );
 
-    await Promise.all(callbacks.map(async (cb) => await cb?.()));
-    callbacks = [];
-
     window.socket = io({
       auth: {
         accessToken: window?.currentUser?.get('accessToken')
@@ -45,6 +42,9 @@ async function loadCurrentUser(callback = undefined) {
           : null,
       },
     });
+
+    await Promise.all(callbacks.map(async (cb) => await cb?.()));
+    callbacks = [];
   } catch {
     window.currentUser = null;
   } finally {
