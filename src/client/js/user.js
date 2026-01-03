@@ -1,13 +1,10 @@
 'use strict';
 
 // Lib Imports.
-import SocketConnection from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 // Local Imports.
 import { API } from './utils';
-
-// Constants.
-const io = SocketConnection();
 
 // Variables.
 let isLoading = false;
@@ -40,6 +37,14 @@ async function loadCurrentUser(callback = undefined) {
 
     await Promise.all(callbacks.map(async (cb) => await cb?.()));
     callbacks = [];
+
+    window.socket = io({
+      auth: {
+        accessToken: window?.currentUser?.get('accessToken')
+          ? `Bearer ${window?.currentUser?.get('accessToken')}`
+          : null,
+      },
+    });
   } catch {
     window.currentUser = null;
   } finally {
