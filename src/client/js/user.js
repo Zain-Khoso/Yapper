@@ -7,7 +7,7 @@ import SocketConnection from 'socket.io-client';
 import { API } from './utils';
 
 // Constants.
-const io = SocketConnection()
+const io = SocketConnection();
 
 // Variables.
 let isLoading = false;
