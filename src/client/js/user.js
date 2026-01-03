@@ -1,7 +1,13 @@
 'use strict';
 
+// Lib Imports.
+import SocketConnection from 'socket.io-client';
+
 // Local Imports.
 import { API } from './utils';
+
+// Constants.
+const io = SocketConnection()
 
 // Variables.
 let isLoading = false;

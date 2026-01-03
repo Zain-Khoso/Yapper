@@ -2,10 +2,12 @@
 import 'dotenv/config';
 
 // Node Imports.
+import {createServer} from 'http';
 import path from 'path';
 
 // Lib Imports.
 import express from 'express';
+import {Server as SocketServer} from 'socket.io'
 import cookieParser from 'cookie-parser';
 import CORS from 'cors';
 
@@ -16,8 +18,10 @@ import pageRouter from './src/routes/page.routes.js';
 import apiRouter from './src/routes/api.routes.js';
 import { stripeWebhook } from './src/controllers/payment.controller.js';
 
-// Initializing Express.
+// Initializing HTTP server and Web-sockets server.
 const app = express();
+const server = createServer(app);
+const io = new SocketServer(server);
 
 // Integrating Template Engine (Pug).
 app.set('view engine', 'pug');
@@ -66,5 +70,13 @@ import './src/utils/cron-jobs.js';
 // Connecting to Database.
 await sequelize.sync({ force: false });
 
+// Web-sockets Events.
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });});
+
 // Running the server.
-app.listen(process.env.PORT);
+server.listen(process.env.PORT);
