@@ -126,7 +126,7 @@ function serializeMessage(message, senderId) {
 
   return {
     id: message.id,
-    isSender: senderId === message.userId,
+    senderId: message.userId,
     content: message.content,
     isFile: message.isFile,
     fileType: message.isFile ? formatFileType(message.fileType) : null,
@@ -154,7 +154,7 @@ function serializeMessagesList(messages, senderId) {
         const lastCreatedAt = lastEntry.at(-1).createdAt;
 
         if (isSameDate(lastCreatedAt, currentCreatedAt)) {
-          if (lastEntry.at(-1).isSender === message.isSender) output.at(-1).push(message);
+          if (lastEntry.at(-1).senderId === message.senderId) output.at(-1).push(message);
           else output.push([message]);
         } else {
           output.push(formatDateString(lastCreatedAt));

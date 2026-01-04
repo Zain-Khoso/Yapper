@@ -140,7 +140,6 @@ export default class App {
         ...room,
         receiver: { ...room.receiver, isOnline },
       });
-      console.log(room);
 
       this.updateRoom(room.id);
       if (room.id === this.activeRoomId) {
@@ -152,6 +151,8 @@ export default class App {
         );
       }
     });
+    window.socket.on('new-message', (roomId, body) => this.handleNewMessage(roomId, body));
+    window.socket.on('new-message-error', (body) => this.handleNewMessageError(body));
   }
 
   toggleAppUI(showUI) {
@@ -171,6 +172,7 @@ export default class App {
       });
 
       window.socket.emit('subscribe', room.receiver.id);
+      window.socket.emit('subscribe', room.id);
     }
 
     const {
@@ -245,6 +247,7 @@ export default class App {
     }
 
     this.elem_MessageTextInput.focus();
+    this.updateLastRead(roomId);
   }
 
   updateChatHeader(initial, picture, displayName, isOnline) {
@@ -541,6 +544,86 @@ export default class App {
     this.downloadFile(url, name);
   }
 
+  handleNewMessageError(body) {
+    if (body.type === 'paywall') {
+      showInfo.fire({
+        title: 'Upgrade Required',
+        text: body.message,
+        showCancelButton: true,
+        confirmButtonText: 'Upgrade',
+        cancelButtonText: 'No thanks',
+        focusConfirm: true,
+        reverseButtons: true,
+        customClass: {
+          confirmButton: 'btn outline',
+          cancelButton: 'btn outline',
+        },
+        preConfirm: () => location.assign('/#pricing'),
+      });
+    } else new showError('Something went wrong.');
+  }
+
+  addNewMessageToRoomState(roomId, message) {
+    const room = this.rooms.get(roomId);
+    const newMessages = [...room.messages];
+    const currentCreatedAt = new Date(message.createdAt);
+
+    if (newMessages.length === 0) {
+      const dateString = formatDateString(currentCreatedAt);
+
+      newMessages.unshift(dateString);
+      newMessages.unshift([message]);
+    } else {
+      const lastEntry = newMessages.at(0);
+      const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
+
+      if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+        if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
+        else newMessages.unshift([message]);
+      } else {
+        const dateString = formatDateString(currentCreatedAt);
+
+        newMessages.unshift(dateString);
+        newMessages.unshift([message]);
+      }
+    }
+
+    this.rooms.set(roomId, {
+      ...room,
+      messages: newMessages,
+      lastMessage: message.isFile ? message.fileName : message.content,
+      lastSpoke: message.sentAt,
+      unreadCount: room.unreadCount + (message.isSender ? 0 : 1),
+    });
+  }
+
+  handleNewMessage(roomId, message) {
+    message.isSender = message.senderId === window.currentUser.get('id');
+
+    const room = this.rooms.get(roomId);
+    const isActiveRoom = roomId === this.activeRoomId;
+    const currentCreatedAt = new Date(message.createdAt);
+    const lastCreatedAt = new Date(room.messages.at(0).at(0).createdAt);
+
+    this.addNewMessageToRoomState(roomId, message);
+
+    if (room.messages.length === 0) {
+      this.addDateSeparator(formatDateString(currentCreatedAt), 'beforeend');
+    } else if (!isSameDate(lastCreatedAt, currentCreatedAt)) {
+      this.addDateSeparator(formatDateString(currentCreatedAt), 'beforeend');
+    }
+
+    if (isActiveRoom) {
+      this.addMessage(message, 'new');
+      this.scrollToEnd();
+      this.updateLastRead(roomId);
+    }
+
+    this.updateRoom(roomId);
+    this.moveRoomToTop(roomId);
+    this.updateMessagesOffet(roomId);
+  }
+
   async createRoom() {
     await Swal.fire({
       icon: 'question',
@@ -662,100 +745,132 @@ export default class App {
     const fileType = isFile ? content.type : null;
     const fileSize = isFile ? content.size : null;
 
-    try {
-      if (isFile) {
-        const {
-          data: {
-            data: { signature, url },
-          },
-        } = await API.post(`/file/message`, {
-          fileName,
-          fileType,
-          fileSize,
-          roomId: activeRoom.id,
-        });
-
-        await axios.put(signature, content, {
-          headers: {
-            'Content-Type': fileType,
-          },
-        });
-
-        content = url;
-      }
-
+    if (isFile) {
       const {
-        data: { data: message },
-      } = await API.post(`/room/${activeRoom.id}/message/add`, {
-        content,
-        isFile,
+        data: {
+          data: { signature, url },
+        },
+      } = await API.post(`/file/message`, {
         fileName,
         fileType,
         fileSize,
+        roomId: activeRoom.id,
       });
 
-      // Updating Local State.
-      const newMessages = [...activeRoom.messages];
-      const currentCreatedAt = new Date(message.createdAt);
-
-      if (newMessages.length === 0) {
-        const dateString = formatDateString(currentCreatedAt);
-
-        newMessages.unshift(dateString);
-        newMessages.unshift([message]);
-
-        this.addDateSeparator(dateString, 'beforeend');
-      } else {
-        const lastEntry = newMessages.at(0);
-        const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
-
-        if (isSameDate(lastCreatedAt, currentCreatedAt)) {
-          if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
-          else newMessages.unshift([message]);
-        } else {
-          const dateString = formatDateString(currentCreatedAt);
-
-          newMessages.unshift(dateString);
-          newMessages.unshift([message]);
-
-          this.addDateSeparator(dateString, 'beforeend');
-        }
-      }
-
-      this.rooms.set(activeRoom.id, {
-        ...activeRoom,
-        messages: newMessages,
-        lastMessage: message.isFile ? message.fileName : message.content,
-        lastSpoke: message.sentAt,
-        unreadCount: 0,
+      await axios.put(signature, content, {
+        headers: {
+          'Content-Type': fileType,
+        },
       });
 
-      this.addMessage(message, 'new');
-      this.scrollToEnd();
-      this.updateRoom(activeRoom.id);
-      this.moveRoomToTop(activeRoom.id);
-      this.updateMessagesOffet(activeRoom.id);
-      this.updateLastRead(activeRoom.id);
-
-      onSuccess?.();
-    } catch (error) {
-      if (error.isAxiosError && error.status === 402) {
-        showInfo.fire({
-          title: 'Upgrade Required',
-          text: error?.response?.data?.errors?.root,
-          showCancelButton: true,
-          confirmButtonText: 'Upgrade',
-          cancelButtonText: 'No thanks',
-          focusConfirm: true,
-          reverseButtons: true,
-          customClass: {
-            confirmButton: 'btn outline',
-            cancelButton: 'btn outline',
-          },
-          preConfirm: () => location.assign('/#pricing'),
-        });
-      } else new showError('Something went wrong.');
+      content = url;
     }
+
+    window.socket.emit('new-message', {
+      content,
+      isFile,
+      fileName,
+      fileType,
+      fileSize,
+      roomId: activeRoom.id,
+    });
+
+    onSuccess?.();
+
+    // try {
+    //   if (isFile) {
+    //     const {
+    //       data: {
+    //         data: { signature, url },
+    //       },
+    //     } = await API.post(`/file/message`, {
+    //       fileName,
+    //       fileType,
+    //       fileSize,
+    //       roomId: activeRoom.id,
+    //     });
+
+    //     await axios.put(signature, content, {
+    //       headers: {
+    //         'Content-Type': fileType,
+    //       },
+    //     });
+
+    //     content = url;
+    //   }
+
+    //   const {
+    //     data: { data: message },
+    //   } = await API.post(`/room/${activeRoom.id}/message/add`, {
+    //     content,
+    //     isFile,
+    //     fileName,
+    //     fileType,
+    //     fileSize,
+    //   });
+
+    //   // Updating Local State.
+    //   const newMessages = [...activeRoom.messages];
+    //   const currentCreatedAt = new Date(message.createdAt);
+
+    //   if (newMessages.length === 0) {
+    //     const dateString = formatDateString(currentCreatedAt);
+
+    //     newMessages.unshift(dateString);
+    //     newMessages.unshift([message]);
+
+    //     this.addDateSeparator(dateString, 'beforeend');
+    //   } else {
+    //     const lastEntry = newMessages.at(0);
+    //     const lastCreatedAt = new Date(lastEntry.at(0).createdAt);
+
+    //     if (isSameDate(lastCreatedAt, currentCreatedAt)) {
+    //       if (lastEntry.at(0).isSender === message.isSender) newMessages.at(0).unshift(message);
+    //       else newMessages.unshift([message]);
+    //     } else {
+    //       const dateString = formatDateString(currentCreatedAt);
+
+    //       newMessages.unshift(dateString);
+    //       newMessages.unshift([message]);
+
+    //       this.addDateSeparator(dateString, 'beforeend');
+    //     }
+    //   }
+
+    //   this.rooms.set(activeRoom.id, {
+    //     ...activeRoom,
+    //     messages: newMessages,
+    //     lastMessage: message.isFile ? message.fileName : message.content,
+    //     lastSpoke: message.sentAt,
+    //     unreadCount: 0,
+    //   });
+
+    //   this.addMessage(message, 'new');
+    //   this.scrollToEnd();
+    //   this.updateRoom(activeRoom.id);
+    //   this.moveRoomToTop(activeRoom.id);
+    //   this.updateMessagesOffet(activeRoom.id);
+    //   this.updateLastRead(activeRoom.id);
+
+    //   onSuccess?.();
+    // } catch (error) {
+    //   if (error.isAxiosError && error.status === 402) {
+    //     showInfo.fire({
+    //       title: 'Upgrade Required',
+    //       text: error?.response?.data?.errors?.root,
+    //       showCancelButton: true,
+    //       confirmButtonText: 'Upgrade',
+    //       cancelButtonText: 'No thanks',
+    //       focusConfirm: true,
+    //       reverseButtons: true,
+    //       customClass: {
+    //         confirmButton: 'btn outline',
+    //         cancelButton: 'btn outline',
+    //       },
+    //       preConfirm: () => location.assign('/#pricing'),
+    //     });
+    //   } else new showError('Something went wrong.');
+    // }
   }
 
   async fetchMessages() {
@@ -766,12 +881,20 @@ export default class App {
     });
 
     try {
-      const {
+      let {
         data: {
           data: { messages, offset: newOffset, isFirstPage, isLastPage },
         },
       } = await API.get(`/room/${activeRoom.id}/message/get-all/${activeRoom.messagesOffset}`);
 
+      messages = messages.map((entry) => {
+        if (typeof entry === 'string') return entry;
+        else
+          return entry.map((message) => ({
+            ...message,
+            isSender: message.senderId === window.currentUser.get('id'),
+          }));
+      });
       let oldMessages = [...activeRoom.messages];
       let newMessages = [...messages];
 
