@@ -1,87 +1,73 @@
-# 💬 Yapper
+# Yapper
 
-**Yapper** is a high-performance, full-stack real-time chat application built with a focus on privacy, scalability, and custom tooling. Unlike traditional SPAs, Yapper utilizes **Pug** templates with a custom **Vite-integrated Express** middleware to deliver a modern development experience with server-side rendering.
+Yapper is a full-stack, real-time chat application focused on privacy, reliability, and a minimal client footprint. It combines server-rendered views (Pug) with modern frontend tooling (Vite) and a Node/Express backend to provide a fast developer experience and scalable runtime.
 
-## 🚀 Key Features
+## Features
 
-### 🔐 Security & Privacy
+- **Real-time messaging** with Socket.io and user presence tracking.
+- **Authentication** using JWT (access + refresh tokens) and email OTP flows.
+- **File uploads** stored in S3-compatible storage (Cloudflare R2) using presigned URLs.
+- **Payments** integration (Stripe) and webhook handling for premium features.
+- **Server-side views** rendered with Pug and lightweight vanilla JS for interactivity.
 
-* **Dual-Token JWT Auth:** Secure authentication flow using Access and Refresh tokens with an Axios auth interceptor.
-* **Email OTP:** Account actions and verification secured via One-Time Passwords with a custom **cooldown mechanism**.
-* **Database Transactions:** Ensures data integrity across complex relational operations.
+## Tech stack
 
-### ⚡ Real-Time & Media
+- **Runtime:** Node.js + Express
+- **Frontend:** Pug templates, Vite, vanilla JS, CSS
+- **Database:** MariaDB via Sequelize ORM
+- **Realtime:** Socket.io, WebRTC
+- **Storage:** Cloudflare R2 (S3-compatible)
+- **Build tools:** Vite, esbuild, custom build scripts
 
-* **Instant Messaging:** Powered by **Socket.io** for real-time delivery and **User Presence** (Online/Offline) tracking.
-* **Voice & Video Calls:** Peer-to-peer communication implemented via **WebRTC**.
-* **Paginated Loading:** Efficient data handling for both chatroom lists and message history.
+## Repository layout (key paths)
 
-### 💰 Monetization & Storage
+- **`app.js`**: Server entrypoint and global middleware.
+- **`src/client`**: Frontend JS, CSS, and pages.
+- **`src/controllers`**: Express controllers for routes and business logic.
+- **`src/models`**: Sequelize models and associations.
+- **`src/routes`**: Route definitions mounting controllers.
+- **`src/views`**: Pug templates and partials.
+- **`src/utils`**: Database setup, auth helpers, storage helpers, and cron jobs.
 
-* **Stripe Integration:** Full payment lifecycle management with a paywall system for premium features.
-* **Cloudflare R2:** S3-compatible object storage for file uploads, utilizing **presigned URLs** to allow direct client-to-cloud uploads.
-* **Stripe CLI:** Integrated workflow for local webhook testing.
+## Prerequisites
 
-## 🛠️ Technical Stack
+- Node.js (16+ recommended)
+- pnpm (preferred) or npm
+- A running database (configured via environment variables)
+- Cloudflare R2 credentials (if using uploads)
+- Stripe keys (if using payments)
 
-| **Layer** | **Technology** | 
-| ----- | ----- | 
-| **Backend** | Node.js, Express.js | 
-| **Frontend** | Pug (Jade), Vanilla JS, CSS | 
-| **Database** | MariaDB | 
-| **ORM** | Sequelize (Transactions, Virtual Fields, Scopes) | 
-| **Real-time** | Socket.io, WebRTC | 
-| **Storage** | Cloudflare R2 | 
-| **Infrastructure** | Docker, Nginx (Proxy & Rate Limiting) | 
-| **Build Tools** | Vite, esbuild, Custom Node.js build scripts | 
+## Quick start (local)
 
-## 🏗️ Architecture & Engineering Highlights
+1. Install dependencies:
 
-### The "Hybrid" Frontend Approach
+```bash
+pnpm install
+# or: npm install
+```
 
-One of the most challenging aspects of Yapper was the integration of **Vite as an Express middleware**. This setup provides:
+2. Create and populate a `.env` file (see sample keys below).
 
-* **Hot Module Replacement (HMR)** during development while serving Pug templates.
-* A custom **Local State Management** solution to handle complex UI updates without a heavy framework like React.
-* Optimized asset bundling for vanilla JS and CSS through Vite.
+3. Start the app (development):
 
-### Database Excellence
+```bash
+pnpm dev
+```
 
-The data layer utilizes MariaDB with Sequelize, featuring complex relational mapping:
+4. Open your browser at http://localhost:8000 (or the `PORT` you set).
 
-* **Advanced Relations:** Implementation of One-to-Many, Many-to-Many, and **Super Many-to-Many** associations.
-* **Performance:** Utilizing **Sequelize Scopes** for minimal data fetching and **Virtual Fields** for computed properties.
-* **Cron Jobs:** Automated scheduled tasks using `node-cron` for database maintenance and cleanup.
+Note: The repo includes `vite.config.js`—frontend assets are served/bundled with Vite. If you use the provided scripts, they will orchestrate Vite and server builds.
 
-### Custom Build Pipeline
+## Environment variables
 
-Rather than relying on standard presets, Yapper uses a bespoke build system:
+Just copy from the `.env.example` file
 
-* **esbuild** handles the backend code bundling for speed and efficiency.
-* **Vite** manages the frontend assets.
-* A **custom JS build script** orchestrates both processes to bundle the Frontend and Backend in a single command.
+## Development notes
 
-## 🚦 Getting Started
+- Views are implemented with Pug templates under `src/views` and lightweight client behavior lives in `src/client/js`.
+- Server controllers and route wiring live in `src/controllers` and `src/routes` respectively.
+- Database models and associations are defined in `src/models` and `src/utils/associations.js`.
 
-### Prerequisites
+---
 
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
-
-### Installation & Launch
-
-1. **Clone the repo:**
-   ```bash
-   git clone [https://github.com/Zain-Khoso/Yapper.git](https://github.com/Zain-Khoso/Yapper.git)
-   cd Yapper
-    ```
-2. **Environment Setup:** Create a `.env` file based off of the `.env.example` file and populate it with your own secrets (Stripe, Cloudflare R2, JWT, etc.).
-
-3. **Spin up the containers:** 
-    ```bash 
-    docker-compose up --build
-    ```
-
-The application will be accessible at http://localhost. Docker handles the dependency installation, database initialization, and the custom build orchestration automatically.
-
-### 📈 Lessons Learned
-This project was a deep dive into the internals of modern web tooling. Successfully setting up Vite within an Express ecosystem required a thorough understanding of the request/response lifecycle and how to bridge the gap between traditional SSR and modern build-time optimizations.
+Developed with Problem Solving by [Zain Khoso](https://github.com/Zain-Khoso).
