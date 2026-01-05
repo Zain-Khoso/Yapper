@@ -126,10 +126,6 @@ function getChatPage(req, res) {
   res.render('chat', { metadata, bundleName: 'chat' });
 }
 
-function getCallsPage(_, res) {
-  res.redirect('/chat');
-}
-
 function getPaymentSuccessPage(req, res) {
   const metadata = getMetadata({
     title: 'Payment Successful',
@@ -164,7 +160,6 @@ export {
   getAccountDeletePage,
   getSettingsPage,
   getChatPage,
-  getCallsPage,
   getPaymentSuccessPage,
   getPaymentCancelPage,
 };

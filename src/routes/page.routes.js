@@ -10,7 +10,6 @@ import {
   getChangePasswordPage,
   getSettingsPage,
   getChatPage,
-  getCallsPage,
   getAccountDeletePage,
   getPaymentSuccessPage,
   getPaymentCancelPage,
@@ -45,9 +44,6 @@ router.get('/settings', protectRoute, getSettingsPage);
 
 // GET: Chatapp Page.
 router.get('/chat', protectRoute, getChatPage);
-
-// GET: Calls Page.
-router.get('/calls', protectRoute, getCallsPage);
 
 // GET: Calls Page.
 router.get('/payment-success', getPaymentSuccessPage);
