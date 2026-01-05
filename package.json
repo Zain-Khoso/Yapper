@@ -1,7 +1,7 @@
 {
-  "name": "yapper",
-  "version": "0.0.0",
-  "description": "A real-time chat application",
+  "name": "expressjs-chat-app",
+  "version": "1.0.0",
+  "description": "Real-time chat application built with Express.js and Socket.io",
   "main": "app.js",
   "type": "module",
   "scripts": {
