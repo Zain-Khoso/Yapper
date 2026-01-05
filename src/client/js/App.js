@@ -32,13 +32,9 @@ export default class App {
     this.elem_HeaderDisplayName = document.getElementById('header-displayName');
     this.elem_OpenNavButton = document.getElementById('btn-open-sidenav');
 
-    this.elem_VoiceCallButton = document.getElementById('btn-call-voice');
-    this.elem_VideoCallButton = document.getElementById('btn-call-video');
     this.elem_BlockChatButton = document.getElementById('btn-chat-block');
     this.elem_UnblockChatButton = document.getElementById('btn-chat-unblock');
 
-    this.elem_MobileVoiceCallButton = document.getElementById('btn-mobile-call-voice');
-    this.elem_MobileVideoCallButton = document.getElementById('btn-mobile-call-video');
     this.elem_MobileBlockChatButton = document.getElementById('btn-mobile-chat-block');
     this.elem_MobileUnblockChatButton = document.getElementById('btn-mobile-chat-unblock');
 
@@ -276,12 +272,6 @@ export default class App {
 
     // Update Header Copy.
     this.updateChatHeader(initial, picture, displayName, isOnline);
-
-    // Showing/Hiding controls.
-    this.elem_VoiceCallButton.classList.toggle('hidden', isDeleted || isBlocked);
-    this.elem_VideoCallButton.classList.toggle('hidden', isDeleted || isBlocked);
-    this.elem_MobileVoiceCallButton.classList.toggle('hidden', isDeleted || isBlocked);
-    this.elem_MobileVideoCallButton.classList.toggle('hidden', isDeleted || isBlocked);
 
     this.elem_BlockChatButton.closest('.dropdown').classList.toggle('hidden', isDeleted);
     this.elem_MobileBlockChatButton.closest('.dropdown').classList.toggle('hidden', isDeleted);
