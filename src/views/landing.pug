@@ -17,7 +17,7 @@ block hero-content
           span.inherit Conversations without delay. 
           span.inherit Infrastructure without shortcuts.
 
-        p Yapper is a production-ready messaging system featuring real-time transport, modern cryptography for private communication, a Stripe-based paywall, and a reusable backend architecture that supports custom clients and external integrations.
+        p Yapper is a production-ready messaging system featuring real-time transport, a professional Stripe-based paywall, and a high-performance architecture built for seamless communication and scalable cloud storage.
 
         .btn-group.reverse
           a.btn.primary(href="/chat") Get Started
@@ -30,20 +30,20 @@ block hero-content
 
       ul.features-list 
         li.feature-card 
-          h4 Stripe Paywall 
-          span Subscription-based access with Stripe billing, webhooks, and server-side enforcement.
+          h4 Real-Time Transport
+          span Sub-millisecond message delivery and live presence tracking powered by a robust Socket.io implementation.
 
         li.feature-card 
-          h4 Headless Backend
-          span Use Yapper as a drop-in messaging API with your own frontend.
+          h4 Stripe Paywall
+          span A professional monetization engine with secure checkout and granular access to premium chat features.
 
         li.feature-card 
-          h4 Real-Time
-          span Instant messaging powered by Socket.io with live delivery and presence.
+          h4 Edge Storage with R2
+          span High-speed file transfers using Cloudflare R2 and presigned URLs to offload server traffic.
 
         li.feature-card 
-          h4 End-to-End Encryption
-          span Messages secured using the X3DH key exchange—server never sees plaintext.
+          h4 Custom Vite Architecture
+          span A high-performance hybrid setup merging server-side Pug templates with a modern Vite-driven build pipeline.
 
 block content 
   main.page-contents
@@ -58,34 +58,34 @@ block content
 
         ul.slides 
           li.slide 
-            a.person
+            a(href="https://www.linkedin.com/in/muhammad-imtiaz-hussain/").person
               img.image(src="/assets/brand/testimonial-1.png", alt="MERN Stack Developer's Testimonial")
               
               div
                 h4 Muhammad Imtiaz Hussain
                 span.small MERN Stack Developer 
             
-            span As a MERN-stack developer, I really liked how Yapper separates concerns—auth, messaging, encryption, and billing are all modular and easy to reason about. It feels like production code, not a demo project.
+            span As a developer used to standard SPA setups, seeing Vite integrated directly as Express middleware was a game-changer. The way Yapper bridges SSR Pug templates with modern HMR and bundling feels like a sophisticated production-grade architecture rather than a simple project.
 
           li.slide 
-            a(href="").person
+            a(href="https://www.linkedin.com/in/thehassaanahmed/").person
               img.image(src="/assets/brand/testimonial-2.jpg", alt="Backend Engineer's Testimonial")
               
               div
                 h4 Hassaan Ahmed
                 span.small Backend Engineer
             
-            span Socket.io is often easy to misuse, but Yapper handles real-time messaging, presence, and delivery cleanly. It's clear a lot of thought went into edge cases and state synchronization.
+            span Socket.io is often easy to misuse, but Yapper handles real-time messaging and user presence cleanly. Combining that with Cloudflare R2 for presigned uploads shows a deep understanding of how to offload heavy traffic and build a system that can actually scale.
 
           li.slide 
-            a(href="").person
+            a(href="https://www.linkedin.com/in/adeen-khoso/").person
               img.image(src="/assets/user-placeholder.png", alt="React.js Developer's Testimonial")
               
               div
                 h4 Muhammad Adeen
                 span.small React.js Developer 
             
-            span I used Yapper's API to plug in a custom React frontend and didn't have to fight the backend at all. The endpoints are predictable, real-time events are well designed, and the docs make it easy to get started.
+            span I was really impressed by the data layer. Most projects shy away from complex SQL, but Yapper handles Super Many-to-Many relations and database transactions with Sequelize flawlessly. It’s rare to find a project that balances complex business logic with clean, modular service files.
 
         button.control
           span.material-icons chevron_right
@@ -105,7 +105,7 @@ block content
             span Perfect for trying Yapper.
 
           ul.perks-list 
-            li.perk End-to-end encrypted chats
+            li.perk Account Registration
             li.perk 5 chatrooms
             li.perk 25 messages per chatroom
             li.perk 2 files per chatroom
@@ -141,7 +141,7 @@ block content
             br
             span.inherit Zain Ul Abdin 
         
-        p Zain is a web developer with 2 years of professional experience building applications for startups and clients worldwide. While working on real-time products, he repeatedly ran into the same problem—chat systems that were hard to scale, insecure by default, or tightly coupled to the UI. That frustration led to Yapper, a developer-first messaging platform focused on real-time performance, end-to-end encryption, and a reusable backend that can power any frontend.
+        p Zain is a web developer with 2 years of professional experience building applications for startups and clients worldwide. While working on real-time products, he repeatedly ran into the same problem—chat systems that were either over-engineered with heavy frameworks or too simplistic for production needs. That frustration led to Yapper: a high-performance messaging platform focused on architectural excellence. By merging the reliability of server-side rendering with the speed of modern build tools like Vite and esbuild, Zain created a system that prioritizes developer control, database integrity, and scalable cloud infrastructure.
 
         .actions
           .socials 
@@ -166,7 +166,7 @@ block content
         .copy 
           h2 Get started with Yapper today.
 
-          span Plug in your frontend, start sending secure real-time messages, and see how fast development can be with a backend that just works.
+          span Spin up a professional messaging stack in minutes. Experience the power of a custom Vite-Express architecture, real-time transport, and Stripe-ready monetization—all in one high-performance package.
 
           .btn-group 
             //- TODO: Publish some API docs on https://api-docs.io/ and add that link here.
