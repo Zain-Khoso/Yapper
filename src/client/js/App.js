@@ -12,7 +12,6 @@ import {
 } from '../../utils/validations';
 import { formatDateString, isSameDate } from '../../utils/serializers';
 import { getTheme } from './theme';
-import { loadCurrentUser } from './user';
 
 export default class App {
   constructor() {
@@ -698,7 +697,6 @@ export default class App {
       }
       if (isLastPage) this.roomsObserver.disconnect();
     } catch (error) {
-      console.log(error);
       new showError(
         'Something went wrong',
         'We were unable to fetch your Chats. Please try again letter.'
@@ -934,7 +932,6 @@ export default class App {
       }
       if (isLastPage) this.messagesObserver.unobserve(this.elem_MessagesObserved);
     } catch (error) {
-      console.log(error);
       new showError(
         'Something went wrong',
         'We were unable to fetch your Chat. Please try again letter.'
@@ -986,8 +983,6 @@ export default class App {
       this.removeMessage(messageId);
       this.updateRoom(activeRoom.id);
     } catch (error) {
-      console.error(error);
-
       new showError('Something went wrong.');
     }
   }
@@ -1007,7 +1002,6 @@ export default class App {
 
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error('Download failed:', error);
       window.open(url, '_blank');
     }
   }
@@ -1036,8 +1030,6 @@ export default class App {
       });
 
       this.updateRoom(activeRoom.id);
-    } catch {
-      console.error('Unable to update read-receipt for Room: ', activeRoom.id);
-    }
+    } catch {}
   }
 }

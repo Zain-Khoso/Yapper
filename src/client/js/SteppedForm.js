@@ -76,7 +76,6 @@ export default class Form {
       this.activeStep += 1;
       this.changeForm();
     } catch (error) {
-      console.error(error);
     } finally {
       this.setLoading(false);
     }

@@ -87,9 +87,7 @@ async function deleteOldImage(oldUrl) {
 
   try {
     await storage.send(deleteCommand);
-  } catch (err) {
-    console.log('Failed to delete old image from R2:', err);
-  }
+  } catch (err) {}
 }
 
 function generateFileKey(fileName, prefix) {
@@ -112,9 +110,7 @@ function sendEmail(to, subject, otp, message) {
 
   try {
     SendGrid.send(email);
-  } catch (error) {
-    console.log('Unable to send email: ', email);
-  }
+  } catch (error) {}
 }
 
 export { viteAssets, generateOTP, deleteOldImage, generateFileKey, sendEmail };

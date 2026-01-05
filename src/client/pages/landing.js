@@ -87,14 +87,12 @@ async function handleCheckout(_) {
         data: { url },
       },
     } = await API.post('/payment/checkout', {
-      success_url: 'http://localhost:8000/payment-success', // TODO: When hosting make sure to change logic here.
-      cancel_url: 'http://localhost:8000/payment-cancel', // TODO: When hosting make sure to change logic here.
+      success_url: 'http://localhost:8000/payment-success',
+      cancel_url: 'http://localhost:8000/payment-cancel',
     });
 
     location.assign(url);
   } catch (error) {
-    console.error(error);
-
     new showError('Something went wrong.');
   }
 }
